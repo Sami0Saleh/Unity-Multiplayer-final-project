@@ -33,7 +33,7 @@ MonoBehaviour:
   m_Settings:
     m_SettingsList:
       m_List:
-      - rid: 3030877977932201984
+      - rid: 631092836341645495
       - rid: 3030877977932201985
       - rid: 3030877977932201986
       - rid: 3030877977932201987
@@ -52,7 +52,7 @@ MonoBehaviour:
       - rid: 3030877977932202000
       - rid: 3030877977932202001
       - rid: 3030877977932202002
-      - rid: 3030877977932202003
+      - rid: 631092836341645496
       - rid: 3030877977932202004
     m_RuntimeSettings:
       m_List: []
@@ -79,11 +79,17 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 3030877977932201984
+    - rid: 631092836341645495
       type: {class: RenderGraphSettings, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.Runtime}
       data:
         m_Version: 0
-        m_EnableRenderCompatibilityMode: 1
+        m_EnableRenderCompatibilityMode: 0
+    - rid: 631092836341645496
+      type: {class: RenderGraphGlobalSettings, ns: UnityEngine.Rendering, asm: Unity.RenderPipelines.Core.Runtime}
+      data:
+        m_version: 0
+        m_EnableCompilationCaching: 1
+        m_EnableValidityChecks: 1
     - rid: 3030877977932201985
       type: {class: UniversalRenderPipelineRuntimeXRResources, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.Runtime}
       data:
@@ -232,12 +238,6 @@ MonoBehaviour:
         probeVolumeBlendStatesCS: {fileID: 7200000, guid: a3f7b8c99de28a94684cb1daebeccf5d, type: 3}
         probeVolumeUploadDataCS: {fileID: 7200000, guid: 0951de5992461754fa73650732c4954c, type: 3}
         probeVolumeUploadDataL2CS: {fileID: 7200000, guid: 6196f34ed825db14b81fb3eb0ea8d931, type: 3}
-    - rid: 3030877977932202003
-      type: {class: RenderGraphGlobalSettings, ns: UnityEngine.Rendering, asm: Unity.RenderPipelines.Core.Runtime}
-      data:
-        m_version: 0
-        m_EnableCompilationCaching: 1
-        m_EnableValidityChecks: 1
     - rid: 3030877977932202004
       type: {class: IncludeAdditionalRPAssets, ns: UnityEngine.Rendering, asm: Unity.RenderPipelines.Core.Runtime}
       data:
