@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 8030409777523237525}
   - component: {fileID: 6733986039433904899}
   m_Layer: 5
-  m_Name: Enter Name
+  m_Name: Create Room
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -143,7 +143,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Enter Name
+  m_text: 'Create Room
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -280,7 +282,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Username
+  m_text: 'Room Name
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -561,7 +565,7 @@ GameObject:
   - component: {fileID: 7539387287465167269}
   - component: {fileID: 6073805497563221400}
   m_Layer: 5
-  m_Name: Start Menu
+  m_Name: Create Room Menu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -862,7 +866,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 586763322797851671, guid: 25dc1d964f915c2459d13a6d2ac72db7, type: 3}
       propertyPath: m_text
-      value: Connect
+      value: Create
       objectReference: {fileID: 0}
     - target: {fileID: 586763322797851671, guid: 25dc1d964f915c2459d13a6d2ac72db7, type: 3}
       propertyPath: m_fontColor32.rgba
@@ -950,7 +954,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5141506289125333578, guid: 25dc1d964f915c2459d13a6d2ac72db7, type: 3}
       propertyPath: m_Name
-      value: Connect
+      value: Create
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -972,7 +976,9 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 586763322797851671, guid: 25dc1d964f915c2459d13a6d2ac72db7, type: 3}
       propertyPath: m_text
-      value: Exit
+      value: 'Cancel
+
+'
       objectReference: {fileID: 0}
     - target: {fileID: 586763322797851671, guid: 25dc1d964f915c2459d13a6d2ac72db7, type: 3}
       propertyPath: m_fontColor32.rgba
@@ -1060,7 +1066,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5141506289125333578, guid: 25dc1d964f915c2459d13a6d2ac72db7, type: 3}
       propertyPath: m_Name
-      value: Exit
+      value: Cancel
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
