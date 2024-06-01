@@ -1,57 +1,71 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
-using UnityEngine.UI;
 using Photon.Realtime;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
-public class NetworkedObject : MonoBehaviourPunCallbacks
+public class MainMenuManager : MonoBehaviourPunCallbacks
 {
-	private const string LOBBY_DEFAULT_NAME = "TheWheel";
+	[SerializeField] private LoginMenu _loginMenu;
+	[SerializeField] private MainMenu _mainMenu;
+	[SerializeField] private JoinRoomMenu _joinRoomMenu;
+	[SerializeField] private CreateRoomMenu _createRoomMenu;
+	[SerializeField, HideInInspector] private GameObject[] _menus;
 
-    [SerializeField] InputField nameInputField;
-	[SerializeField] InputField roomNameInputField;
-	[SerializeField] TMPro.TextMeshPro statusText;
-	public override void OnConnectedToMaster()
+	public static MainMenuManager Instance { get; private set; }
+
+	public TypedLobby GameLobby { get; private set; }
+
+	private void OnValidate()
 	{
-		Debug.Log("Connected");
-		statusText.text = ("Successfuly Connected To Servers");
+		_menus = new GameObject[] {
+			_loginMenu.gameObject,
+			_mainMenu.gameObject,
+			_joinRoomMenu.gameObject,
+			_createRoomMenu.gameObject };
+		SetActiveMenu(_loginMenu);
 	}
 
-	public void ConnectToPhoton() // Connect Button
+	private void Awake()
 	{
-		if (nameInputField.text != null)
-		{ PhotonNetwork.ConnectUsingSettings(); }
-		else
-		{ nameInputField.text = "Lior Hadshian"; PhotonNetwork.ConnectUsingSettings(); }
+		if (Instance == null)
+			Instance = this;
+		GameLobby = GameLobby = new("Game Lobby", LobbyType.Default);
+	}
+
+	private void SetActiveMenu([DisallowNull] MonoBehaviour menuToActivate)
+	{
+        foreach (var menu in _menus)
+            menu.SetActive(false);
+		menuToActivate.gameObject.SetActive(true);
     }
 
-	public void Play() // Play Button
+	public override void OnConnectedToMaster()
 	{
-        PhotonNetwork.JoinLobby(new TypedLobby(LOBBY_DEFAULT_NAME, LobbyType.Default));
-        // Switch To Room Selection UI
-    }
+		SetActiveMenu(_mainMenu);
+	}
+
+	public override void OnDisconnected(DisconnectCause cause)
+	{
+		SetActiveMenu(_loginMenu);
+	}
 
     public override void OnJoinedLobby()
     {
-        base.OnJoinedLobby();
-		Debug.Log($"Joined Lobby {PhotonNetwork.CurrentLobby}");
-    }
-
-    public void Exit() // Exit Button
-	{
-        Application.Quit();
+		if (PhotonNetwork.CurrentLobby == GameLobby)
+			SetActiveMenu(_joinRoomMenu);
     }
 
 	public void CreateRoom()
 	{
-		PhotonNetwork.CreateRoom(roomNameInputField.text);
+		//PhotonNetwork.CreateRoom(roomNameInputField.text);
 	}
 
 	public override void OnCreatedRoom()
 	{
 		base.OnCreatedRoom();
 		Debug.Log("Created Room");
-		statusText.text = ("Created Room Successfully");
+		//statusText.text = ("Created Room Successfully");
 	}
 
 	public void JoinRandomRoom() // joined A random Room

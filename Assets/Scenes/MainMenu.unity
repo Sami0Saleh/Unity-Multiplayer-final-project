@@ -208,7 +208,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5267742389556059215, guid: 4af655c45024f924d8e181cb136c9495, type: 3}
       propertyPath: m_Name
-      value: Start Menu
+      value: Login Menu
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -218,6 +218,22 @@ PrefabInstance:
 --- !u!224 &144666956 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2274910528486872431, guid: 4af655c45024f924d8e181cb136c9495, type: 3}
+  m_PrefabInstance: {fileID: 144666955}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &144666957 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6268016626143594215, guid: 4af655c45024f924d8e181cb136c9495, type: 3}
+  m_PrefabInstance: {fileID: 144666955}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 144666958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5a4c23461e5b145832383ffb1ee35f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &144666958 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5267742389556059215, guid: 4af655c45024f924d8e181cb136c9495, type: 3}
   m_PrefabInstance: {fileID: 144666955}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &407852976
@@ -312,6 +328,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Main Menu Buttons
       objectReference: {fileID: 0}
+    - target: {fileID: 5267742389556059215, guid: d12fe02f45301c24aafd1e996d647b9c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -320,6 +340,22 @@ PrefabInstance:
 --- !u!224 &407852977 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2274910528486872431, guid: d12fe02f45301c24aafd1e996d647b9c, type: 3}
+  m_PrefabInstance: {fileID: 407852976}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &407852978 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6131826567779924656, guid: d12fe02f45301c24aafd1e996d647b9c, type: 3}
+  m_PrefabInstance: {fileID: 407852976}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 407852979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7522773fc45bba741b0484519b852857, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &407852979 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5267742389556059215, guid: d12fe02f45301c24aafd1e996d647b9c, type: 3}
   m_PrefabInstance: {fileID: 407852976}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &432220900
@@ -462,6 +498,7 @@ GameObject:
   - component: {fileID: 633681766}
   - component: {fileID: 633681765}
   - component: {fileID: 633681764}
+  - component: {fileID: 633681767}
   m_Layer: 5
   m_Name: Main Menu Canvas
   m_TagString: Untagged
@@ -538,6 +575,27 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &633681767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 633681763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d6d58f7cf7d5574e96fc520ce60e819, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _loginMenu: {fileID: 144666957}
+  _mainMenu: {fileID: 407852978}
+  _joinRoomMenu: {fileID: 669555011}
+  _createRoomMenu: {fileID: 2058645225}
+  _menus:
+  - {fileID: 144666958}
+  - {fileID: 407852979}
+  - {fileID: 669555012}
+  - {fileID: 2058645226}
 --- !u!1001 &669555009
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -630,6 +688,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Join Room Menu
       objectReference: {fileID: 0}
+    - target: {fileID: 5267742389556059215, guid: a89a0dccd522a7745a4b27775816aa62, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -638,6 +700,22 @@ PrefabInstance:
 --- !u!224 &669555010 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2274910528486872431, guid: a89a0dccd522a7745a4b27775816aa62, type: 3}
+  m_PrefabInstance: {fileID: 669555009}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &669555011 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2375399862602225142, guid: a89a0dccd522a7745a4b27775816aa62, type: 3}
+  m_PrefabInstance: {fileID: 669555009}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 669555012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12fb4f9d344fad7478200031715ab2df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &669555012 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5267742389556059215, guid: a89a0dccd522a7745a4b27775816aa62, type: 3}
   m_PrefabInstance: {fileID: 669555009}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &755151522
@@ -1022,6 +1100,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Create Room Menu
       objectReference: {fileID: 0}
+    - target: {fileID: 5267742389556059215, guid: ba85eb1516c5a1c40a906833664a4360, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1030,6 +1112,22 @@ PrefabInstance:
 --- !u!224 &2058645224 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2274910528486872431, guid: ba85eb1516c5a1c40a906833664a4360, type: 3}
+  m_PrefabInstance: {fileID: 2058645223}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2058645225 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 390407633076940780, guid: ba85eb1516c5a1c40a906833664a4360, type: 3}
+  m_PrefabInstance: {fileID: 2058645223}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2058645226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04cd0e5b046c3fa4c9dc2e4e79ce5c98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &2058645226 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5267742389556059215, guid: ba85eb1516c5a1c40a906833664a4360, type: 3}
   m_PrefabInstance: {fileID: 2058645223}
   m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807

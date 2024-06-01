@@ -564,6 +564,7 @@ GameObject:
   - component: {fileID: 2274910528486872431}
   - component: {fileID: 7539387287465167269}
   - component: {fileID: 6073805497563221400}
+  - component: {fileID: 390407633076940780}
   m_Layer: 5
   m_Name: Create Room Menu
   m_TagString: Untagged
@@ -631,6 +632,21 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &390407633076940780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5267742389556059215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04cd0e5b046c3fa4c9dc2e4e79ce5c98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _roomName: {fileID: 0}
+  _createRoomButton: {fileID: 0}
+  _exitButton: {fileID: 0}
 --- !u!1 &5964241249296401619
 GameObject:
   m_ObjectHideFlags: 0
