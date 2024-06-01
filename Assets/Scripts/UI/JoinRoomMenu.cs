@@ -16,6 +16,7 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 	private void Awake()
 	{
 		InitPool(_roomElementPrefab);
+		_dict = new(ELEMENT_LIST_CAPACITY);
 	}
 
 	private void Start()
@@ -25,11 +26,20 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 		_backButton.onClick.AddListener(BackButton);
 	}
 
+	private void OnDisable()
+	{
+		ClearAllRooms();
+	}
+
 	public override void OnRoomListUpdate(List<RoomInfo> roomList)
 	{
-		HideAllElements();
 		foreach (RoomInfo roomInfo in roomList)
-			_pool.Get().SetProperties(roomInfo);
+		{
+			if (roomInfo.RemovedFromList)
+				UpdateClosedRoom(roomInfo);
+			else
+				UpdateOpenRoom(roomInfo);
+		}
 	}
 
 	public void CreateRoomButton()
@@ -47,10 +57,46 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 		PhotonNetwork.LeaveLobby();
 	}
 
+	#region ROOM_ELEMENT
+	private const int ELEMENT_LIST_CAPACITY = 10;
+
+	private Dictionary<string, RoomElement> _dict;
+
+	private bool UpdateOpenRoom(RoomInfo roomInfo)
+	{
+		RoomElement roomElement = _pool.Get();
+		if (_dict.TryAdd(roomInfo.Name, roomElement))
+		{
+			roomElement.SetProperties(roomInfo);
+			return true;
+		}
+		_pool.Release(roomElement);
+		return false;
+	}
+
+	private bool UpdateClosedRoom(RoomInfo roomInfo) => UpdateClosedRoom(roomInfo.Name);
+
+	private bool UpdateClosedRoom(string roomName)
+	{
+		if (_dict.TryGetValue(roomName, out RoomElement roomElement))
+		{
+			_pool.Release(roomElement);
+			_dict.Remove(roomName);
+			return true;
+		}
+		return false;
+	}
+
+	private void ClearAllRooms()
+	{
+		foreach (var room in _dict)
+			_pool.Release(room.Value);
+		_dict.Clear();
+	}
+	#endregion
+
 	#region POOL
 	private ObjectPool<RoomElement> _pool;
-	private List<RoomElement> _active;
-	private const int DEFAULT_POOL_CAPACITY = 10;
 
 	private void InitPool(RoomElement roomElement)
 	{
@@ -60,32 +106,17 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 			actionOnGet: OnGetElement,
 			actionOnRelease: OnRelease,
 			actionOnDestroy: DestroyElement,
-			defaultCapacity: DEFAULT_POOL_CAPACITY
+			defaultCapacity: ELEMENT_LIST_CAPACITY
 		);
-		_active = new(DEFAULT_POOL_CAPACITY);
-	}
-
-	private void HideAllElements()
-	{
-		foreach (var element in _active)
-			_pool.Release(element);
 	}
 
 	private RoomElement CreateElement(RoomElement roomElement) => Instantiate(roomElement, _roomList);
 
-	private void OnGetElement(RoomElement roomElement)
-	{
-		_active.Add(roomElement);
-		roomElement.gameObject.SetActive(true);
-	}
+	private void OnGetElement(RoomElement roomElement) => roomElement.gameObject.SetActive(true);
 
 	private void DestroyElement(RoomElement roomElement) => Destroy(roomElement.gameObject);
 
-	private void OnRelease(RoomElement roomElement)
-	{
-		_active.Remove(roomElement);
-		roomElement.gameObject.SetActive(false);
-	}
+	private void OnRelease(RoomElement roomElement) => roomElement.gameObject.SetActive(false);
 
 	private bool ElementActive(RoomElement roomElement) => roomElement.gameObject.activeSelf;
 	#endregion
