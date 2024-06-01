@@ -561,7 +561,7 @@ GameObject:
   - component: {fileID: 7539387287465167269}
   - component: {fileID: 6073805497563221400}
   m_Layer: 5
-  m_Name: Start Menu
+  m_Name: Login Menu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
