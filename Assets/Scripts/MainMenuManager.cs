@@ -1,12 +1,11 @@
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
-using System.Diagnostics.CodeAnalysis;
 
 public class MainMenuManager : MonoBehaviourPunCallbacks
 {
-	public const int PLAYERS_PER_ROOM = 4;
+	public const int MAX_PLAYERS_PER_ROOM = 8;
 
 	[SerializeField] private LoginMenu _loginMenu;
 	[SerializeField] private MainMenu _mainMenu;
