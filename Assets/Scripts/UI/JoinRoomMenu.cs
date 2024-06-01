@@ -54,7 +54,7 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 
 	private void InitPool(RoomElement roomElement)
 	{
-		_pool = new ObjectPool<RoomElement>
+		_pool = new
 		(
 			createFunc: () => CreateElement(roomElement),
 			actionOnGet: OnGetElement,
@@ -62,6 +62,7 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 			actionOnDestroy: DestroyElement,
 			defaultCapacity: DEFAULT_POOL_CAPACITY
 		);
+		_active = new(DEFAULT_POOL_CAPACITY);
 	}
 
 	private void HideAllElements()

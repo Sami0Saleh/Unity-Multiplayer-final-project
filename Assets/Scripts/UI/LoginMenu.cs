@@ -20,11 +20,10 @@ public class LoginMenu : MonoBehaviour
 
 	public void ConnectButton()
 	{
-		if (!Nickname.IsNullOrEmpty())
-		{
-			PhotonNetwork.LocalPlayer.NickName = Nickname;
-			PhotonNetwork.ConnectUsingSettings();
-		}
+		if (Nickname.IsNullOrEmpty())
+			return;
+		PhotonNetwork.LocalPlayer.NickName = Nickname;
+		PhotonNetwork.ConnectUsingSettings();
 	}
 
 	public void ExitButton()

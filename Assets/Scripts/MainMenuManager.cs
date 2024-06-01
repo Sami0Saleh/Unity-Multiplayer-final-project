@@ -12,6 +12,7 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 	[SerializeField] private MainMenu _mainMenu;
 	[SerializeField] private JoinRoomMenu _joinRoomMenu;
 	[SerializeField] private CreateRoomMenu _createRoomMenu;
+	[SerializeField] private RoomMenu _roomMenu;
 	[SerializeField, HideInInspector] private GameObject[] _menus;
 
 	public static MainMenuManager Instance { get; private set; }
@@ -24,7 +25,8 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 			_loginMenu.gameObject,
 			_mainMenu.gameObject,
 			_joinRoomMenu.gameObject,
-			_createRoomMenu.gameObject };
+			_createRoomMenu.gameObject,
+			_roomMenu.gameObject};
 		SetActiveMenu(_loginMenu);
 	}
 
@@ -58,40 +60,24 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 			SetActiveMenu(_joinRoomMenu);
     }
 
+	public override void OnLeftLobby()
+	{
+		if (!PhotonNetwork.InLobby)
+			SetActiveMenu(_mainMenu);
+	}
+
 	public void ToCreateRoomMenu()
 	{
 		SetActiveMenu(_createRoomMenu);
 	}
 
-	public override void OnCreatedRoom()
+	public void ExitCreateRoomMenu()
 	{
-		base.OnCreatedRoom();
-		Debug.Log("Created Room");
-		//statusText.text = ("Created Room Successfully");
+		SetActiveMenu(_joinRoomMenu);
 	}
 
-	public void JoinRandomRoom() // joined A random Room
-	{
-		PhotonNetwork.JoinRandomRoom();
-	}
-
-	public void JoinRoom()
-	{
-		PhotonNetwork.JoinRoom("Whatever Room I Clicked On");
-	}
     public override void OnJoinedRoom()
     {
-        base.OnJoinedRoom();
-		Debug.Log($"joined {PhotonNetwork.CurrentRoom}");
+		SetActiveMenu(_roomMenu);
     }
-    public override void OnRoomListUpdate(List<RoomInfo> roomList) // change UI Based On Room List
-	{
-        base.OnRoomListUpdate(roomList);
-        foreach (RoomInfo roomInfo in roomList)
-        {
-            // change UI
-        }
-    }
-
-
 }
