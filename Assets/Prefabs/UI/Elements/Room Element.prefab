@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8894687812831285187}
   - component: {fileID: 3821853370475240464}
   m_Layer: 5
-  m_Name: Room
+  m_Name: Room Element
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -50,6 +50,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad3b8dafe195ea64aa1e27028a40e8dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _roomName: {fileID: 1846957647435809534}
+  _playerCount: {fileID: 6943343338679848856}
 --- !u!1 &5254263180134003175
 GameObject:
   m_ObjectHideFlags: 0
