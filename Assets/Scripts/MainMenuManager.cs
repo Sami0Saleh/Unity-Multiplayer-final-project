@@ -79,4 +79,9 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
     {
 		SetActiveMenu(_roomMenu);
     }
+
+	public override void OnLeftRoom()
+	{
+		SetActiveMenu(_joinRoomMenu);
+	}
 }
