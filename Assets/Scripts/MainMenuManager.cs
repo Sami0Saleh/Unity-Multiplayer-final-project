@@ -6,6 +6,8 @@ using System.Diagnostics.CodeAnalysis;
 
 public class MainMenuManager : MonoBehaviourPunCallbacks
 {
+	public const int PLAYERS_PER_ROOM = 4;
+
 	[SerializeField] private LoginMenu _loginMenu;
 	[SerializeField] private MainMenu _mainMenu;
 	[SerializeField] private JoinRoomMenu _joinRoomMenu;
@@ -56,9 +58,9 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 			SetActiveMenu(_joinRoomMenu);
     }
 
-	public void CreateRoom()
+	public void ToCreateRoomMenu()
 	{
-		//PhotonNetwork.CreateRoom(roomNameInputField.text);
+		SetActiveMenu(_createRoomMenu);
 	}
 
 	public override void OnCreatedRoom()
