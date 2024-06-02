@@ -29,8 +29,9 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 		_hideFullRooms.onValueChanged.AddListener(ApplySearchFiltersOnToggle);
 	}
 
-	private void OnDisable()
+	public override void OnDisable()
 	{
+		base.OnDisable();
 		ClearAllRooms();
 	}
 
