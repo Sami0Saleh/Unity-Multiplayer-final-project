@@ -13,6 +13,8 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 	[SerializeField] private Button _backButton;
 	[SerializeField] private Transform _roomList;
 
+	[SerializeField] private Toggle _hideFullRooms;
+
 	private void Awake()
 	{
 		InitPool(_roomElementPrefab);
@@ -24,6 +26,7 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 		_createRoomButton.onClick.AddListener(CreateRoomButton);
 		_joinRandomRoomButton.onClick.AddListener(JoinRandomRoomButton);
 		_backButton.onClick.AddListener(BackButton);
+		_hideFullRooms.onValueChanged.AddListener(ApplySearchFiltersOnToggle);
 	}
 
 	private void OnDisable()
@@ -40,6 +43,7 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 			else
 				UpdateOpenRoom(roomInfo);
 		}
+		ApplySearchFilters();
 	}
 
 	public void CreateRoomButton()
@@ -55,6 +59,24 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 	public void BackButton()
 	{
 		PhotonNetwork.LeaveLobby();
+	}
+
+	private void ApplySearchFiltersOnToggle(bool _)
+	{
+		ApplySearchFilters();
+	}
+
+	private void ApplySearchFilters()
+	{
+		foreach(var room in _dict.Values)
+			room.gameObject.SetActive(ApplySearchFilters(room.RoomInfo));
+	}
+
+	private bool ApplySearchFilters(RoomInfo source)
+	{
+		if (_hideFullRooms.isOn && source.PlayerCount >= source.MaxPlayers)
+			return false;
+		return true;
 	}
 
 	#region ROOM_ELEMENT

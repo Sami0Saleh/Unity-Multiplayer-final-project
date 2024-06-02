@@ -9,6 +9,8 @@ public class RoomElement : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _roomName;
 	[SerializeField] private TextMeshProUGUI _playerCount;
 	[SerializeField] private Button _joinButton;
+	
+	public RoomInfo RoomInfo { get; private set; }
 
 	private void Start()
 	{
@@ -22,6 +24,7 @@ public class RoomElement : MonoBehaviour
 
 	public void SetProperties(RoomInfo roomInfo)
 	{
+		RoomInfo = roomInfo;
 		SetTexts(roomInfo.Name, roomInfo.PlayerCount, roomInfo.MaxPlayers);
 	}
 
