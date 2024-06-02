@@ -84,16 +84,12 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 
 	private Dictionary<string, RoomElement> _dict;
 
-	private bool UpdateOpenRoom(RoomInfo roomInfo)
+	private void UpdateOpenRoom(RoomInfo roomInfo)
 	{
-		RoomElement roomElement = _pool.Get();
-		if (_dict.TryAdd(roomInfo.Name, roomElement))
-		{
-			roomElement.SetProperties(roomInfo);
-			return true;
-		}
-		_pool.Release(roomElement);
-		return false;
+		if (!_dict.TryGetValue(roomInfo.Name, out RoomElement roomElement))
+			roomElement = _pool.Get();
+		roomElement.SetProperties(roomInfo);
+		_dict.TryAdd(roomInfo.Name, roomElement);
 	}
 
 	private bool UpdateClosedRoom(RoomInfo roomInfo) => UpdateClosedRoom(roomInfo.Name);
