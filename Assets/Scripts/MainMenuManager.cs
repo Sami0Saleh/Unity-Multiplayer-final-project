@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using Photon.Pun;
@@ -38,14 +39,17 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 
 	private void SetActiveMenu([DisallowNull] MonoBehaviour menuToActivate)
 	{
-        foreach (var menu in _menus)
+        foreach (var menu in _menus.Where(go => go != menuToActivate.gameObject))
             menu.SetActive(false);
 		menuToActivate.gameObject.SetActive(true);
     }
 
 	public override void OnConnectedToMaster()
 	{
-		SetActiveMenu(_mainMenu);
+		if (!PhotonNetwork.InLobby)
+			SetActiveMenu(_mainMenu);
+		else
+			SetActiveMenu(_joinRoomMenu);
 	}
 
 	public override void OnDisconnected(DisconnectCause cause)
@@ -79,9 +83,4 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
     {
 		SetActiveMenu(_roomMenu);
     }
-
-	public override void OnLeftRoom()
-	{
-		SetActiveMenu(_joinRoomMenu);
-	}
 }
