@@ -44,26 +44,26 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	public override void OnPlayerEnteredRoom(Player newPlayer)
 	{
 		PlayerElement playerElement = _pool.Get();
-		if (_dict.TryAdd(newPlayer, playerElement))
+		if (_dict.TryAdd(newPlayer.ActorNumber, playerElement))
 			playerElement.SetProperties(newPlayer);
 		else
 			_pool.Release(playerElement);
 		UpdatePlayerCountText();
 	}
 
-	public override void OnPlayerLeftRoom(Player newPlayer)
+	public override void OnPlayerLeftRoom(Player otherPlayer)
 	{
-		if (_dict.TryGetValue(newPlayer, out PlayerElement playerElement))
+		if (_dict.TryGetValue(otherPlayer.ActorNumber, out PlayerElement playerElement))
 		{
 			_pool.Release(playerElement);
-			_dict.Remove(newPlayer);
+			_dict.Remove(otherPlayer.ActorNumber);
 		}
 		UpdatePlayerCountText();
 	}
 
 	public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
 	{
-		if (_dict.TryGetValue(targetPlayer, out PlayerElement playerElement))
+		if (_dict.TryGetValue(targetPlayer.ActorNumber, out PlayerElement playerElement))
 			playerElement.SetProperties(targetPlayer);
 	}
 
@@ -76,7 +76,7 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	#region ROOM_ELEMENT
 	private const int ELEMENT_LIST_CAPACITY = 10;
 
-	private Dictionary<Player, PlayerElement> _dict;
+	private Dictionary<int, PlayerElement> _dict;
 
 	private void ClearAllPlayers()
 	{
