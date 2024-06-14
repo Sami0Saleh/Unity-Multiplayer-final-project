@@ -18,16 +18,33 @@ public class LoginMenu : MonoBehaviour
 		_exitButton.onClick.AddListener(ExitButton);
 	}
 
-	public void ConnectButton()
+    private void OnEnable()
+    {
+        ToggleButtonsState(true);
+    }
+
+    public void ConnectButton()
 	{
 		if (Nickname.IsNullOrEmpty())
 			return;
 		PhotonNetwork.LocalPlayer.NickName = Nickname;
 		PhotonNetwork.ConnectUsingSettings();
-	}
 
-	public void ExitButton()
+        ToggleButtonsState(false);
+    }
+
+	//TODO add on failed to connect
+
+    public void ExitButton()
 	{
 		Application.Quit();
+
+        ToggleButtonsState(false);
+    }
+
+	public void ToggleButtonsState(bool active)
+	{
+		_connectButton.interactable = active;
+		_exitButton.interactable = active;
 	}
 }

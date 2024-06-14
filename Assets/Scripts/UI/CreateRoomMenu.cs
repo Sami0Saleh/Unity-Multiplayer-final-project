@@ -21,20 +21,37 @@ public class CreateRoomMenu : MonoBehaviour
 		_backButton.onClick.AddListener(BackButton);
 	}
 
-	public void CreateRoomButton()
+    private void OnEnable()
+    {
+        ToggleButtonsState(true);
+    }
+
+    public void CreateRoomButton()
 	{
 		if (RoomName.IsNullOrEmpty())
 			return;
 		PhotonNetwork.CreateRoom(RoomName, new() {MaxPlayers = MaxPlayerCount});
-	}
 
-	public void BackButton()
+        ToggleButtonsState(false);
+    }
+
+	//TODO add on failed to create room
+
+    public void BackButton()
 	{
 		MainMenuManager.Instance.ExitCreateRoomMenu();
-	}
 
-	public void UpdateMaxPlayersText(float value)
+        ToggleButtonsState(false);
+    }
+
+    public void UpdateMaxPlayersText(float value)
 	{
 		_maxPlayerText.text = $"Max Players: {(int)value}";
 	}
+
+    public void ToggleButtonsState(bool active)
+    {
+        _createRoomButton.interactable = active;
+        _backButton.interactable = active;
+    }
 }

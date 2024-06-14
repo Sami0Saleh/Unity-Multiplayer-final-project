@@ -30,9 +30,9 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 		base.OnEnable();
 		foreach (var player in PhotonNetwork.PlayerList)
 			OnPlayerEnteredRoom(player);
-	}
+    }
 
-	public override void OnDisable()
+    public override void OnDisable()
 	{
 		base.OnDisable();
 		ClearAllPlayers();
@@ -41,9 +41,9 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	public void LeaveRoomButton()
 	{
 		PhotonNetwork.LeaveRoom();
-	}
+    }
 
-	public override void OnPlayerEnteredRoom(Player newPlayer)
+    public override void OnPlayerEnteredRoom(Player newPlayer)
 	{
 		PlayerElement playerElement = _pool.Get();
 		if (_dict.TryAdd(newPlayer.ActorNumber, playerElement))

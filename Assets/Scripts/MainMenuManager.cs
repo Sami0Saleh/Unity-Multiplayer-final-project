@@ -52,6 +52,8 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 			SetActiveMenu(_joinRoomMenu);
 	}
 
+	//TODO is failed to connect here?
+
 	public override void OnDisconnected(DisconnectCause cause)
 	{
 		SetActiveMenu(_loginMenu);

@@ -17,10 +17,18 @@ public class RoomElement : MonoBehaviour
 		_joinButton.onClick.AddListener(JoinButton);
 	}
 
-	private void JoinButton()
+    private void OnEnable()
+    {
+        _joinButton.interactable = true;
+    }
+
+    private void JoinButton()
 	{
 		PhotonNetwork.JoinRoom(_roomName.text);
+		_joinButton.interactable = false;
 	}
+
+	//TODO add on failed to join room
 
 	public void SetProperties(RoomInfo roomInfo)
 	{

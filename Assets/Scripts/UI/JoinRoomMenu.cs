@@ -29,7 +29,12 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 		_hideFullRooms.onValueChanged.AddListener(ApplySearchFiltersOnToggle);
 	}
 
-	public override void OnDisable()
+    private void OnEnable()
+    {
+        ToggleButtonsState(true);
+    }
+
+    public override void OnDisable()
 	{
 		base.OnDisable();
 		ClearAllRooms();
@@ -50,19 +55,29 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 	public void CreateRoomButton()
 	{
 		MainMenuManager.Instance.ToCreateRoomMenu();
-	}
 
-	public void JoinRandomRoomButton()
+        ToggleButtonsState(false);
+    }
+
+	//TODO add on failed to create room
+
+    public void JoinRandomRoomButton()
 	{
 		PhotonNetwork.JoinRandomRoom();
-	}
 
-	public void BackButton()
+        ToggleButtonsState(false);
+    }
+
+	//TODO add on failed to join random room
+
+    public void BackButton()
 	{
 		PhotonNetwork.LeaveLobby();
-	}
 
-	private void ApplySearchFiltersOnToggle(bool _)
+        ToggleButtonsState(false);
+    }
+
+    private void ApplySearchFiltersOnToggle(bool _)
 	{
 		ApplySearchFilters();
 	}
@@ -80,8 +95,15 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 		return true;
 	}
 
-	#region ROOM_ELEMENT
-	private const int ELEMENT_LIST_CAPACITY = 10;
+    public void ToggleButtonsState(bool active)
+    {
+        _createRoomButton.interactable = active;
+        _joinRandomRoomButton.interactable = active;
+        _backButton.interactable = active;
+    }
+
+    #region ROOM_ELEMENT
+    private const int ELEMENT_LIST_CAPACITY = 10;
 
 	private Dictionary<string, RoomElement> _dict;
 
