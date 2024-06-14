@@ -26,10 +26,10 @@ public class MainMenu : MonoBehaviourPunCallbacks
 		_exitButton.onClick.AddListener(ExitButton);
 	}
 
-	private void OnEnable()
+	public override void OnEnable()
 	{
+		base.OnEnable();
 		Nickname = PhotonNetwork.LocalPlayer.NickName;
-
         ToggleButtonsState(true);
     }
 
