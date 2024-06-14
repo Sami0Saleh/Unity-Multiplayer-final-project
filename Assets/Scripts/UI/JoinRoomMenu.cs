@@ -69,7 +69,10 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 
     public void BackButton()
 	{
-		PhotonNetwork.LeaveLobby();
+		if (PhotonNetwork.InLobby)
+			PhotonNetwork.LeaveLobby();
+		else
+			MainMenuManager.Instance.OnLeftLobby();
 
         ToggleButtonsState(false);
     }
