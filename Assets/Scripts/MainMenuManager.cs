@@ -60,7 +60,6 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 
 	public override void OnDisconnected(DisconnectCause cause)
 	{
-		base.OnDisconnected(cause);
 		SetActiveMenu(_loginMenu);
 		Debug.Log("Disconnected from server");
 		if (cause != DisconnectCause.DisconnectByClientLogic)
@@ -128,21 +127,18 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
-        base.OnCreateRoomFailed(returnCode, message);
         Debug.Log("Failed To Create Room");
         PopUpErrorMessage(message);
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
-		base.OnJoinRoomFailed(returnCode, message);
         Debug.Log("Failed To Join Room");
 		PopUpErrorMessage(message);
     }
 
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
-        base.OnJoinRandomFailed(returnCode, message);
         Debug.Log("Failed To Join Random Room");
         PopUpErrorMessage(message);
     }
