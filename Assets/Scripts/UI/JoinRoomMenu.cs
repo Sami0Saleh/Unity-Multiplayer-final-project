@@ -100,6 +100,9 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
         _createRoomButton.interactable = active;
         _joinRandomRoomButton.interactable = active;
         _backButton.interactable = active;
+		_hideFullRooms.interactable = active;
+		foreach (var room in _dict.Values)
+			room.ToggleButtonsState(active);
     }
 
     #region ROOM_ELEMENT

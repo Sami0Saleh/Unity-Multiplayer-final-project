@@ -139,12 +139,11 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 		_errorPopup.gameObject.SetActive(true);
 	}
 
-	public void ResolveErrorPopup()
+	public void ToggleButtonState(bool active)
 	{
-		_errorPopup.gameObject.SetActive(false);
-		_mainMenu.ToggleButtonsState(true); //Could make it only apply to the active room, but idk how to do it rn, maybe later when I have time
-		_loginMenu.ToggleButtonsState(true);
-        _joinRoomMenu.ToggleButtonsState(true);
-		_createRoomMenu.ToggleButtonsState(true);
-    }
+		_mainMenu.ToggleButtonsState(active); //Could make it only apply to the active room, but idk how to do it rn, maybe later when I have time
+		_loginMenu.ToggleButtonsState(active);
+		_joinRoomMenu.ToggleButtonsState(active);
+		_createRoomMenu.ToggleButtonsState(active);
+	}
 }

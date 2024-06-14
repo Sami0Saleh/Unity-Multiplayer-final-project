@@ -19,13 +19,13 @@ public class RoomElement : MonoBehaviour
 
     private void OnEnable()
     {
-        _joinButton.interactable = true;
+		ToggleButtonsState(true);
     }
 
     private void JoinButton()
 	{
 		PhotonNetwork.JoinRoom(_roomName.text);
-		_joinButton.interactable = false;
+		ToggleButtonsState(false);
 	}
 
 	public void SetProperties(RoomInfo roomInfo)
@@ -38,5 +38,10 @@ public class RoomElement : MonoBehaviour
 	{
 		_roomName.text = roomName;
 		_playerCount.text = $"{playerCount}/{maxPlayers}";
+	}
+
+	public void ToggleButtonsState(bool active)
+	{
+		_joinButton.interactable = active;
 	}
 }

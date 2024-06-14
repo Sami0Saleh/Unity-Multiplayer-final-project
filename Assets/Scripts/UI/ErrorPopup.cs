@@ -14,17 +14,21 @@ public class ErrorPopup : MonoBehaviour
 
     private void OnEnable()
     {
-        _okButton.interactable = true;
-    }
+        MainMenuManager.Instance.ToggleButtonState(false);
+	}
 
-    public void EditErrorText(string error)
+	private void OnDisable()
+	{
+		MainMenuManager.Instance.ToggleButtonState(true);
+	}
+
+	public void EditErrorText(string error)
     {
         _errorText.text = error;
     }
 
     public void OkButton()
     {
-        _okButton.interactable = false;
-        MainMenuManager.Instance.ResolveErrorPopup();
+        gameObject.SetActive(false);
     }
 }
