@@ -89,18 +89,8 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 		if (PhotonNetwork.CurrentLobby == GameLobby) //Checks if player is in default lobby
 		{
             SetActiveMenu(_joinRoomMenu);
-			Debug.Log("Joined Main Lobby");
+			Debug.Log($"Joined Lobby {PhotonNetwork.CurrentLobby}");
 			return;
-        }
-
-        foreach (TypedLobby lobby in ClientLobbies) //Checks if player is in any client lobby. This is not a good way of doing it, but it'll work for now
-		{
-			if (PhotonNetwork.CurrentLobby == lobby)
-			{
-                SetActiveMenu(_joinRoomMenu);
-                Debug.Log("Joined client lobby: " + PhotonNetwork.CurrentLobby.Name);
-                return;
-            }
         }
     }
 
