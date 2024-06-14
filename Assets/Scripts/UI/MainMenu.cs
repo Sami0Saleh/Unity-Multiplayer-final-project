@@ -4,15 +4,20 @@ using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
+using Unity.VisualScripting;
+using WebSocketSharp;
 
 public class MainMenu : MonoBehaviourPunCallbacks
 {
 	[SerializeField] private TextMeshProUGUI _nicknameText;
-	[SerializeField] private Button _playButton;
+    [SerializeField] private TMP_InputField _lobbyName;
+    [SerializeField] private Button _playButton;
 	[SerializeField] private Button _logOutButton;
 	[SerializeField] private Button _exitButton;
 
-	private string Nickname { set => _nicknameText.text = value; }
+    public string LobbyName => _lobbyName.text;
+
+    private string Nickname { set => _nicknameText.text = value; }
 
 	private void Start()
 	{
@@ -36,7 +41,14 @@ public class MainMenu : MonoBehaviourPunCallbacks
 
 	public void PlayButton()
 	{
-		PhotonNetwork.JoinLobby(MainMenuManager.Instance.GameLobby); //TODO add lobby name
+		if (LobbyName.IsNullOrEmpty())
+		{
+            PhotonNetwork.JoinLobby(MainMenuManager.Instance.GameLobby);
+        }
+		else
+		{
+			MainMenuManager.Instance.JoinLobbyByName(LobbyName);
+		}
 
         ToggleButtonsState(false);
     }
