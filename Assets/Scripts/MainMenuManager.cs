@@ -159,6 +159,5 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 		_loginMenu.ToggleButtonsState(true);
         _joinRoomMenu.ToggleButtonsState(true);
 		_createRoomMenu.ToggleButtonsState(true);
-        Debug.Log("Buttons switched on");
     }
 }
