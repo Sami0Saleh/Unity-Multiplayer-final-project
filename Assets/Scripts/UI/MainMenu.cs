@@ -43,7 +43,7 @@ public class MainMenu : MonoBehaviourPunCallbacks
 	{
 		if (LobbyName.IsNullOrEmpty())
 		{
-            PhotonNetwork.JoinLobby(MainMenuManager.Instance.GameLobby);
+            PhotonNetwork.JoinLobby(MainMenuManager.Instance.DefaultLobby);
         }
 		else
 		{

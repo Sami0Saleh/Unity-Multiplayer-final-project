@@ -21,7 +21,7 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 
 	public static MainMenuManager Instance { get; private set; }
 
-	public TypedLobby GameLobby { get; private set; }
+	public TypedLobby DefaultLobby { get; private set; }
 	public List<TypedLobby> ClientLobbies { get; private set; }
 
     private void OnValidate()
@@ -40,7 +40,7 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 	{
 		if (Instance == null)
 			Instance = this;
-		GameLobby = GameLobby = new("Main Lobby", LobbyType.Default);
+		DefaultLobby = DefaultLobby = new("Default Lobby", LobbyType.Default);
 	}
 
 	private void SetActiveMenu([DisallowNull] MonoBehaviour menuToActivate)
@@ -86,7 +86,7 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedLobby()
     {
-		if (PhotonNetwork.CurrentLobby == GameLobby) //Checks if player is in default lobby
+		if (PhotonNetwork.CurrentLobby == DefaultLobby) //Checks if player is in default lobby
 		{
             SetActiveMenu(_joinRoomMenu);
 			Debug.Log($"Joined Lobby {PhotonNetwork.CurrentLobby}");
