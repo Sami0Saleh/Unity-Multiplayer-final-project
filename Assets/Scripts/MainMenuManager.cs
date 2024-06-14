@@ -63,7 +63,8 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 		base.OnDisconnected(cause);
 		SetActiveMenu(_loginMenu);
 		Debug.Log("Disconnected from server");
-		PopUpErrorMessage(cause.ToString());
+		if (cause != DisconnectCause.DisconnectByClientLogic)
+			PopUpErrorMessage(cause.ToString());
 	}
 
 	public void JoinLobbyByName(string lobbyName)
