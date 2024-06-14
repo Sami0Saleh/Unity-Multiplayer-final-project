@@ -10,7 +10,9 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 {
 	public const int MAX_PLAYERS_PER_ROOM = 8;
 
-	[SerializeField] private LoginMenu _loginMenu;
+    [SerializeField] private ErrorPopup _errorPopup;
+
+    [SerializeField] private LoginMenu _loginMenu;
 	[SerializeField] private MainMenu _mainMenu;
 	[SerializeField] private JoinRoomMenu _joinRoomMenu;
 	[SerializeField] private CreateRoomMenu _createRoomMenu;
@@ -58,7 +60,10 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 
 	public override void OnDisconnected(DisconnectCause cause)
 	{
+		base.OnDisconnected(cause);
 		SetActiveMenu(_loginMenu);
+		Debug.Log("Disconnected from server");
+		PopUpErrorMessage(cause.ToString());
 	}
 
 	public void JoinLobbyByName(string lobbyName)
@@ -120,14 +125,40 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 		SetActiveMenu(_roomMenu);
     }
 
-    //TODO add failed to log in
-    //TODO add failed to connect to lobby
-    //TODO add failed to create room
-    //TODO add failed to join room
+    public override void OnCreateRoomFailed(short returnCode, string message)
+    {
+        base.OnCreateRoomFailed(returnCode, message);
+        Debug.Log("Failed To Create Room");
+        PopUpErrorMessage(message);
+    }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
+		base.OnJoinRoomFailed(returnCode, message);
         Debug.Log("Failed To Join Room");
+		PopUpErrorMessage(message);
+    }
+
+    public override void OnJoinRandomFailed(short returnCode, string message)
+    {
+        base.OnJoinRandomFailed(returnCode, message);
+        Debug.Log("Failed To Join Random Room");
+        PopUpErrorMessage(message);
+    }
+
+    public void PopUpErrorMessage(string error)
+	{
+		_errorPopup.EditErrorText(error);
+		_errorPopup.gameObject.SetActive(true);
+	}
+
+	public void ResolveErrorPopup()
+	{
+		_errorPopup.gameObject.SetActive(false);
+		_mainMenu.ToggleButtonsState(true); //Could make it only apply to the active room, but idk how to do it rn, maybe later when I have time
+		_loginMenu.ToggleButtonsState(true);
         _joinRoomMenu.ToggleButtonsState(true);
+		_createRoomMenu.ToggleButtonsState(true);
+        Debug.Log("Buttons switched on");
     }
 }
