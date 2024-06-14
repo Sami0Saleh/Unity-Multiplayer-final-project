@@ -33,8 +33,6 @@ public class LoginMenu : MonoBehaviour
         ToggleButtonsState(false);
     }
 
-	//TODO add on failed to connect
-
     public void ExitButton()
 	{
 		Application.Quit();

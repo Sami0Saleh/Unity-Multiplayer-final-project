@@ -60,16 +60,12 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
         ToggleButtonsState(false);
     }
 
-	//TODO add on failed to create room
-
     public void JoinRandomRoomButton()
 	{
 		PhotonNetwork.JoinRandomRoom();
 
         ToggleButtonsState(false);
     }
-
-	//TODO add on failed to join random room
 
     public void BackButton()
 	{

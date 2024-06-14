@@ -53,8 +53,6 @@ public class MainMenu : MonoBehaviourPunCallbacks
         ToggleButtonsState(false);
     }
 
-	//TODO add on failed to join lobby method
-
 	public void LogOutButton()
 	{
 		PhotonNetwork.Disconnect();

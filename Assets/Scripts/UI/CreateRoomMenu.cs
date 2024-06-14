@@ -35,8 +35,6 @@ public class CreateRoomMenu : MonoBehaviour
         ToggleButtonsState(false);
     }
 
-	//TODO add on failed to create room
-
     public void BackButton()
 	{
 		MainMenuManager.Instance.ExitCreateRoomMenu();

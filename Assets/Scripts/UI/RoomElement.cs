@@ -28,8 +28,6 @@ public class RoomElement : MonoBehaviour
 		_joinButton.interactable = false;
 	}
 
-	//TODO add on failed to join room
-
 	public void SetProperties(RoomInfo roomInfo)
 	{
 		RoomInfo = roomInfo;
