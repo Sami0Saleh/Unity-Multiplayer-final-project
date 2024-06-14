@@ -56,8 +56,6 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 			SetActiveMenu(_joinRoomMenu);
 	}
 
-	//TODO is failed to connect here?
-
 	public override void OnDisconnected(DisconnectCause cause)
 	{
 		SetActiveMenu(_loginMenu);
@@ -120,5 +118,16 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
 		SetActiveMenu(_roomMenu);
+    }
+
+    //TODO add failed to log in
+    //TODO add failed to connect to lobby
+    //TODO add failed to create room
+    //TODO add failed to join room
+
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        Debug.Log("Failed To Join Room");
+        _joinRoomMenu.ToggleButtonsState(true);
     }
 }
