@@ -41,6 +41,7 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 
 	private void Awake()
 	{
+		PhotonNetwork.AutomaticallySyncScene = true;
 		if (Instance == null)
 			Instance = this;
 		DefaultLobby = DefaultLobby = new("Default Lobby", LobbyType.Default);

@@ -9,10 +9,15 @@ using ExitGames.Client.Photon;
 
 public class RoomMenu : MonoBehaviourPunCallbacks
 {
+	const int GAME_SCENE_INDEX = 1;
+
 	[SerializeField] private PlayerElement _playerElementPrefab;
 	[SerializeField] private Button _leaveRoomButton;
+	[SerializeField] private Button _startButton;
 	[SerializeField] private TextMeshProUGUI _playerCountText;
 	[SerializeField] private Transform _playerList;
+
+	private bool StartCondition => PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1;
 
 	private void Awake()
 	{
@@ -23,6 +28,7 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	private void Start()
 	{
 		_leaveRoomButton.onClick.AddListener(LeaveRoomButton);
+		_startButton.onClick.AddListener(StartButton);
 	}
 
 	public override void OnEnable()
@@ -43,14 +49,26 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 		PhotonNetwork.LeaveRoom();
     }
 
-    public override void OnPlayerEnteredRoom(Player newPlayer)
+	public void StartButton()
+	{
+		if (StartCondition)
+			PhotonNetwork.LoadLevel(GAME_SCENE_INDEX);
+	}
+
+	private void UpdatePlayerCount()
+	{
+		_startButton.interactable = StartCondition;
+		UpdatePlayerCountText();
+	}
+
+	public override void OnPlayerEnteredRoom(Player newPlayer)
 	{
 		PlayerElement playerElement = _pool.Get();
 		if (_dict.TryAdd(newPlayer.ActorNumber, playerElement))
 			playerElement.SetProperties(newPlayer);
 		else
 			_pool.Release(playerElement);
-		UpdatePlayerCountText();
+		UpdatePlayerCount();
 	}
 
 	public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -60,7 +78,7 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 			_pool.Release(playerElement);
 			_dict.Remove(otherPlayer.ActorNumber);
 		}
-		UpdatePlayerCountText();
+		UpdatePlayerCount();
 	}
 
 	public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
