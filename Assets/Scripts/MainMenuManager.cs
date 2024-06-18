@@ -10,15 +10,24 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 {
 	public const int MAX_PLAYERS_PER_ROOM = 8;
 
-    [SerializeField] private ErrorPopup _errorPopup;
+	[SerializeField] private ErrorPopup _errorPopup;
 
-    [SerializeField] private LoginMenu _loginMenu;
+	[SerializeField] private LoginMenu _loginMenu;
 	[SerializeField] private MainMenu _mainMenu;
 	[SerializeField] private JoinRoomMenu _joinRoomMenu;
 	[SerializeField] private CreateRoomMenu _createRoomMenu;
 	[SerializeField] private RoomMenu _roomMenu;
-	[SerializeField, HideInInspector] private GameObject[] _menus;
-
+	private IEnumerable<MonoBehaviour> Menus
+	{
+		get
+		{
+			yield return _loginMenu;
+			yield return _mainMenu;
+			yield return _joinRoomMenu;
+			yield return _createRoomMenu;
+			yield return _roomMenu;
+		}
+	}
 	public static MainMenuManager Instance { get; private set; }
 
 	public TypedLobby DefaultLobby { get; private set; }
@@ -26,12 +35,6 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 
     private void OnValidate()
 	{
-		_menus = new GameObject[] {
-			_loginMenu.gameObject,
-			_mainMenu.gameObject,
-			_joinRoomMenu.gameObject,
-			_createRoomMenu.gameObject,
-			_roomMenu.gameObject};
 		SetActiveMenu(_loginMenu);
 		ClientLobbies = new List<TypedLobby>();
 	}
@@ -45,9 +48,8 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 
 	private void SetActiveMenu([DisallowNull] MonoBehaviour menuToActivate)
 	{
-        foreach (var menu in _menus.Where(go => go != menuToActivate.gameObject))
-            menu.SetActive(false);
-		menuToActivate.gameObject.SetActive(true);
+        foreach (var menu in Menus)
+            menu.gameObject.SetActive(menu == menuToActivate);
     }
 
 	public override void OnConnectedToMaster()
