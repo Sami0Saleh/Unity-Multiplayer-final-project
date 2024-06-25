@@ -10,12 +10,16 @@ using ExitGames.Client.Photon;
 public class RoomMenu : MonoBehaviourPunCallbacks
 {
 	const int GAME_SCENE_INDEX = 1;
-
+	const string DISPALY_CHAT = nameof(DisplayChatMessage);
 	[SerializeField] private PlayerElement _playerElementPrefab;
+	[SerializeField] private ChatMessage _chatMessagePrefab;
+	[SerializeField] private PhotonView _photonView;
 	[SerializeField] private Button _leaveRoomButton;
 	[SerializeField] private Button _startButton;
 	[SerializeField] private TextMeshProUGUI _playerCountText;
 	[SerializeField] private Transform _playerList;
+	[SerializeField] private Transform _chat;
+	[SerializeField] private TMP_InputField _chatBoxInput;
 
 	private bool StartCondition => PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1;
 
@@ -29,6 +33,8 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	{
 		_leaveRoomButton.onClick.AddListener(LeaveRoomButton);
 		_startButton.onClick.AddListener(StartButton);
+		_chatBoxInput.onEndEdit.AddListener(SendChatButton);
+
 	}
 
 	public override void OnEnable()
@@ -53,6 +59,19 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	{
 		if (StartCondition)
 			PhotonNetwork.LoadLevel(GAME_SCENE_INDEX);
+	}
+
+	public void SendChatButton(string msg)
+	{
+		_photonView.RPC(DISPALY_CHAT, RpcTarget.All, msg);
+		_chatBoxInput.text = string.Empty;
+	}
+
+	[PunRPC]
+	public void DisplayChatMessage(string message, PhotonMessageInfo info)
+	{
+		var msg = Instantiate(_chatMessagePrefab, _chat);
+		msg.Text = $"{info.Sender.NickName}: {message}";
 	}
 
 	private void UpdatePlayerCount()
