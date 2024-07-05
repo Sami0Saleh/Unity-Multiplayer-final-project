@@ -6,6 +6,7 @@ using TMPro;
 using Photon.Realtime;
 using Photon.Pun;
 using ExitGames.Client.Photon;
+using WebSocketSharp;
 
 public class RoomMenu : MonoBehaviourPunCallbacks
 {
@@ -34,7 +35,6 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 		_leaveRoomButton.onClick.AddListener(LeaveRoomButton);
 		_startButton.onClick.AddListener(StartButton);
 		_chatBoxInput.onEndEdit.AddListener(SendChatButton);
-
 	}
 
 	public override void OnEnable()
@@ -42,11 +42,12 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 		base.OnEnable();
 		foreach (var player in PhotonNetwork.PlayerList)
 			OnPlayerEnteredRoom(player);
-    }
+	}
 
     public override void OnDisable()
 	{
 		base.OnDisable();
+		ClearChat();
 		ClearAllPlayers();
 	}
 
@@ -63,6 +64,8 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 
 	public void SendChatButton(string msg)
 	{
+		if (msg.IsNullOrEmpty())
+			return;
 		_photonView.RPC(DISPALY_CHAT, RpcTarget.All, msg);
 		_chatBoxInput.text = string.Empty;
 	}
@@ -110,6 +113,12 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	{
 		var room = PhotonNetwork.CurrentRoom;
 		_playerCountText.text = $"{room.PlayerCount}/{room.MaxPlayers}";
+	}
+
+	private void ClearChat()
+	{
+		for (int i = 0; i < _chat.childCount; i++)
+			Destroy(_chat.GetChild(i).gameObject);
 	}
 
 	#region ROOM_ELEMENT
