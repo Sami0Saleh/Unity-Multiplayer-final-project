@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Pool;
@@ -7,6 +8,8 @@ using Photon.Realtime;
 using Photon.Pun;
 using ExitGames.Client.Photon;
 using WebSocketSharp;
+using static UnityEditor.Progress;
+using System.Linq;
 
 public class RoomMenu : MonoBehaviourPunCallbacks
 {
@@ -79,11 +82,35 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 
 	private void UpdatePlayerCount()
 	{
-		_startButton.interactable = StartCondition;
+		StartCoroutine(CheckPlayerUniqueColor());
 		UpdatePlayerCountText();
 	}
 
-	public override void OnPlayerEnteredRoom(Player newPlayer)
+    private IEnumerator CheckPlayerUniqueColor()
+    {
+		yield return new WaitForSeconds(0.1f);
+		List<string> playerColors = new List<string>();
+		foreach (var player in PhotonNetwork.PlayerList)
+		{
+			playerColors.Add(player.CustomProperties["PlayerColor"].ToString());
+			string allPlayerStrings = "";
+			foreach (var item in playerColors)
+			{
+				allPlayerStrings = allPlayerStrings + item + ", ";
+            }
+            Debug.Log(allPlayerStrings);
+        }
+		if (playerColors.Distinct().Count() == playerColors.Count())
+		{
+            _startButton.interactable = StartCondition;
+        }
+		else
+		{
+			_startButton.interactable = false;
+		}
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
 	{
 		PlayerElement playerElement = _pool.Get();
 		if (_dict.TryAdd(newPlayer.ActorNumber, playerElement))
@@ -103,10 +130,11 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 		UpdatePlayerCount();
 	}
 
-	public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+	public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
 	{
 		if (_dict.TryGetValue(targetPlayer.ActorNumber, out PlayerElement playerElement))
 			playerElement.SetProperties(targetPlayer);
+		StartCoroutine(CheckPlayerUniqueColor());
 	}
 
 	private void UpdatePlayerCountText()
