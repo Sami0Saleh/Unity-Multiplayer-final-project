@@ -82,24 +82,19 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 
 	private void UpdatePlayerCount()
 	{
-		StartCoroutine(CheckPlayerUniqueColor());
-		UpdatePlayerCountText();
+        if (PhotonNetwork.IsMasterClient)
+            StartCoroutine(CheckPlayerUniqueColor());
+        UpdatePlayerCountText();
 	}
 
     private IEnumerator CheckPlayerUniqueColor()
     {
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.2f);
 		List<string> playerColors = new List<string>();
 		foreach (var player in PhotonNetwork.PlayerList)
 		{
 			playerColors.Add(player.CustomProperties["PlayerColor"].ToString());
-			string allPlayerStrings = "";
-			foreach (var item in playerColors)
-			{
-				allPlayerStrings = allPlayerStrings + item + ", ";
-            }
-            Debug.Log(allPlayerStrings);
-        }
+		}
 		if (playerColors.Distinct().Count() == playerColors.Count())
 		{
             _startButton.interactable = StartCondition;
@@ -134,7 +129,8 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	{
 		if (_dict.TryGetValue(targetPlayer.ActorNumber, out PlayerElement playerElement))
 			playerElement.SetProperties(targetPlayer);
-		StartCoroutine(CheckPlayerUniqueColor());
+		if (PhotonNetwork.IsMasterClient)
+		    StartCoroutine(CheckPlayerUniqueColor());
 	}
 
 	private void UpdatePlayerCountText()
