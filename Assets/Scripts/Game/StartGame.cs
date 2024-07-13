@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using static Utility;
 
 namespace Game
 {
@@ -17,7 +18,7 @@ namespace Game
 
 		private Transform GetStartPosition()
 		{
-			return _startPositions[PhotonNetwork.LocalPlayer.ActorNumber]; // TODO Make sure this doesn't crash if a player leaves and another joins in Room Menu
+			return _startPositions[GetPlayerNumber(PhotonNetwork.LocalPlayer)];
 		}
 	}
 }
