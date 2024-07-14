@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4189284442602744466}
   - component: {fileID: 6876909149777838842}
   - component: {fileID: 6220468712623393250}
-  - component: {fileID: 8171131270870985555}
+  - component: {fileID: 4497678083692367122}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -74,31 +74,20 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
---- !u!143 &8171131270870985555
-CharacterController:
+--- !u!114 &4497678083692367122
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6071354540810833049}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Height: 2
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 1, z: 0}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efa724f1524d4d4479fe12c9c3f0e3c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cursorPrefab: {fileID: 5485945444279674405, guid: 093af67fa5a878246b33178d6a90f0e2, type: 3}
+  _photonView: {fileID: 6876909149777838842}
 --- !u!1 &7671056656447810305
 GameObject:
   m_ObjectHideFlags: 0

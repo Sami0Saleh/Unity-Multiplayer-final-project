@@ -168,7 +168,7 @@ Grid:
   m_CellSize: {x: 1, y: 1.16, z: 0}
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 1
-  m_CellSwizzle: 1
+  m_CellSwizzle: 3
 --- !u!1001 &2413437050213877216
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -177,9 +177,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 9179438068783658224}
     m_Modifications:
+    - target: {fileID: 554844729628254781, guid: 789c649d653169a4a82bbba8f38f2be8, type: 3}
+      propertyPath: m_DynamicOccludee
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 554844729628254781, guid: 789c649d653169a4a82bbba8f38f2be8, type: 3}
+      propertyPath: m_LightProbeUsage
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 771511384513196556, guid: 789c649d653169a4a82bbba8f38f2be8, type: 3}
       propertyPath: m_Name
       value: Tile
+      objectReference: {fileID: 0}
+    - target: {fileID: 1724142255317507153, guid: 789c649d653169a4a82bbba8f38f2be8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 1724142255317507153, guid: 789c649d653169a4a82bbba8f38f2be8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5031157216377395268, guid: 789c649d653169a4a82bbba8f38f2be8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -221,14 +237,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7416442313342617884, guid: 789c649d653169a4a82bbba8f38f2be8, type: 3}
-      propertyPath: m_DynamicOccludee
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416442313342617884, guid: 789c649d653169a4a82bbba8f38f2be8, type: 3}
-      propertyPath: m_LightProbeUsage
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -239,7 +247,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5031157216377395268, guid: 789c649d653169a4a82bbba8f38f2be8, type: 3}
   m_PrefabInstance: {fileID: 2413437050213877216}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1912346730918794008
+--- !u!114 &1646227394873883849
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
