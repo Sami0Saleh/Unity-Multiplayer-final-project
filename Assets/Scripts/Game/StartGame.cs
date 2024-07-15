@@ -10,11 +10,12 @@ namespace Game
 		[SerializeField] private Player _playerPrefab;
 		[SerializeField] private List<Transform> _startPositions;
 
-		private void Start()
+
+        private void Start()
 		{
 			var start = GetStartPosition();
-			PhotonNetwork.Instantiate(_playerPrefab.name, start.position, start.rotation);
-		}
+            PhotonNetwork.Instantiate(_playerPrefab.name, start.position, start.rotation);
+        }
 
 		private Transform GetStartPosition()
 		{
