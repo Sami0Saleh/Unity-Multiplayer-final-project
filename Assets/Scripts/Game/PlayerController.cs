@@ -18,17 +18,22 @@ public class PlayerController : MonoBehaviourPun
 
     [SerializeField] private int HP = 10;
 
-    void Start()
+	private void Awake()
+	{
+		if (!photonView.IsMine)
+		{
+			enabled = false;
+			return;
+		}
+	}
+
+	void Start()
     {
         cachedCamera = Camera.main;
     }
-
     
     void Update()
     {
-        if(!photonView.IsMine)
-            return;
-
         Ray ray = cachedCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
