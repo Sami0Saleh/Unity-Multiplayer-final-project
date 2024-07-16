@@ -10,6 +10,7 @@ using ExitGames.Client.Photon;
 using WebSocketSharp;
 using static UnityEditor.Progress;
 using System.Linq;
+using ExitGames.Client.Photon.StructWrapping;
 
 public class RoomMenu : MonoBehaviourPunCallbacks
 {
@@ -73,6 +74,8 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 		_chatBoxInput.text = string.Empty;
 	}
 
+	
+
 	[PunRPC]
 	public void DisplayChatMessage(string message, PhotonMessageInfo info)
 	{
@@ -83,17 +86,17 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	private void UpdatePlayerCount()
 	{
         if (PhotonNetwork.IsMasterClient)
-            StartCoroutine(CheckPlayerUniqueColor());
+            CheckPlayerUniqueColor();
         UpdatePlayerCountText();
 	}
 
-    private IEnumerator CheckPlayerUniqueColor()
+    private void CheckPlayerUniqueColor()
     {
-		yield return new WaitForSeconds(0.2f);
 		List<string> playerColors = new List<string>();
 		foreach (var player in PhotonNetwork.PlayerList)
 		{
-			playerColors.Add(player.CustomProperties["PlayerColor"].ToString());
+			if (player.CustomProperties.TryGetValue("PlayerColor", out var color))
+				playerColors.Add(color.ToString());
 		}
 		if (playerColors.Distinct().Count() == playerColors.Count())
 		{
@@ -130,7 +133,7 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 		if (_dict.TryGetValue(targetPlayer.ActorNumber, out PlayerElement playerElement))
 			playerElement.SetProperties(targetPlayer);
 		if (PhotonNetwork.IsMasterClient)
-		    StartCoroutine(CheckPlayerUniqueColor());
+		    CheckPlayerUniqueColor();
 	}
 
 	private void UpdatePlayerCountText()
