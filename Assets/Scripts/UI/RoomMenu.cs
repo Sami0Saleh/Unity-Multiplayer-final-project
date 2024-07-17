@@ -16,19 +16,20 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 {
 	const int GAME_SCENE_INDEX = 1;
 	const string DISPALY_CHAT = nameof(DisplayChatMessage);
-	[SerializeField] private PlayerElement _playerElementPrefab;
+	const string PLAYER_ELEMENT_PREFAB = "Player Element Photon";
+    [SerializeField] private PlayerElement _playerElementPrefab;
 	[SerializeField] private ChatMessage _chatMessagePrefab;
 	[SerializeField] private PhotonView _photonView;
 	[SerializeField] private Button _leaveRoomButton;
 	[SerializeField] private Button _startButton;
 	[SerializeField] private TextMeshProUGUI _playerCountText;
-	[SerializeField] private Transform _playerList;
 	[SerializeField] private Transform _chat;
 	[SerializeField] private TMP_InputField _chatBoxInput;
 
 	private bool StartCondition => PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1;
+    [field: SerializeField] public Transform PlayerList { get; private set; }
 
-	private void Awake()
+    private void Awake()
 	{
 		InitPool(_playerElementPrefab);
 		_dict = new(ELEMENT_LIST_CAPACITY);
@@ -133,7 +134,9 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 		if (_dict.TryGetValue(targetPlayer.ActorNumber, out PlayerElement playerElement))
 			playerElement.SetProperties(targetPlayer);
 		if (PhotonNetwork.IsMasterClient)
-		    CheckPlayerUniqueColor();
+		{
+            CheckPlayerUniqueColor();
+        }
 	}
 
 	private void UpdatePlayerCountText()
@@ -176,9 +179,9 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 		);
 	}
 
-	private PlayerElement CreateElement(PlayerElement playerElement) => Instantiate(playerElement, _playerList);
+    private PlayerElement CreateElement(PlayerElement playerElement) => PhotonNetwork.Instantiate(PLAYER_ELEMENT_PREFAB, PlayerList.position, PlayerList.rotation).GetComponent<PlayerElement>();
 
-	private void OnGetElement(PlayerElement playerElement) => playerElement.gameObject.SetActive(true);
+    private void OnGetElement(PlayerElement playerElement) => playerElement.gameObject.SetActive(true);
 
 	private void DestroyElement(PlayerElement playerElement) => Destroy(playerElement.gameObject);
 

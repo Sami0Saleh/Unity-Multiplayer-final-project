@@ -1178,9 +1178,9 @@ MonoBehaviour:
   _leaveRoomButton: {fileID: 3717414418509321082}
   _startButton: {fileID: 4473848282868723326}
   _playerCountText: {fileID: 6323592381559395205}
-  _playerList: {fileID: 8363875147720184407}
   _chat: {fileID: 8363113576536091939}
   _chatBoxInput: {fileID: 3627528656961837828}
+  <PlayerList>k__BackingField: {fileID: 8363875147720184407}
 --- !u!114 &8759038978770551462
 MonoBehaviour:
   m_ObjectHideFlags: 0
