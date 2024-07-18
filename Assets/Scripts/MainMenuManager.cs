@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
-using NUnit.Framework;
 using System.Collections.Generic;
 
 public class MainMenuManager : MonoBehaviourPunCallbacks
@@ -12,30 +11,29 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 
 	[SerializeField] private ErrorPopup _errorPopup;
 
-	[SerializeField] private LoginMenu _loginMenu;
-	[SerializeField] private MainMenu _mainMenu;
-	[SerializeField] private JoinRoomMenu _joinRoomMenu;
-	[SerializeField] private CreateRoomMenu _createRoomMenu;
-	[SerializeField] private RoomMenu _roomMenu;
+	[field: SerializeField] public LoginMenu LoginMenu {  get; private set; }
+	[field: SerializeField] public MainMenu MainMenu { get; private set; }
+	[field: SerializeField] public JoinRoomMenu JoinRoomMenu { get; private set; }
+	[field: SerializeField] public CreateRoomMenu CreateRoomMenu { get; private set; }
+	[field: SerializeField] public RoomMenu RoomMenu { get; private set; }
 	private IEnumerable<MonoBehaviour> Menus
 	{
 		get
 		{
-			yield return _loginMenu;
-			yield return _mainMenu;
-			yield return _joinRoomMenu;
-			yield return _createRoomMenu;
-			yield return _roomMenu;
+			yield return LoginMenu;
+			yield return MainMenu;
+			yield return JoinRoomMenu;
+			yield return CreateRoomMenu;
+			yield return RoomMenu;
 		}
 	}
 	public static MainMenuManager Instance { get; private set; }
-
 	public TypedLobby DefaultLobby { get; private set; }
 	public List<TypedLobby> ClientLobbies { get; private set; }
 
     private void OnValidate()
 	{
-		SetActiveMenu(_loginMenu);
+		SetActiveMenu(LoginMenu);
 		ClientLobbies = new List<TypedLobby>();
 	}
 
@@ -56,14 +54,14 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 	public override void OnConnectedToMaster()
 	{
 		if (!PhotonNetwork.InLobby)
-			SetActiveMenu(_mainMenu);
+			SetActiveMenu(MainMenu);
 		else
-			SetActiveMenu(_joinRoomMenu);
+			SetActiveMenu(JoinRoomMenu);
 	}
 
 	public override void OnDisconnected(DisconnectCause cause)
 	{
-		SetActiveMenu(_loginMenu);
+		SetActiveMenu(LoginMenu);
 		Debug.Log("Disconnected from server");
 		if (cause != DisconnectCause.DisconnectByClientLogic)
 			PopUpErrorMessage(cause.ToString());
@@ -91,7 +89,7 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
     {
 		if (PhotonNetwork.CurrentLobby == DefaultLobby) //Checks if player is in default lobby
 		{
-            SetActiveMenu(_joinRoomMenu);
+            SetActiveMenu(JoinRoomMenu);
 			Debug.Log($"Joined Lobby {PhotonNetwork.CurrentLobby}");
 			return;
         }
@@ -100,22 +98,22 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 	public override void OnLeftLobby()
 	{
 		if (!PhotonNetwork.InLobby)
-			SetActiveMenu(_mainMenu);
+			SetActiveMenu(MainMenu);
 	}
 
 	public void ToCreateRoomMenu()
 	{
-		SetActiveMenu(_createRoomMenu);
+		SetActiveMenu(CreateRoomMenu);
 	}
 
 	public void ExitCreateRoomMenu()
 	{
-		SetActiveMenu(_joinRoomMenu);
+		SetActiveMenu(JoinRoomMenu);
 	}
 
     public override void OnJoinedRoom()
     {
-		SetActiveMenu(_roomMenu);
+		SetActiveMenu(RoomMenu);
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)
@@ -144,9 +142,9 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 
 	public void ToggleButtonState(bool active)
 	{
-		_mainMenu.ToggleButtonsState(active); //Could make it only apply to the active room, but idk how to do it rn, maybe later when I have time
-		_loginMenu.ToggleButtonsState(active);
-		_joinRoomMenu.ToggleButtonsState(active);
-		_createRoomMenu.ToggleButtonsState(active);
+		MainMenu.ToggleButtonsState(active); //Could make it only apply to the active room, but idk how to do it rn, maybe later when I have time
+		LoginMenu.ToggleButtonsState(active);
+		JoinRoomMenu.ToggleButtonsState(active);
+		CreateRoomMenu.ToggleButtonsState(active);
 	}
 }

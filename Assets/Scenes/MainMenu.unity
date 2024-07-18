@@ -877,11 +877,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _errorPopup: {fileID: 152417577}
-  _loginMenu: {fileID: 144666957}
-  _mainMenu: {fileID: 407852978}
-  _joinRoomMenu: {fileID: 669555011}
-  _createRoomMenu: {fileID: 2058645225}
-  _roomMenu: {fileID: 1217140987}
+  <LoginMenu>k__BackingField: {fileID: 144666957}
+  <MainMenu>k__BackingField: {fileID: 407852978}
+  <JoinRoomMenu>k__BackingField: {fileID: 669555011}
+  <CreateRoomMenu>k__BackingField: {fileID: 2058645225}
+  <RoomMenu>k__BackingField: {fileID: 1217140987}
 --- !u!1001 &669555009
 PrefabInstance:
   m_ObjectHideFlags: 0

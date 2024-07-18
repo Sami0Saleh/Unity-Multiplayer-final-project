@@ -1,16 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Collections;
+using System.Linq;
+using WebSocketSharp;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Pool;
 using TMPro;
 using Photon.Realtime;
 using Photon.Pun;
-using ExitGames.Client.Photon;
-using WebSocketSharp;
-using static UnityEditor.Progress;
-using System.Linq;
-using ExitGames.Client.Photon.StructWrapping;
 
 public class RoomMenu : MonoBehaviourPunCallbacks
 {
@@ -29,12 +24,6 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	private bool StartCondition => PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1;
     [field: SerializeField] public Transform PlayerList { get; private set; }
 
-    private void Awake()
-	{
-		InitPool(_playerElementPrefab);
-		_dict = new(ELEMENT_LIST_CAPACITY);
-	}
-
 	private void Start()
 	{
 		_leaveRoomButton.onClick.AddListener(LeaveRoomButton);
@@ -45,15 +34,14 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	public override void OnEnable()
 	{
 		base.OnEnable();
-		foreach (var player in PhotonNetwork.PlayerList)
-			OnPlayerEnteredRoom(player);
+		CreateElement();
+		UpdatePlayerCount();
 	}
 
     public override void OnDisable()
 	{
 		base.OnDisable();
 		ClearChat();
-		ClearAllPlayers();
 	}
 
 	public void LeaveRoomButton()
@@ -75,8 +63,6 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 		_chatBoxInput.text = string.Empty;
 	}
 
-	
-
 	[PunRPC]
 	public void DisplayChatMessage(string message, PhotonMessageInfo info)
 	{
@@ -93,50 +79,34 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 
     private void CheckPlayerUniqueColor()
     {
-		List<string> playerColors = new List<string>();
+		_startButton.interactable = StartCondition && GetAllColorsInLobby().Distinct().Count() == PhotonNetwork.CurrentRoom.PlayerCount;
+    }
+
+	private IEnumerable<string> GetAllColorsInLobby()
+	{
 		foreach (var player in PhotonNetwork.PlayerList)
 		{
 			if (player.CustomProperties.TryGetValue("PlayerColor", out var color))
-				playerColors.Add(color.ToString());
+				yield return color.ToString();
 		}
-		if (playerColors.Distinct().Count() == playerColors.Count())
-		{
-            _startButton.interactable = StartCondition;
-        }
-		else
-		{
-			_startButton.interactable = false;
-		}
-    }
-
-    public override void OnPlayerEnteredRoom(Player newPlayer)
-	{
-		PlayerElement playerElement = _pool.Get();
-		if (_dict.TryAdd(newPlayer.ActorNumber, playerElement))
-			playerElement.SetProperties(newPlayer);
-		else
-			_pool.Release(playerElement);
-		UpdatePlayerCount();
 	}
 
-	public override void OnPlayerLeftRoom(Player otherPlayer)
-	{
-		if (_dict.TryGetValue(otherPlayer.ActorNumber, out PlayerElement playerElement))
-		{
-			_pool.Release(playerElement);
-			_dict.Remove(otherPlayer.ActorNumber);
-		}
-		UpdatePlayerCount();
-	}
+	public override void OnPlayerEnteredRoom(Player newPlayer) => UpdatePlayerCount();
+
+	public override void OnPlayerLeftRoom(Player otherPlayer) => UpdatePlayerCount();
 
 	public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
 	{
-		if (_dict.TryGetValue(targetPlayer.ActorNumber, out PlayerElement playerElement))
-			playerElement.SetProperties(targetPlayer);
 		if (PhotonNetwork.IsMasterClient)
-		{
             CheckPlayerUniqueColor();
-        }
+	}
+
+	public override void OnMasterClientSwitched(Player newMasterClient)
+	{
+		if (!PhotonNetwork.IsMasterClient)
+			return;
+		UpdatePlayerCount();
+		CheckPlayerUniqueColor();
 	}
 
 	private void UpdatePlayerCountText()
@@ -147,46 +117,9 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 
 	private void ClearChat()
 	{
-		for (int i = 0; i < _chat.childCount; i++)
+		for (int i = _chat.childCount-1; i >= 0; i--)
 			Destroy(_chat.GetChild(i).gameObject);
 	}
 
-	#region ROOM_ELEMENT
-	private const int ELEMENT_LIST_CAPACITY = 10;
-
-	private Dictionary<int, PlayerElement> _dict;
-
-	private void ClearAllPlayers()
-	{
-		foreach (var room in _dict)
-			_pool.Release(room.Value);
-		_dict.Clear();
-	}
-	#endregion
-
-	#region POOL
-	private ObjectPool<PlayerElement> _pool;
-
-	private void InitPool(PlayerElement playerElement)
-	{
-		_pool = new
-		(
-			createFunc: () => CreateElement(playerElement),
-			actionOnGet: OnGetElement,
-			actionOnRelease: OnRelease,
-			actionOnDestroy: DestroyElement,
-			defaultCapacity: ELEMENT_LIST_CAPACITY
-		);
-	}
-
-    private PlayerElement CreateElement(PlayerElement playerElement) => PhotonNetwork.Instantiate(PLAYER_ELEMENT_PREFAB, PlayerList.position, PlayerList.rotation).GetComponent<PlayerElement>();
-
-    private void OnGetElement(PlayerElement playerElement) => playerElement.gameObject.SetActive(true);
-
-	private void DestroyElement(PlayerElement playerElement) => Destroy(playerElement.gameObject);
-
-	private void OnRelease(PlayerElement playerElement) => playerElement.gameObject.SetActive(false);
-
-	private bool ElementActive(PlayerElement playerElement) => playerElement.gameObject.activeSelf;
-	#endregion
+	private PlayerElement CreateElement() => PhotonNetwork.Instantiate(PLAYER_ELEMENT_PREFAB, PlayerList.position, PlayerList.rotation).GetComponent<PlayerElement>();
 }
