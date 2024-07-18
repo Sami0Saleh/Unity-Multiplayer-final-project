@@ -8,7 +8,6 @@ namespace Game
 {
 	public class PlayerCharacter : MonoBehaviourPun
 	{
-		private const string PROJECTILE_TAG = "Projectile";
 		private const string RECEIVE_DAMAGE = nameof(ReceiveDamage);
 
 		[SerializeField] private PlayerColors _colorConfig;
@@ -45,17 +44,9 @@ namespace Game
 			PlayerJoined?.Invoke(this);
 		}
 
-		private void OnTriggerEnter(Collider other)
+		public void ReceiveDamage(int damage)
 		{
-			if (!other.CompareTag(PROJECTILE_TAG))
-				return;
-			Projectile otherProjectile = other.GetComponent<Projectile>();
-			if (otherProjectile.photonView.Owner.ActorNumber == photonView.Owner.ActorNumber || otherProjectile.Damage <= 0 || !otherProjectile.photonView.IsMine)
-				return;
-
-			StartCoroutine(DestroyDelay(otherProjectile.gameObject, 2f));
-			photonView.RPC(RECEIVE_DAMAGE, RpcTarget.All, otherProjectile.Damage, photonView.Owner.ActorNumber);
-			otherProjectile.SetVisibility(false);
+			photonView.RPC(RECEIVE_DAMAGE, RpcTarget.All, damage, photonView.Owner.ActorNumber);
 		}
 
 		[PunRPC]
@@ -73,12 +64,6 @@ namespace Game
 				if (photonView.IsMine)
 					PhotonNetwork.Destroy(gameObject);
 			}
-		}
-
-		IEnumerator DestroyDelay(GameObject projectileObject, float delay = 1f)
-		{
-			yield return new WaitForSeconds(delay);
-			Destroy(projectileObject);
 		}
 	}
 }
