@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -14,6 +15,7 @@ public class LoginMenu : MonoBehaviour
 
 	private void Start()
 	{
+		_nickname.text = Environment.UserName;
 		_connectButton.onClick.AddListener(ConnectButton);
 		_exitButton.onClick.AddListener(ExitButton);
 	}
