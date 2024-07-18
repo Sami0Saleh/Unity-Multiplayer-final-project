@@ -7,9 +7,8 @@ namespace Game
 {
 	public class StartGame : MonoBehaviourPun
 	{
-		[SerializeField] private Player _playerPrefab;
+		[SerializeField] private PlayerCharacter _playerPrefab;
 		[SerializeField] private List<Transform> _startPositions;
-
 
         private void Start()
 		{

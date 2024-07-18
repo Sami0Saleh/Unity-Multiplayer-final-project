@@ -45,6 +45,22 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 		DefaultLobby = DefaultLobby = new("Default Lobby", LobbyType.Default);
 	}
 
+	public override void OnEnable()
+	{
+		base.OnEnable();
+		CheckNetworkState();
+
+		void CheckNetworkState()
+		{
+			if (PhotonNetwork.InRoom)
+				SetActiveMenu(RoomMenu);
+			else if (PhotonNetwork.InLobby)
+				SetActiveMenu(JoinRoomMenu);
+			else if (PhotonNetwork.IsConnected)
+				SetActiveMenu(MainMenu);
+		}
+	}
+
 	private void SetActiveMenu([DisallowNull] MonoBehaviour menuToActivate)
 	{
         foreach (var menu in Menus)

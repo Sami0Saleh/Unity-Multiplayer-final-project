@@ -1,55 +1,79 @@
-using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using Photon.Pun;
-using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviourPunCallbacks
+namespace Game
 {
-    public static GameManager Instance;
+	public class GameManager : MonoBehaviourPunCallbacks
+	{
+		private const int MENU_SCENE_INDEX = 0;
+		private const string GAME_OVER = nameof(GameOver);
+		public static GameManager Instance;
 
-    private const int GAME_SCENE_INDEX = 0;
+		private List<PlayerCharacter> _activePlayers;
 
-    private const string GameOverRPC = "GameOver";
+		private void Awake()
+		{
+			if (Instance != null)
+			{
+				Destroy(gameObject);
+				return;
+			}
+			Instance = this;
+			_activePlayers = new List<PlayerCharacter>();
+		}
 
+		public override void OnEnable()
+		{
+			base.OnEnable();
+			PlayerCharacter.PlayerDied += OnPlayerDeath;
+			PlayerCharacter.PlayerJoined += OnPlayerJoined;
+		}
 
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
+		public override void OnDisable()
+		{
+			base.OnDisable();
+			PlayerCharacter.PlayerDied -= OnPlayerDeath;
+			PlayerCharacter.PlayerJoined -= OnPlayerJoined;
+		}
 
-    [PunRPC]
-    public void GameOver(int losingPlayerActorNumber)
-    {
-        if (PhotonNetwork.LocalPlayer.ActorNumber == losingPlayerActorNumber)
-        {
-            Debug.Log("Game Over! You lost.");
-        }
-        else
-        {
-            Debug.Log("Game Over! You won.");
-        }
+		[PunRPC]
+		public void GameOver(int winningPlayerActorNumber, PhotonMessageInfo info)
+		{
+			Debug.Assert(info.Sender.IsMasterClient, "Game Over can only be sent by master client");
+			if (PhotonNetwork.LocalPlayer.ActorNumber == winningPlayerActorNumber)
+				Debug.Log("Game Over! You won.");
+			else
+				Debug.Log("Game Over! You lost.");
 
-        PhotonNetwork.LeaveRoom();
-        StartCoroutine(LoadRoomSelectionScene());
-        
-    }
+			if (PhotonNetwork.IsMasterClient)
+				StartCoroutine(LeaveMatch());
+		}
 
-    public void TriggerGameOver(int losingPlayerActorNumber)
-    {
-        photonView.RPC(GameOverRPC, RpcTarget.All, losingPlayerActorNumber);
-    }
+		public void TriggerGameOver(int winningPlayerActorNumber)
+		{
+			photonView.RPC(GAME_OVER, RpcTarget.All, winningPlayerActorNumber);
+		}
 
-    IEnumerator LoadRoomSelectionScene()
-    {
-        yield return new WaitForSeconds(2f);
-        SceneManager.LoadScene(GAME_SCENE_INDEX);
-        PhotonNetwork.Disconnect();
-    }
+		private void OnPlayerDeath(PlayerCharacter player)
+		{
+			Debug.Log($"{player} eleminated");
+			if (!PhotonNetwork.IsMasterClient)
+				return;
+			_activePlayers.Remove(player);
+			Debug.Log($"{_activePlayers.Count} remaining.");
+			if (_activePlayers.Count <= 1)
+				TriggerGameOver(_activePlayers.Single().ThisPlayer.ActorNumber);
+		}
+
+		private void OnPlayerJoined(PlayerCharacter player) => _activePlayers.Add(player);
+
+		IEnumerator LeaveMatch()
+		{
+			yield return new WaitForSeconds(2f);
+			PhotonNetwork.LoadLevel(MENU_SCENE_INDEX);
+		}
+	}
 }
