@@ -89,14 +89,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efa724f1524d4d4479fe12c9c3f0e3c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _colorConfig: {fileID: 11400000, guid: 59f0b44d65fa7b440b6af1910403bdcb, type: 2}
   _cursorPrefab: {fileID: 5485945444279674405, guid: 093af67fa5a878246b33178d6a90f0e2, type: 3}
-  _photonView: {fileID: 6876909149777838842}
   _renderer: {fileID: 7212264484202330204}
-  _colors:
-  - {fileID: 2100000, guid: 38d1b05e188d5d74ca900b6ff7e0f731, type: 2}
-  - {fileID: 2100000, guid: 8402b8b69b156454bb5c1c22f6b41bfd, type: 2}
-  - {fileID: 2100000, guid: 7404344d67e6c9f4abc689e61dd6a656, type: 2}
-  - {fileID: 2100000, guid: 929e1004ce0043c4bb4f68edee8a289d, type: 2}
 --- !u!114 &8732770633806474988
 MonoBehaviour:
   m_ObjectHideFlags: 0

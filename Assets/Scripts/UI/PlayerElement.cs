@@ -1,48 +1,54 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
 
 public class PlayerElement : MonoBehaviourPunCallbacks
 {
+	const string REQUEST_COLOR = nameof(RequestColor);
+	const string SET_TAKEN_POPUP = nameof(SetTakenPopup);
+
+	[SerializeField] private PlayerColors _colorConfig;
     [SerializeField] private TextMeshProUGUI _playerName;
     [SerializeField] private Button _rightArrow;
     [SerializeField] private Button _leftArrow;
     [SerializeField] private TextMeshProUGUI _colorTextbox;
 	[SerializeField] private TextMeshProUGUI _takenPopup;
-	[SerializeField] private string[] _colors;
-    private RoomMenu _roomMenu;
     private int _currentColorIndex = 0;
-
-    const string IS_COLOR_UNIQUE = nameof(IsColorUnique);
-    const string SET_TAKEN_POPUP = nameof(SetTakenPopup);
 
     public Player ThisPlayer => photonView.Owner;
 
 	private void Start()
     {
-        _roomMenu = MainMenuManager.Instance.RoomMenu;
-        transform.SetParent(_roomMenu.PlayerList);
-        transform.localScale = Vector3.one;
-        _rightArrow.onClick.AddListener(CycleColorRightButton);
-        _leftArrow.onClick.AddListener(CycleColorLeftButton);
-
-        _colorTextbox.text = _colors[_currentColorIndex];
-        _rightArrow.gameObject.SetActive(photonView.IsMine);
-        _leftArrow.gameObject.SetActive(photonView.IsMine);
-
+        AddToPlayerGroup();
+		SetColorText(_colorConfig[_currentColorIndex]);
 		SetNameText(ThisPlayer.NickName);
-		var _hashedProperties = PhotonNetwork.LocalPlayer.CustomProperties;
-        if (!_hashedProperties.ContainsKey("PlayerColor"))
+
+		if (!photonView.IsMine)
+            return;
+
+        BindButtons();
+        ThisPlayer.SetColorProperty(_colorConfig[_currentColorIndex]);
+
+        void BindButtons()
         {
-            _hashedProperties.Add("PlayerColor", _colors[_currentColorIndex]);
-        }
-        PhotonNetwork.LocalPlayer.SetCustomProperties(_hashedProperties);
-        Debug.Log(PhotonNetwork.LocalPlayer.ToStringFull());
+			_rightArrow.onClick.AddListener(CycleColorRightButton);
+			_leftArrow.onClick.AddListener(CycleColorLeftButton);
+			_rightArrow.gameObject.SetActive(photonView.IsMine);
+			_leftArrow.gameObject.SetActive(photonView.IsMine);
+		}
+
+        void AddToPlayerGroup()
+		{
+			transform.SetParent(MainMenuManager.Instance.RoomMenu.PlayerList);
+			transform.localScale = Vector3.one;
+		}
 	}
 
 	private void SetNameText(string playerName) => _playerName.text = playerName;
+
+    private void SetColorText(string color) => _colorTextbox.text = color;
 
 	private void CycleColorRightButton() => CycleColor(1);
 
@@ -50,63 +56,59 @@ public class PlayerElement : MonoBehaviourPunCallbacks
 
 	private void CycleColor(int direction)
     {
+        Debug.Assert(photonView.IsMine, "Cannot cycle colors on other player's PlayerElement.");
         if (_currentColorIndex + direction < 0)
         {
-            _currentColorIndex = _colors.Length - 1;
-            _colorTextbox.text = _colors[_currentColorIndex];
+            _currentColorIndex = _colorConfig.Count - 1;
+			SetColorText(_colorConfig[_currentColorIndex]);
 
         }
-        else if (_currentColorIndex + direction > _colors.Length - 1)
+        else if (_currentColorIndex + direction > _colorConfig.Count - 1)
         {
             _currentColorIndex = 0;
-            _colorTextbox.text = _colors[_currentColorIndex];
-        }
+			SetColorText(_colorConfig[_currentColorIndex]);
+		}
         else
         {
             _currentColorIndex = _currentColorIndex + direction;
-            _colorTextbox.text = _colors[_currentColorIndex];
-        }
+			SetColorText(_colorConfig[_currentColorIndex]);
+		}
 
         _takenPopup.gameObject.SetActive(false);
-
-        var _hashedProperties = PhotonNetwork.LocalPlayer.CustomProperties;
-        _hashedProperties["PlayerColor"] = _colors[_currentColorIndex];
-        PhotonNetwork.LocalPlayer.SetCustomProperties(_hashedProperties);
+        PhotonNetwork.LocalPlayer.SetColorProperty(_colorConfig[_currentColorIndex]);
     }
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
     {
-        if (!changedProps.ContainsKey("PlayerColor") || targetPlayer.UserId != ThisPlayer.UserId)
+        if (!changedProps.HasColorProperty() || targetPlayer != ThisPlayer)
             return;
-        if (changedProps.TryGetValue("PlayerColor", out object newText))
-        {
-            _colorTextbox.text = newText.ToString();
-            photonView.RPC(IS_COLOR_UNIQUE, RpcTarget.MasterClient, ThisPlayer);
+        if (changedProps.TryGetColorProperty(out string color))
+		{
+			SetColorText(color);
+			photonView.RPC(REQUEST_COLOR, RpcTarget.MasterClient);
         }
         else
         {
-            Debug.Log($"Failed to get new player color. Sender: {targetPlayer.NickName}");
+            Debug.LogWarning($"Failed to get new player color. Sender: {targetPlayer.NickName}");
         }
     }
 
     [PunRPC]
-    public void IsColorUnique(Player sender)
+    public void RequestColor(PhotonMessageInfo info)
     {
-        int colorCopies = 0;
-        foreach (var player in PhotonNetwork.PlayerList)
+		if (!info.Sender.TryGetColorProperty(out string senderColor))
+		{
+            Debug.LogWarning($"{info.Sender} requested with empry color property.");
+			return;
+		}
+
+		int colorCopies = 0;
+		foreach (var player in PhotonNetwork.PlayerList)
         {
-            if (player.CustomProperties.TryGetValue("PlayerColor", out var color))
-                if (color.ToString() == sender.CustomProperties.TryGetValue("PlayerColor", out var senderColor).ToString())
-                    colorCopies++;
+            if (player.TryGetColorProperty(out var color) && color == senderColor)
+				colorCopies++;
         }
-        if (colorCopies > 1)
-        {
-            photonView.RPC(SET_TAKEN_POPUP, sender, true);
-        }
-        else
-        {
-            photonView.RPC(SET_TAKEN_POPUP, sender, false);
-        }
+        photonView.RPC(SET_TAKEN_POPUP, info.Sender, colorCopies > 1);
     }
 
     [PunRPC]

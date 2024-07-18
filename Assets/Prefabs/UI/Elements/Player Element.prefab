@@ -608,16 +608,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94cd323e41b61974284969bf3767ca43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _colorConfig: {fileID: 11400000, guid: 59f0b44d65fa7b440b6af1910403bdcb, type: 2}
   _playerName: {fileID: 2215370839814480881}
   _rightArrow: {fileID: 29571652759986810}
   _leftArrow: {fileID: 9074249708440153919}
   _colorTextbox: {fileID: 3731525176878815589}
-  _colors:
-  - Red
-  - Green
-  - Blue
-  - Yellow
-  _photonView: {fileID: 80536097964016491}
   _takenPopup: {fileID: 3614847589810258404}
 --- !u!114 &80536097964016491
 MonoBehaviour:
