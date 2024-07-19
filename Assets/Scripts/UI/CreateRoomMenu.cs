@@ -19,6 +19,7 @@ public class CreateRoomMenu : MonoBehaviour
 	{
 		_createRoomButton.onClick.AddListener(CreateRoomButton);
 		_backButton.onClick.AddListener(BackButton);
+		_roomName.text = $"{PhotonNetwork.LocalPlayer.NickName}'s Room";
 	}
 
     private void OnEnable()
