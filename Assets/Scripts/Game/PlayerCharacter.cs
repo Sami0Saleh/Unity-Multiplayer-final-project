@@ -34,7 +34,7 @@ namespace Game
 
 			void SetMaterial()
 			{
-				if (ThisPlayer.TryGetColorProperty(out var color) && _colorConfig.TryGetValue(color, out var mat))
+				if (_colorConfig.TryGetMaterial(ThisPlayer, out var mat))
 					_renderer.material = mat;
 			}
 		}

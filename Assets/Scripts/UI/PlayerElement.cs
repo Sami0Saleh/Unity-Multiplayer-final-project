@@ -4,8 +4,6 @@ using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
-using Unity.VisualScripting;
-using System.Reflection;
 
 public class PlayerElement : MonoBehaviourPunCallbacks
 {
@@ -52,7 +50,12 @@ public class PlayerElement : MonoBehaviourPunCallbacks
 
 	private void SetNameText(string playerName) => _playerName.text = playerName;
 
-    private void SetColorText(string color) => _colorTextbox.text = color;
+	private void SetColorText(string color)
+	{
+		_colorTextbox.text = color;
+        if (_colorConfig.TryGetValue(color, out var mat))
+            _colorTextbox.color = mat.color;
+	}
 
 	private void CycleColorRightButton() => CycleColor(1);
 

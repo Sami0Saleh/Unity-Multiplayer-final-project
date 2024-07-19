@@ -103,4 +103,10 @@ public static class PlayerColorsExtension
 		color = null;
 		return false;
 	}
+
+	public static bool TryGetMaterial(this PlayerColors playerColors, Player player, out Material material)
+	{
+		material = null;
+		return player.TryGetColorProperty(out var color) && playerColors.TryGetValue(color, out material);
+	}
 }

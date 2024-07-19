@@ -12,7 +12,9 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	const int GAME_SCENE_INDEX = 1;
 	const string DISPALY_CHAT = nameof(DisplayChatMessage);
 	const string PLAYER_ELEMENT_PREFAB = "Player Element Photon";
-    [SerializeField] private PlayerElement _playerElementPrefab;
+
+	[SerializeField] private PlayerColors _colorConfig;
+	[SerializeField] private PlayerElement _playerElementPrefab;
 	[SerializeField] private ChatMessage _chatMessagePrefab;
 	[SerializeField] private PhotonView _photonView;
 	[SerializeField] private Button _leaveRoomButton;
@@ -69,6 +71,8 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	{
 		var msg = Instantiate(_chatMessagePrefab, _chat);
 		msg.Text = $"{info.Sender.NickName}: {message}";
+		if (_colorConfig.TryGetMaterial(info.Sender, out var mat))
+			msg.Color = mat.color;
 	}
 
 	private bool AllUniqueAndValidColors()
