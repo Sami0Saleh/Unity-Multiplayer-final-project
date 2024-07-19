@@ -42,7 +42,7 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 		if (Instance == null)
 			Instance = this;
 		DefaultLobby = DefaultLobby = new("Default Lobby", LobbyType.Default);
-		if (PhotonNetwork.LocalPlayer.CustomProperties.HasColorProperty())
+		if (!PhotonNetwork.LocalPlayer.CustomProperties.HasColorProperty())
 			PhotonNetwork.LocalPlayer.SetColorProperty(PlayerColors.DEFAULT_COLOR);
 	}
 
