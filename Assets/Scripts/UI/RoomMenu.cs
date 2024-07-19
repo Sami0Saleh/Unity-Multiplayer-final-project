@@ -55,7 +55,10 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	public void StartButton()
 	{
 		if (StartCondition)
+		{
+			PhotonNetwork.DestroyAll();
 			PhotonNetwork.LoadLevel(GAME_SCENE_INDEX);
+		}
 	}
 
 	public void SendChatButton(string msg)

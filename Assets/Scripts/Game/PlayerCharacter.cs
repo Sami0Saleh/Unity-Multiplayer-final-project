@@ -52,7 +52,7 @@ namespace Game
 		[PunRPC]
 		private void ReceiveDamage(int damage, int damagedActorNumber)
 		{
-			if (damagedActorNumber != photonView.Owner.ActorNumber)
+			if (damagedActorNumber != ThisPlayer.ActorNumber)
 				return;
 			HP -= damage;
 			PlayerDamaged?.Invoke(this);

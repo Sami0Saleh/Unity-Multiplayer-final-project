@@ -73,6 +73,7 @@ namespace Game
 		IEnumerator LeaveMatch()
 		{
 			yield return new WaitForSeconds(2f);
+			PhotonNetwork.DestroyAll();
 			PhotonNetwork.LoadLevel(MENU_SCENE_INDEX);
 		}
 	}
