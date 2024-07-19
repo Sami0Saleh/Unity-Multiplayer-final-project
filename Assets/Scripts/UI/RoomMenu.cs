@@ -21,8 +21,9 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	[SerializeField] private Transform _chat;
 	[SerializeField] private TMP_InputField _chatBoxInput;
 
-	private bool StartCondition => PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1;
-    [field: SerializeField] public Transform PlayerList { get; private set; }
+	private bool StartCondition => PhotonNetwork.CurrentRoom.PlayerCount > 1 && AllUniqueAndValidColors();
+
+	[field: SerializeField] public Transform PlayerList { get; private set; }
 
 	private void Start()
 	{
@@ -70,17 +71,25 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 		msg.Text = $"{info.Sender.NickName}: {message}";
 	}
 
+	private bool AllUniqueAndValidColors()
+	{
+		var colors = GetAllColorsInLobby();
+		return colors.Distinct().Count() == PhotonNetwork.CurrentRoom.PlayerCount &&
+			!colors.Contains(PlayerColors.DEFAULT_COLOR);
+	}
+
 	private void UpdatePlayerCount()
 	{
-        if (PhotonNetwork.IsMasterClient)
-            CheckPlayerUniqueColor();
+        UpdateStartButton();
         UpdatePlayerCountText();
 	}
 
-    private void CheckPlayerUniqueColor()
-    {
-		_startButton.interactable = StartCondition && GetAllColorsInLobby().Distinct().Count() == PhotonNetwork.CurrentRoom.PlayerCount;
-    }
+	private void UpdateStartButton()
+	{
+		_startButton.gameObject.SetActive(PhotonNetwork.IsMasterClient);
+		if (PhotonNetwork.IsMasterClient)
+			_startButton.interactable = StartCondition;
+	}
 
 	private IEnumerable<string> GetAllColorsInLobby()
 	{
@@ -91,14 +100,19 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 		}
 	}
 
+	private void UpdatePlayerCountText()
+	{
+		var room = PhotonNetwork.CurrentRoom;
+		_playerCountText.text = $"{room.PlayerCount}/{room.MaxPlayers}";
+	}
+
 	public override void OnPlayerEnteredRoom(Player newPlayer) => UpdatePlayerCount();
 
 	public override void OnPlayerLeftRoom(Player otherPlayer) => UpdatePlayerCount();
 
 	public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
 	{
-		if (PhotonNetwork.IsMasterClient)
-            CheckPlayerUniqueColor();
+		UpdateStartButton();
 	}
 
 	public override void OnMasterClientSwitched(Player newMasterClient)
@@ -106,13 +120,7 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 		if (!PhotonNetwork.IsMasterClient)
 			return;
 		UpdatePlayerCount();
-		CheckPlayerUniqueColor();
-	}
-
-	private void UpdatePlayerCountText()
-	{
-		var room = PhotonNetwork.CurrentRoom;
-		_playerCountText.text = $"{room.PlayerCount}/{room.MaxPlayers}";
+		UpdateStartButton();
 	}
 
 	private void ClearChat()
