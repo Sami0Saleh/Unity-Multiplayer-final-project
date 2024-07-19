@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public class MainMenuManager : MonoBehaviourPunCallbacks
 {
-	public const int MAX_PLAYERS_PER_ROOM = 8;
+	public const int MAX_PLAYERS_PER_ROOM = 4;
 
 	[SerializeField] private ErrorPopup _errorPopup;
 

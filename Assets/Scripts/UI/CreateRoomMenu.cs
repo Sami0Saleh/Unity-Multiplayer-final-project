@@ -15,6 +15,8 @@ public class CreateRoomMenu : MonoBehaviour
 	private string RoomName => _roomName.text;
 	private int MaxPlayerCount => Mathf.Clamp((int)_maxPlayerCount.value, 2, MainMenuManager.MAX_PLAYERS_PER_ROOM);
 
+	private void OnValidate() => _maxPlayerCount.maxValue = MainMenuManager.MAX_PLAYERS_PER_ROOM;
+
 	private void Start()
 	{
 		_createRoomButton.onClick.AddListener(CreateRoomButton);
