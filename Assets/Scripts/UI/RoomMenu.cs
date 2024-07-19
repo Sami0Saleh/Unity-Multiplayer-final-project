@@ -39,6 +39,8 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 		base.OnEnable();
 		CreateElement();
 		UpdatePlayerCount();
+		if (PhotonNetwork.IsMasterClient)
+			PhotonNetwork.CurrentRoom.IsOpen = true;
 	}
 
     public override void OnDisable()
@@ -57,6 +59,7 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 		if (StartCondition)
 		{
 			PhotonNetwork.DestroyAll();
+			PhotonNetwork.CurrentRoom.IsOpen = false;
 			PhotonNetwork.LoadLevel(GAME_SCENE_INDEX);
 		}
 	}
