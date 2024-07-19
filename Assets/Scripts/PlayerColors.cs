@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Photon.Pun;
 using Photon.Realtime;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
@@ -11,7 +10,9 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class PlayerColors : ScriptableObject, IDictionary<string, Material>
 {
 	public const string COLOR_PROPERTY = "PlayerColor";
+	public const string DEFAULT_COLOR = "None";
 
+	[SerializeField] private Material _defaultColor;
     [SerializeField] private List<Material> _materials;
 	private Dictionary<string, Material> _dict;
 
@@ -21,7 +22,8 @@ public class PlayerColors : ScriptableObject, IDictionary<string, Material>
 
 		void InitDictionary()
 		{
-			_dict = new();
+			_dict = new(_materials.Count + 1)
+			{ { DEFAULT_COLOR, _defaultColor } };
 			foreach (var mat in _materials)
 				_dict.Add(mat.name, mat);
 		}
@@ -34,7 +36,7 @@ public class PlayerColors : ScriptableObject, IDictionary<string, Material>
 
 	public ICollection<Material> Values => ((IDictionary<string, Material>)_dict).Values;
 
-	public int Count => ((ICollection<KeyValuePair<string, Material>>)_dict).Count;
+	public int Count => ((ICollection<KeyValuePair<string, Material>>)_dict).Count-1;
 
 	public bool IsReadOnly => true;
 
@@ -58,7 +60,19 @@ public class PlayerColors : ScriptableObject, IDictionary<string, Material>
 
 	public bool TryGetValue(string key, out Material value) => (_dict as IDictionary<string, Material>).TryGetValue(key, out value);
 
-	public string this[int index] => _dict.ElementAt(index).Key;
+	public string this[int index] => _dict.ElementAt(index+1).Key;
+
+	public int IndexOf(string color)
+	{
+		int index = -1;
+		foreach (var key in Keys)
+		{
+			if (key.Equals(color))
+				return index;
+			index++;
+		}
+		return -1;
+	}
 
 	IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_dict).GetEnumerator();
 	#endregion

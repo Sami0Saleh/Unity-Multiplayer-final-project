@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f9e9dd4e7655e44e8244d53046a866f, type: 3}
   m_Name: PlayerColors
   m_EditorClassIdentifier: 
+  _defaultColor: {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
   _materials:
   - {fileID: 2100000, guid: 7404344d67e6c9f4abc689e61dd6a656, type: 2}
   - {fileID: 2100000, guid: 8402b8b69b156454bb5c1c22f6b41bfd, type: 2}

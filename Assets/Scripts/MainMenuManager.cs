@@ -1,9 +1,8 @@
-using System.Linq;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
-using System.Collections.Generic;
 
 public class MainMenuManager : MonoBehaviourPunCallbacks
 {
@@ -43,6 +42,7 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 		if (Instance == null)
 			Instance = this;
 		DefaultLobby = DefaultLobby = new("Default Lobby", LobbyType.Default);
+		PhotonNetwork.LocalPlayer.SetColorProperty(PlayerColors.DEFAULT_COLOR);
 	}
 
 	public override void OnEnable()
