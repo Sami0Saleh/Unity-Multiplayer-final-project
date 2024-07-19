@@ -704,7 +704,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a5a4c23461e5b145832383ffb1ee35f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _nickname: {fileID: 6844278214027602929}
+  _nicknameInput: {fileID: 6844278214027602929}
   _connectButton: {fileID: 9199338697535317004}
   _exitButton: {fileID: 7564917651484798354}
 --- !u!1 &6017625189069683612
