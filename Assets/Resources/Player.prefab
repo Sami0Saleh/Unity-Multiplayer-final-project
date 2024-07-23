@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 6876909149777838842}
   - component: {fileID: 6220468712623393250}
   - component: {fileID: 4497678083692367122}
-  - component: {fileID: 8732770633806474988}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -142,20 +141,6 @@ MonoBehaviour:
   _colorConfig: {fileID: 11400000, guid: 59f0b44d65fa7b440b6af1910403bdcb, type: 2}
   _cursorPrefab: {fileID: 5485945444279674405, guid: 093af67fa5a878246b33178d6a90f0e2, type: 3}
   _renderer: {fileID: 7212264484202330204}
-  <HP>k__BackingField: 10
---- !u!114 &8732770633806474988
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6071354540810833049}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6896aaf085833d74d9b83bbdc040b95d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ProjectileSpawnTransform: {fileID: 3198430377306024909}
 --- !u!1 &7657162699437373641
 GameObject:
   m_ObjectHideFlags: 0
