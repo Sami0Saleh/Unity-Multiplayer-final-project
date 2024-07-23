@@ -28,12 +28,10 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 	}
 	public static MainMenuManager Instance { get; private set; }
 	public TypedLobby DefaultLobby { get; private set; }
-	public List<TypedLobby> ClientLobbies { get; private set; }
 
     private void OnValidate()
 	{
 		SetActiveMenu(LoginMenu);
-		ClientLobbies = new List<TypedLobby>();
 	}
 
 	private void Awake()
@@ -84,32 +82,15 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
 			PopUpErrorMessage(cause.ToString());
 	}
 
-	public void JoinLobbyByName(string lobbyName)
+	public void JoinLobby()
 	{
-		TypedLobby typedLobby = null;
-		foreach (TypedLobby lobby in ClientLobbies)
-		{
-			if (lobby.Name == lobbyName)
-			{
-				typedLobby = lobby;
-			}	
-		}
-		if (typedLobby == null)
-		{
-            typedLobby = new TypedLobby(lobbyName, LobbyType.Default);
-			ClientLobbies.Add(typedLobby);
-        }
-		PhotonNetwork.JoinLobby(typedLobby);
+		PhotonNetwork.JoinLobby(DefaultLobby);
 	}
 
     public override void OnJoinedLobby()
     {
-		if (PhotonNetwork.CurrentLobby == DefaultLobby) //Checks if player is in default lobby
-		{
+		if (PhotonNetwork.CurrentLobby == DefaultLobby)
             SetActiveMenu(JoinRoomMenu);
-			Debug.Log($"Joined Lobby {PhotonNetwork.CurrentLobby}");
-			return;
-        }
     }
 
 	public override void OnLeftLobby()

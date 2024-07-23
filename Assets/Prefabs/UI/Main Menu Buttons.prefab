@@ -445,7 +445,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _nicknameText: {fileID: 6506436098587383741}
   _playButton: {fileID: 9199338697535317004}
-  _LogOutButton: {fileID: 109874689652857083}
+  _logOutButton: {fileID: 0}
   _exitButton: {fileID: 7564917651484798354}
 --- !u!1 &5964241249296401619
 GameObject:
@@ -861,17 +861,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 25dc1d964f915c2459d13a6d2ac72db7, type: 3}
---- !u!114 &109874689652857083 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6639404921520837811, guid: 25dc1d964f915c2459d13a6d2ac72db7, type: 3}
-  m_PrefabInstance: {fileID: 6748008437686881352}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &4737787256223994289 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2046249979020893689, guid: 25dc1d964f915c2459d13a6d2ac72db7, type: 3}
