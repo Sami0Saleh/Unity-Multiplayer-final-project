@@ -1,34 +1,31 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using WebSocketSharp;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Pool;
 using TMPro;
 using Photon.Realtime;
 using Photon.Pun;
-using ExitGames.Client.Photon;
-using WebSocketSharp;
 
 public class RoomMenu : MonoBehaviourPunCallbacks
 {
 	const int GAME_SCENE_INDEX = 1;
 	const string DISPALY_CHAT = nameof(DisplayChatMessage);
+	const string PLAYER_ELEMENT_PREFAB = "Player Element Photon";
+
+	[SerializeField] private PlayerColors _colorConfig;
 	[SerializeField] private PlayerElement _playerElementPrefab;
 	[SerializeField] private ChatMessage _chatMessagePrefab;
 	[SerializeField] private PhotonView _photonView;
 	[SerializeField] private Button _leaveRoomButton;
 	[SerializeField] private Button _startButton;
 	[SerializeField] private TextMeshProUGUI _playerCountText;
-	[SerializeField] private Transform _playerList;
 	[SerializeField] private Transform _chat;
 	[SerializeField] private TMP_InputField _chatBoxInput;
 
-	private bool StartCondition => PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1;
+	private bool StartCondition => PhotonNetwork.CurrentRoom.PlayerCount > 1 && AllUniqueAndValidColors();
 
-	private void Awake()
-	{
-		InitPool(_playerElementPrefab);
-		_dict = new(ELEMENT_LIST_CAPACITY);
-	}
+	[field: SerializeField] public Transform PlayerList { get; private set; }
 
 	private void Start()
 	{
@@ -40,15 +37,16 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	public override void OnEnable()
 	{
 		base.OnEnable();
-		foreach (var player in PhotonNetwork.PlayerList)
-			OnPlayerEnteredRoom(player);
+		CreateElement();
+		UpdatePlayerCount();
+		if (PhotonNetwork.IsMasterClient)
+			PhotonNetwork.CurrentRoom.IsOpen = true;
 	}
 
     public override void OnDisable()
 	{
 		base.OnDisable();
 		ClearChat();
-		ClearAllPlayers();
 	}
 
 	public void LeaveRoomButton()
@@ -59,7 +57,11 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	public void StartButton()
 	{
 		if (StartCondition)
+		{
+			PhotonNetwork.DestroyAll();
+			PhotonNetwork.CurrentRoom.IsOpen = false;
 			PhotonNetwork.LoadLevel(GAME_SCENE_INDEX);
+		}
 	}
 
 	public void SendChatButton(string msg)
@@ -75,38 +77,37 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 	{
 		var msg = Instantiate(_chatMessagePrefab, _chat);
 		msg.Text = $"{info.Sender.NickName}: {message}";
+		if (_colorConfig.TryGetMaterial(info.Sender, out var mat))
+			msg.Color = mat.color;
+	}
+
+	private bool AllUniqueAndValidColors()
+	{
+		var colors = GetAllColorsInLobby();
+		return colors.Distinct().Count() == PhotonNetwork.CurrentRoom.PlayerCount &&
+			!colors.Contains(PlayerColors.DEFAULT_COLOR);
 	}
 
 	private void UpdatePlayerCount()
 	{
-		_startButton.interactable = StartCondition;
-		UpdatePlayerCountText();
+        UpdateStartButton();
+        UpdatePlayerCountText();
 	}
 
-	public override void OnPlayerEnteredRoom(Player newPlayer)
+	private void UpdateStartButton()
 	{
-		PlayerElement playerElement = _pool.Get();
-		if (_dict.TryAdd(newPlayer.ActorNumber, playerElement))
-			playerElement.SetProperties(newPlayer);
-		else
-			_pool.Release(playerElement);
-		UpdatePlayerCount();
+		_startButton.gameObject.SetActive(PhotonNetwork.IsMasterClient);
+		if (PhotonNetwork.IsMasterClient)
+			_startButton.interactable = StartCondition;
 	}
 
-	public override void OnPlayerLeftRoom(Player otherPlayer)
+	private IEnumerable<string> GetAllColorsInLobby()
 	{
-		if (_dict.TryGetValue(otherPlayer.ActorNumber, out PlayerElement playerElement))
+		foreach (var player in PhotonNetwork.PlayerList)
 		{
-			_pool.Release(playerElement);
-			_dict.Remove(otherPlayer.ActorNumber);
+			if (player.CustomProperties.TryGetValue("PlayerColor", out var color))
+				yield return color.ToString();
 		}
-		UpdatePlayerCount();
-	}
-
-	public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
-	{
-		if (_dict.TryGetValue(targetPlayer.ActorNumber, out PlayerElement playerElement))
-			playerElement.SetProperties(targetPlayer);
 	}
 
 	private void UpdatePlayerCountText()
@@ -115,48 +116,28 @@ public class RoomMenu : MonoBehaviourPunCallbacks
 		_playerCountText.text = $"{room.PlayerCount}/{room.MaxPlayers}";
 	}
 
+	public override void OnPlayerEnteredRoom(Player newPlayer) => UpdatePlayerCount();
+
+	public override void OnPlayerLeftRoom(Player otherPlayer) => UpdatePlayerCount();
+
+	public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+	{
+		UpdateStartButton();
+	}
+
+	public override void OnMasterClientSwitched(Player newMasterClient)
+	{
+		if (!PhotonNetwork.IsMasterClient)
+			return;
+		UpdatePlayerCount();
+		UpdateStartButton();
+	}
+
 	private void ClearChat()
 	{
-		for (int i = 0; i < _chat.childCount; i++)
+		for (int i = _chat.childCount-1; i >= 0; i--)
 			Destroy(_chat.GetChild(i).gameObject);
 	}
 
-	#region ROOM_ELEMENT
-	private const int ELEMENT_LIST_CAPACITY = 10;
-
-	private Dictionary<int, PlayerElement> _dict;
-
-	private void ClearAllPlayers()
-	{
-		foreach (var room in _dict)
-			_pool.Release(room.Value);
-		_dict.Clear();
-	}
-	#endregion
-
-	#region POOL
-	private ObjectPool<PlayerElement> _pool;
-
-	private void InitPool(PlayerElement playerElement)
-	{
-		_pool = new
-		(
-			createFunc: () => CreateElement(playerElement),
-			actionOnGet: OnGetElement,
-			actionOnRelease: OnRelease,
-			actionOnDestroy: DestroyElement,
-			defaultCapacity: ELEMENT_LIST_CAPACITY
-		);
-	}
-
-	private PlayerElement CreateElement(PlayerElement playerElement) => Instantiate(playerElement, _playerList);
-
-	private void OnGetElement(PlayerElement playerElement) => playerElement.gameObject.SetActive(true);
-
-	private void DestroyElement(PlayerElement playerElement) => Destroy(playerElement.gameObject);
-
-	private void OnRelease(PlayerElement playerElement) => playerElement.gameObject.SetActive(false);
-
-	private bool ElementActive(PlayerElement playerElement) => playerElement.gameObject.activeSelf;
-	#endregion
+	private PlayerElement CreateElement() => PhotonNetwork.Instantiate(PLAYER_ELEMENT_PREFAB, PlayerList.position, PlayerList.rotation).GetComponent<PlayerElement>();
 }

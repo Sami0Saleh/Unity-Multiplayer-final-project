@@ -14,6 +14,7 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 	[SerializeField] private Transform _roomList;
 
 	[SerializeField] private Toggle _hideFullRooms;
+	[SerializeField] private Toggle _hideClosedRooms;
 
 	private void Awake()
 	{
@@ -27,6 +28,7 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 		_joinRandomRoomButton.onClick.AddListener(JoinRandomRoomButton);
 		_backButton.onClick.AddListener(BackButton);
 		_hideFullRooms.onValueChanged.AddListener(ApplySearchFiltersOnToggle);
+		_hideClosedRooms.onValueChanged.AddListener(ApplySearchFiltersOnToggle);
 	}
 
     public override void OnEnable()
@@ -88,11 +90,15 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 			room.gameObject.SetActive(ApplySearchFilters(room.RoomInfo));
 	}
 
-	private bool ApplySearchFilters(RoomInfo source)
+	private bool ApplySearchFilters(RoomInfo room)
 	{
-		if (_hideFullRooms.isOn && source.PlayerCount >= source.MaxPlayers)
+		if (HideFullRoomsCondition() || HideClosedRoomsCondition())
 			return false;
 		return true;
+
+		bool HideFullRoomsCondition() => _hideFullRooms.isOn && room.PlayerCount >= room.MaxPlayers;
+
+		bool HideClosedRoomsCondition() => _hideClosedRooms && !room.IsOpen;
 	}
 
     public void ToggleButtonsState(bool active)

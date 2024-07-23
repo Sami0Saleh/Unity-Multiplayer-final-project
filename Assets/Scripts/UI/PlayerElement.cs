@@ -1,112 +1,121 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Photon.Realtime;
+using TMPro;
 using Photon.Pun;
+using Photon.Realtime;
+using System.Collections;
 
 public class PlayerElement : MonoBehaviourPunCallbacks
 {
-    [SerializeField] private TextMeshProUGUI _playerName;
+	const string REQUEST_COLOR = nameof(RequestColor);
+	const string RETURN_COLOR = nameof(ReturnColor);
 
+	[SerializeField] private PlayerColors _colorConfig;
+    [SerializeField] private TextMeshProUGUI _playerName;
     [SerializeField] private Button _rightArrow;
     [SerializeField] private Button _leftArrow;
     [SerializeField] private TextMeshProUGUI _colorTextbox;
-    [SerializeField] private string[] _colors;
-    private Player _thisPlayer;
-    private int _currentColorIndex = 0;
+	[SerializeField] private TextMeshProUGUI _takenPopup;
+    private int _currentColorIndex = -1;
 
-    public void SetProperties(Player player)
+    public Player ThisPlayer => photonView.Owner;
+
+	private void Start()
     {
-        SetTexts(player.NickName);
-        _thisPlayer = player;
-    }
+        AddToPlayerGroup();
+        if (ThisPlayer.TryGetColorProperty(out var color))
+            _currentColorIndex = _colorConfig.IndexOf(color);
+		SetNameText(ThisPlayer.NickName);
+		SetColorText(_colorConfig[_currentColorIndex]);
 
-    private void SetTexts(string playerName)
-    {
-        _playerName.text = playerName;
-    }
+		if (!photonView.IsMine)
+            return;
 
-    private void Start()
-    {
-        _rightArrow.onClick.AddListener(CycleColorRight);
-        _leftArrow.onClick.AddListener(CycleColorLeft);
+        BindButtons();
 
-        _colorTextbox.text = _colors[_currentColorIndex];
-        if (PhotonNetwork.LocalPlayer.UserId == _thisPlayer.UserId)
+        void BindButtons()
         {
-            _rightArrow.gameObject.SetActive(true);
-            _leftArrow.gameObject.SetActive(true);
-        }
+			_rightArrow.onClick.AddListener(CycleColorRightButton);
+			_leftArrow.onClick.AddListener(CycleColorLeftButton);
+			_rightArrow.gameObject.SetActive(photonView.IsMine);
+			_leftArrow.gameObject.SetActive(photonView.IsMine);
+		}
 
-        var _hashedProperties = PhotonNetwork.LocalPlayer.CustomProperties;
-        if (!_hashedProperties.ContainsKey("PlayerColor"))
-        {
-            _hashedProperties.Add("PlayerColor", _colors[_currentColorIndex]);
-        }
-        PhotonNetwork.LocalPlayer.SetCustomProperties(_hashedProperties);
-        Debug.Log(PhotonNetwork.LocalPlayer.ToStringFull());
-    }
+        void AddToPlayerGroup()
+		{
+			transform.SetParent(MainMenuManager.Instance.RoomMenu.PlayerList);
+			transform.localScale = Vector3.one;
+		}
+	}
 
-    private void OnDisable()
+	private void SetNameText(string playerName) => _playerName.text = playerName;
+
+	private void SetColorText(string color)
+	{
+		_colorTextbox.text = color;
+        if (_colorConfig.TryGetValue(color, out var mat))
+            _colorTextbox.color = mat.color;
+	}
+
+	private void CycleColorRightButton() => CycleColor(1);
+
+	private void CycleColorLeftButton() => CycleColor(-1);
+
+	private void CycleColor(int direction)
     {
-        if (PhotonNetwork.LocalPlayer.UserId == _thisPlayer.UserId)
+        Debug.Assert(photonView.IsMine, "Cannot cycle colors on another player's PlayerElement.");
+        ModifyCurrentColorIndex();
+		SetColorText(_colorConfig[_currentColorIndex]);
+		_takenPopup.gameObject.SetActive(false);
+        StopAllCoroutines();
+        StartCoroutine(RequestColorDelay());
+		PhotonNetwork.LocalPlayer.SetColorProperty(_colorConfig[_currentColorIndex]);
+
+		void ModifyCurrentColorIndex() => _currentColorIndex = Utility.Modulo(_currentColorIndex + direction, _colorConfig.Count);
+
+		IEnumerator RequestColorDelay(float delay = 1f)
         {
-            _rightArrow.gameObject.SetActive(false);
-            _leftArrow.gameObject.SetActive(false);
-        }
-    }
-
-    private void CycleColorRight()
-    {
-        CycleColor(1);
-        Debug.Log($"Cycled right. New Color is {_colors[_currentColorIndex]}, indexed {_currentColorIndex}");
-    }
-
-    private void CycleColorLeft()
-    {
-        CycleColor(-1);
-        Debug.Log($"Cycled left. New Color is {_colors[_currentColorIndex]}, indexed {_currentColorIndex}");
-    }
-
-    private void CycleColor(int direction)
-    {
-        if (_currentColorIndex + direction < 0)
-        {
-            _currentColorIndex = _colors.Length - 1;
-            _colorTextbox.text = _colors[_currentColorIndex];
-
-        }
-        else if (_currentColorIndex + direction > _colors.Length - 1)
-        {
-            _currentColorIndex = 0;
-            _colorTextbox.text = _colors[_currentColorIndex];
-        }
-        else
-        {
-            _currentColorIndex = _currentColorIndex + direction;
-            _colorTextbox.text = _colors[_currentColorIndex];
-        }
-
-        var _hashedProperties = PhotonNetwork.LocalPlayer.CustomProperties;
-        _hashedProperties["PlayerColor"] = _colors[_currentColorIndex];
-        PhotonNetwork.LocalPlayer.SetCustomProperties(_hashedProperties);
+            yield return new WaitForSeconds(delay);
+			photonView.RPC(REQUEST_COLOR, RpcTarget.MasterClient);
+		}
     }
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
     {
-        base.OnPlayerPropertiesUpdate(targetPlayer, changedProps);
-        if (!changedProps.ContainsKey("PlayerColor"))
+        if (!changedProps.HasColorProperty() || targetPlayer != ThisPlayer)
             return;
-        if (targetPlayer.UserId == _thisPlayer.UserId)
-        {
-            if (changedProps.TryGetValue("PlayerColor", out object newText))
-            {
-                _colorTextbox.text = newText.ToString();
-            }
-            else
-            {
-                Debug.Log($"Failed to get new player color. Sender: {targetPlayer.NickName}");
-            }
+        if (changedProps.TryGetColorProperty(out string color))
+		{
+			SetColorText(color);
         }
+        else
+        {
+            Debug.LogWarning($"Failed to get new player color. Sender: {targetPlayer.NickName}");
+        }
+    }
+
+    [PunRPC]
+    public void RequestColor(PhotonMessageInfo info)
+    {
+        Debug.Assert(PhotonNetwork.IsMasterClient, "Only the master client may be issued color requests.");
+		if (!info.Sender.TryGetColorProperty(out string senderColor))
+		{
+            Debug.LogWarning($"{info.Sender} requested with empty color property.");
+			return;
+		}
+
+		int colorCopies = 0;
+		foreach (var player in PhotonNetwork.PlayerList)
+        {
+            if (player.TryGetColorProperty(out var color) && color == senderColor)
+				colorCopies++;
+        }
+        photonView.RPC(RETURN_COLOR, info.Sender, colorCopies > 1);
+    }
+
+    [PunRPC]
+    public void ReturnColor(bool state)
+    {
+        _takenPopup.gameObject.SetActive(state);
     }
 }
