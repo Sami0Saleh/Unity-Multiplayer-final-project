@@ -8,8 +8,11 @@ namespace Game
 	public class PlayerCharacter : MonoBehaviourPun
 	{
 		[SerializeField] private PlayerColors _colorConfig;
-		[SerializeField] private GameObject _cursorPrefab;
+		[SerializeField] private PlayerCursor _cursorPrefab;
 		[SerializeField, HideInInspector] private MeshRenderer _renderer;
+		public InputActions InputActions { get; private set; }
+		public PlayerCursor Cursor { get; private set; }
+		public static PlayerCharacter Mine { get; private set; } 
 
 		public static event UnityAction<PlayerCharacter> PlayerJoined;
 		public static event UnityAction<PlayerCharacter> PlayerEliminated;
@@ -25,13 +28,33 @@ namespace Game
 			transform.SetParent(Board.Instance.PlayerParent);
 			if (!photonView.AmOwner)
 				return;
-			PhotonNetwork.Instantiate(_cursorPrefab.name, transform.position, transform.rotation);
+			RegisterMine();
+			InputActions = new();
+			Cursor = PhotonNetwork.Instantiate(_cursorPrefab.name, transform.position, transform.rotation).GetComponent<PlayerCursor>();
+
+			void RegisterMine()
+			{
+				if (Mine == null)
+					Mine = this;
+			}
 
 			void SetMaterial()
 			{
 				if (_colorConfig.TryGetMaterial(ThisPlayer, out var mat))
 					_renderer.material = mat;
 			}
+		}
+
+		private void OnEnable()
+		{
+			if (photonView.AmOwner)
+				InputActions.Cursor.Enable();
+		}
+
+		private void OnDisable()
+		{
+			if (photonView.AmOwner)
+				InputActions.Cursor.Disable();
 		}
 
 		private void Start()

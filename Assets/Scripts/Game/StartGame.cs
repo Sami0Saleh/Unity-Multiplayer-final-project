@@ -6,7 +6,7 @@ using static Utility;
 
 namespace Game
 {
-	public class StartGame : MonoBehaviourPun
+	public class StartGame : MonoBehaviour
 	{
 		[SerializeField] private PlayerCharacter _playerPrefab;
 		private IEnumerable<GameObject> StartPositions => Board.Instance.TilesFromMask(Board.STARTING_POSITIONS);
