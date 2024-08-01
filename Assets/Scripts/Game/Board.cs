@@ -109,6 +109,7 @@ namespace Game
 
 		public IEnumerable<Tile> TilesFromMask(BoardMask mask)
 		{
+			mask &= CurrentBoardState;
 			foreach ((var x, var y) in mask)
 				yield return _tiles[BoardMask.IndexToBitNumber(x, y)];
 		}
