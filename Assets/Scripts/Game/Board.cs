@@ -20,7 +20,7 @@ namespace Game
 		[SerializeField] private Transform _tilesParent;
 		private Tile[] _tiles;
 
-		public IEnumerable<Tile> Tiles => TilesFromMask(CurrentBoardState);
+		public IEnumerable<Tile> Tiles => _tiles;
 		public BoardMask CurrentBoardState { get; private set; }
 
 		private void Awake()
@@ -91,7 +91,7 @@ namespace Game
 
 			public readonly bool Equals(BoardMask other) => _mask == other._mask;
 
-			public readonly IEnumerator<(byte, byte)> GetEnumerator() // TODO Improve efficiency
+			public readonly IEnumerator<(byte, byte)> GetEnumerator()
 			{
 				for (byte y = 0; y < HEIGHT; y++)
 				{
