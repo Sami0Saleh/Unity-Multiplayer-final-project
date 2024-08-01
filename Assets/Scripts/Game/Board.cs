@@ -8,22 +8,32 @@ namespace Game
 {
 	public class Board : MonoBehaviour
 	{
+		#region CONSTS
 		public const byte WIDTH = 9;
 		public const byte HEIGHT = 7;
 		public const byte MAX_NUMBER_OF_TILES = HEIGHT * WIDTH;
 		private const int X_OFFSET = -WIDTH / 2;
 		private const int Y_OFFSET = -HEIGHT / 2;
-		public static BoardMask STARTING_POSITIONS = BoardMask.IndexToMask(1, 0) | BoardMask.IndexToMask(1, 8) | BoardMask.IndexToMask(6, 0) | BoardMask.IndexToMask(6, 8);
+		public static BoardMask STARTING_POSITIONS =
+			BoardMask.IndexToMask(1, 0) |
+			BoardMask.IndexToMask(1, WIDTH-1) |
+			BoardMask.IndexToMask(HEIGHT-1, 0) |
+			BoardMask.IndexToMask(HEIGHT-1, WIDTH-1);
+		#endregion
 
+		#region VARIABLES
 		[SerializeField] private Tile _tilePrefab;
 		[SerializeField] private Grid _grid;
 		[SerializeField] private Transform _tilesParent;
 		[SerializeField, HideInInspector] private BoardMask _initialBoardState;
 		private Tile[] _tiles;
 
-		public IEnumerable<Tile> Tiles => _tiles;
 		public BoardMask CurrentBoardState { get; private set; }
+		public IEnumerable<Tile> Tiles => _tiles;
+		#endregion
 
+		#region METHODS
+		#region UNITY
 		private void OnValidate()
 		{
 			_initialBoardState = GetInitialBoardMaskForTileCreation();
@@ -77,7 +87,9 @@ namespace Game
 
 			void CheckForValidInit(BoardMask input) => Debug.Assert(CurrentBoardState == input, "CurrentBoardState must match the input from GetBoardMaskForTileCreation.");
 		}
+		#endregion
 
+		#region INDEXING_AND_ENUMERATION
 		public static Vector3Int IndexToCell(byte x, byte y) => new(y + Y_OFFSET, x + X_OFFSET);
 
 		public (byte, byte) CellToIndex(Vector3Int cell) => ((byte)(cell.y - Y_OFFSET), (byte)(cell.x - X_OFFSET));
@@ -87,6 +99,8 @@ namespace Game
 			foreach ((var x, var y) in mask)
 				yield return _tiles[BoardMask.IndexToBitNumber(x, y)];
 		}
+		#endregion
+		#endregion
 
 		public struct BoardMask : IEquatable<BoardMask>, IEnumerable<(byte, byte)>
 		{
