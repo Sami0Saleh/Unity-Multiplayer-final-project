@@ -2,22 +2,25 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Tile = UnityEngine.GameObject;
 
 namespace Game
 {
 	public class Board : MonoBehaviour
 	{
-		public const byte WIDTH = 7;
-		public const byte HEIGHT = 9;
+		public const byte WIDTH = 9;
+		public const byte HEIGHT = 7;
 		public const byte MAX_NUMBER_OF_TILES = HEIGHT * WIDTH;
-		public const int X_OFFSET = -WIDTH / 2;
-		public const int Y_OFFSET = -HEIGHT / 2;
+		private const int X_OFFSET = -WIDTH / 2;
+		private const int Y_OFFSET = -HEIGHT / 2;
 		public static BoardMask STARTING_POSITIONS = BoardMask.IndexToMask(1, 0) | BoardMask.IndexToMask(1, 8) | BoardMask.IndexToMask(6, 0) | BoardMask.IndexToMask(6, 8);
 
-		[SerializeField] private GameObject _tilePrefab;
+		[SerializeField] private Tile _tilePrefab;
 		[SerializeField] private Grid _grid;
 		[SerializeField] private Transform _tilesParent;
-		private GameObject[] _tiles;
+		private Tile[] _tiles;
+
+		public IEnumerable<Tile> Tiles => TilesFromMask(CurrentBoardState);
 		public BoardMask CurrentBoardState { get; private set; }
 
 		private void Awake()
@@ -26,7 +29,7 @@ namespace Game
 
 			void CreateTiles(byte width, byte height)
 			{
-				_tiles = new GameObject[MAX_NUMBER_OF_TILES];
+				_tiles = new Tile[MAX_NUMBER_OF_TILES];
 				for (byte y = 0; y < height; y++)
 				{
 					for (byte x = 0; x < width; x++)
@@ -36,7 +39,7 @@ namespace Game
 				}
 			}
 
-			GameObject CreateTile(byte x, byte y)
+			Tile CreateTile(byte x, byte y)
 			{
 				var cell = IndexToCell(x, y);
 				var tile = Instantiate(_tilePrefab, _grid.CellToWorld(cell), Quaternion.identity, _tilesParent);
@@ -48,11 +51,11 @@ namespace Game
 			}
 		}
 
-		public static Vector3Int IndexToCell(byte x, byte y) => new(x + X_OFFSET, y + Y_OFFSET);
+		public static Vector3Int IndexToCell(byte x, byte y) => new(y + Y_OFFSET, x + X_OFFSET);
 
-		public (byte, byte) CellToIndex(Vector3Int cell) => ((byte)(cell.x - X_OFFSET), (byte)(cell.y - Y_OFFSET));
+		public (byte, byte) CellToIndex(Vector3Int cell) => ((byte)(cell.y - Y_OFFSET), (byte)(cell.x - X_OFFSET));
 
-		public IEnumerable<GameObject> TilesFromMask(BoardMask mask)
+		public IEnumerable<Tile> TilesFromMask(BoardMask mask)
 		{
 			foreach ((var x, var y) in mask)
 				yield return _tiles[BoardMask.IndexToBitNumber(x, y)];
