@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game
@@ -8,32 +10,18 @@ namespace Game
 		public const byte WIDTH = 7;
 		public const byte HEIGHT = 9;
 		public const byte MAX_NUMBER_OF_TILES = HEIGHT * WIDTH;
+		public const int X_OFFSET = -WIDTH / 2;
+		public const int Y_OFFSET = -HEIGHT / 2;
+		public static BoardMask STARTING_POSITIONS = BoardMask.IndexToMask(1, 0) | BoardMask.IndexToMask(1, 8) | BoardMask.IndexToMask(6, 0) | BoardMask.IndexToMask(6, 8);
 
 		[SerializeField] private GameObject _tilePrefab;
 		[SerializeField] private Grid _grid;
 		[SerializeField] private Transform _tilesParent;
-		[SerializeField, HideInInspector] private GameObject[] _tiles;
-		[field: SerializeField, HideInInspector] public BoardMask CurrentBoardState { get; private set; }
+		private GameObject[] _tiles;
+		public BoardMask CurrentBoardState { get; private set; }
 
-		private void OnValidate()
+		private void Awake()
 		{
-			ValidateCurrentBoardState();
-
-			void ValidateCurrentBoardState()
-			{
-				CurrentBoardState = 0;
-				for (byte n = 0; n < _tiles.Length; n++)
-				{
-					if (_tiles[n] != null)
-						CurrentBoardState |= BoardMask.BitNumberToMask(n);
-				}
-			}
-		}
-
-		[ContextMenu("Recreate Tiles")]
-		private void ReCreateTiles()
-		{
-			_tilesParent.DestroyAllChildrenImmediate();
 			CreateTiles(WIDTH, HEIGHT);
 
 			void CreateTiles(byte width, byte height)
@@ -50,8 +38,8 @@ namespace Game
 
 			GameObject CreateTile(byte x, byte y)
 			{
-				var index = new Vector3Int(x, y, 0);
-				var tile = Instantiate(_tilePrefab, _grid.CellToWorld(index), Quaternion.identity, _tilesParent);
+				var cell = IndexToCell(x, y);
+				var tile = Instantiate(_tilePrefab, _grid.CellToWorld(cell), Quaternion.identity, _tilesParent);
 				tile.name = $"Tile @ {x}, {y}";
 				var bitNumber = BoardMask.IndexToBitNumber(x, y);
 				_tiles[bitNumber] = tile;
@@ -60,10 +48,21 @@ namespace Game
 			}
 		}
 
-		[Serializable]
-		public struct BoardMask : IEquatable<BoardMask>
+		public static Vector3Int IndexToCell(byte x, byte y) => new(x + X_OFFSET, y + Y_OFFSET);
+
+		public (byte, byte) CellToIndex(Vector3Int cell) => ((byte)(cell.x - X_OFFSET), (byte)(cell.y - Y_OFFSET));
+
+		public IEnumerable<GameObject> TilesFromMask(BoardMask mask)
 		{
-			[SerializeField] private ulong _mask;
+			foreach ((var x, var y) in mask)
+				yield return _tiles[BoardMask.IndexToBitNumber(x, y)];
+		}
+
+		public struct BoardMask : IEquatable<BoardMask>, IEnumerable<(byte, byte)>
+		{
+			public const ulong FULL = ulong.MaxValue;
+
+			private ulong _mask;
 
 			public bool this[byte x, byte y]
 			{
@@ -88,6 +87,24 @@ namespace Game
 			public static byte IndexToBitNumber(byte x, byte y) => (byte)(x + y * WIDTH);
 
 			public readonly bool Equals(BoardMask other) => _mask == other._mask;
+
+			public readonly IEnumerator<(byte, byte)> GetEnumerator() // TODO Improve efficiency
+			{
+				for (byte y = 0; y < HEIGHT; y++)
+				{
+					for (byte x = 0; x < WIDTH; x++)
+					{
+						if ((_mask & IndexToMask(x, y)) != 0)
+							yield return (x, y);
+					}
+				}
+			}
+
+			readonly IEnumerator IEnumerable.GetEnumerator()
+			{
+				IEnumerator<(byte, byte)> e = GetEnumerator();
+				return e;
+			}
 		}
 	}
 }
