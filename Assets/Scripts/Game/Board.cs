@@ -18,25 +18,50 @@ namespace Game
 		[SerializeField] private Tile _tilePrefab;
 		[SerializeField] private Grid _grid;
 		[SerializeField] private Transform _tilesParent;
+		[SerializeField, HideInInspector] private BoardMask _initialBoardState;
 		private Tile[] _tiles;
 
 		public IEnumerable<Tile> Tiles => _tiles;
 		public BoardMask CurrentBoardState { get; private set; }
 
+		private void OnValidate()
+		{
+			_initialBoardState = GetInitialBoardMaskForTileCreation();
+
+			static BoardMask GetInitialBoardMaskForTileCreation()
+			{
+				BoardMask mask = BoardMask.FULL;
+				RemoveCorners();
+				RemoveOddsFromLastRow();
+				return mask;
+
+				void RemoveCorners()
+				{
+					mask[0, 0] = false;
+					mask[WIDTH-1, 0] = false;
+					mask[0, HEIGHT-1] = false;
+					mask[WIDTH-1, HEIGHT-1] = false;
+				}
+
+				void RemoveOddsFromLastRow()
+				{
+					byte y = HEIGHT - 1;
+					for (byte x = 1; x < WIDTH; x += 2)
+						mask[x, y] = false;
+				}
+			}
+		}
+
 		private void Awake()
 		{
-			CreateTiles(WIDTH, HEIGHT);
+			CreateTiles();
 
-			void CreateTiles(byte width, byte height)
+			void CreateTiles()
 			{
 				_tiles = new Tile[MAX_NUMBER_OF_TILES];
-				for (byte y = 0; y < height; y++)
-				{
-					for (byte x = 0; x < width; x++)
-					{
-						CreateTile(x, y);
-					}
-				}
+				foreach ((var x, var y) in _initialBoardState)
+					CreateTile(x, y);
+				CheckForValidInit(_initialBoardState);
 			}
 
 			Tile CreateTile(byte x, byte y)
@@ -49,6 +74,8 @@ namespace Game
 				CurrentBoardState |= BoardMask.BitNumberToMask(bitNumber);
 				return tile;
 			}
+
+			void CheckForValidInit(BoardMask input) => Debug.Assert(CurrentBoardState == input, "CurrentBoardState must match the input from GetBoardMaskForTileCreation.");
 		}
 
 		public static Vector3Int IndexToCell(byte x, byte y) => new(y + Y_OFFSET, x + X_OFFSET);
@@ -63,7 +90,7 @@ namespace Game
 
 		public struct BoardMask : IEquatable<BoardMask>, IEnumerable<(byte, byte)>
 		{
-			public const ulong FULL = ulong.MaxValue;
+			public const ulong FULL = ulong.MaxValue >> 1;
 
 			private ulong _mask;
 
