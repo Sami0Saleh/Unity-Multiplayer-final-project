@@ -15,16 +15,19 @@ namespace Game
 		private const int X_OFFSET = -WIDTH / 2;
 		private const int Y_OFFSET = -HEIGHT / 2;
 		public static BoardMask STARTING_POSITIONS =
-			BoardMask.IndexToMask(1, 0) |
-			BoardMask.IndexToMask(1, WIDTH-1) |
-			BoardMask.IndexToMask(HEIGHT-1, 0) |
-			BoardMask.IndexToMask(HEIGHT-1, WIDTH-1);
+			BoardMask.IndexToMask(0, 1) |
+			BoardMask.IndexToMask(WIDTH - 1, 1) |
+			BoardMask.IndexToMask(0, HEIGHT-1) |
+			BoardMask.IndexToMask(WIDTH - 1, HEIGHT -1);
 		#endregion
 
-		#region VARIABLES
+		#region VARIABLES_AND_PROPERTIES
+		public static Board Instance;
+
+		[field: SerializeField] public Transform TilesParent { get; private set; }
+		[field: SerializeField] public Transform PlayerParent { get; private set; }
 		[SerializeField] private Tile _tilePrefab;
 		[SerializeField] private Grid _grid;
-		[SerializeField] private Transform _tilesParent;
 		[SerializeField, HideInInspector] private BoardMask _initialBoardState;
 		private Tile[] _tiles;
 
@@ -64,7 +67,17 @@ namespace Game
 
 		private void Awake()
 		{
+			if (!RegisterSingleton())
+				return;
 			CreateTiles();
+
+			bool RegisterSingleton()
+			{
+				bool canRegister = Instance == null;
+				if (canRegister)
+					Instance = this;
+				return canRegister;
+			}
 
 			void CreateTiles()
 			{
@@ -77,7 +90,7 @@ namespace Game
 			Tile CreateTile(byte x, byte y)
 			{
 				var cell = IndexToCell(x, y);
-				var tile = Instantiate(_tilePrefab, _grid.CellToWorld(cell), Quaternion.identity, _tilesParent);
+				var tile = Instantiate(_tilePrefab, _grid.CellToWorld(cell), Quaternion.identity, TilesParent);
 				tile.name = $"Tile @ {x}, {y}";
 				var bitNumber = BoardMask.IndexToBitNumber(x, y);
 				_tiles[bitNumber] = tile;

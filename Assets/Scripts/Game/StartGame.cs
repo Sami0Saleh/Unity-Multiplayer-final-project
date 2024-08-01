@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Photon.Pun;
 using static Utility;
@@ -8,17 +9,18 @@ namespace Game
 	public class StartGame : MonoBehaviourPun
 	{
 		[SerializeField] private PlayerCharacter _playerPrefab;
-		[SerializeField] private List<Transform> _startPositions;
+		private IEnumerable<GameObject> StartPositions => Board.Instance.TilesFromMask(Board.STARTING_POSITIONS);
 
         private void Start()
 		{
 			var start = GetStartPosition();
             PhotonNetwork.Instantiate(_playerPrefab.name, start.position, start.rotation);
+			Destroy(this);
         }
 
 		private Transform GetStartPosition()
 		{
-			return _startPositions[GetPlayerNumber(PhotonNetwork.LocalPlayer)];
+			return StartPositions.ElementAt(GetPlayerNumber(PhotonNetwork.LocalPlayer)).transform;
 		}
 	}
 }

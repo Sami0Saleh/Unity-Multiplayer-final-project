@@ -59,9 +59,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa1863bfe7f022341943337d8bada42b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <TilesParent>k__BackingField: {fileID: 2634415392458589694}
+  <PlayerParent>k__BackingField: {fileID: 4901772542142643931}
   _tilePrefab: {fileID: 771511384513196556, guid: 789c649d653169a4a82bbba8f38f2be8, type: 3}
   _grid: {fileID: 2516987731138674965}
-  _tilesParent: {fileID: 2634415392458589694}
 --- !u!1 &3780283015680733202
 GameObject:
   m_ObjectHideFlags: 0
