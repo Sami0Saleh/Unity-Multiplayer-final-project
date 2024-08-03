@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Photon.Pun;
 using UnityEngine.Events;
+using Photon.Pun;
+using Photon.Realtime;
 
 namespace Game
 {
@@ -15,7 +16,7 @@ namespace Game
 
 		public event UnityAction<int> GameOver;
 
-		private List<PlayerCharacter> _activePlayers;
+		public Dictionary<Player, PlayerCharacter> ActivePlayers { get; private set; }
 
 		private void Awake()
 		{
@@ -25,7 +26,7 @@ namespace Game
 				return;
 			}
 			Instance = this;
-			_activePlayers = new List<PlayerCharacter>();
+			ActivePlayers = new();
 		}
 
 		public override void OnEnable()
@@ -61,12 +62,12 @@ namespace Game
 		{
 			if (!PhotonNetwork.IsMasterClient)
 				return;
-			_activePlayers.Remove(player);
-			if (_activePlayers.Count <= 1)
-				TriggerGameOver(_activePlayers.Single().ThisPlayer.ActorNumber);
+			ActivePlayers.Remove(player.ThisPlayer);
+			if (ActivePlayers.Count <= 1)
+				TriggerGameOver(ActivePlayers.Single().Key.ActorNumber);
 		}
 
-		private void OnPlayerJoined(PlayerCharacter player) => _activePlayers.Add(player);
+		private void OnPlayerJoined(PlayerCharacter player) => ActivePlayers.Add(player.ThisPlayer, player);
 
 		IEnumerator LeaveMatch()
 		{
