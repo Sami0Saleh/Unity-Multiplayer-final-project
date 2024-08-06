@@ -201,6 +201,8 @@ namespace MoreMountains.Feedbacks
 					FeedbacksList[i].Initialization(this, i);
 				}
 			}
+			
+			Events.TriggerOnInitializationComplete(this);
 
 			_initialized = true;
 		}

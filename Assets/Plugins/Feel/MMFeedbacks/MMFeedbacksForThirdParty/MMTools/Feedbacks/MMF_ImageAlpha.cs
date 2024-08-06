@@ -107,6 +107,7 @@ namespace MoreMountains.Feedbacks
 						return;
 					}
 
+					if (_coroutine != null) { Owner.StopCoroutine(_coroutine); }
 					_coroutine = Owner.StartCoroutine(ImageSequence());
 					break;
 				case Modes.ToDestination:
@@ -115,6 +116,7 @@ namespace MoreMountains.Feedbacks
 						return;
 					}
 
+					if (_coroutine != null) { Owner.StopCoroutine(_coroutine); }
 					_coroutine = Owner.StartCoroutine(ImageSequence());
 					break;
 			}

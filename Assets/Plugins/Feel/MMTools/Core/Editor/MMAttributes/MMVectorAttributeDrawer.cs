@@ -87,7 +87,6 @@ namespace MoreMountains.Tools
 			GUIContent mainLabelContent = new GUIContent();
 			mainLabelContent.text = mainLabel;
 			mainLabelContent.tooltip = originalGuiContent.tooltip;
-
 			EditorGUI.LabelField(mainLabelRect, mainLabelContent);
 
 			for (int i = 0; i < vector.Length; i++)

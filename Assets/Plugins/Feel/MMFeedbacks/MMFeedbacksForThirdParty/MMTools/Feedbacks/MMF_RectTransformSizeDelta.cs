@@ -33,13 +33,15 @@ namespace MoreMountains.Feedbacks
 		[Tooltip("the speed at which we should animate the size delta")]
 		[MMFEnumCondition("Mode", (int)MMFeedbackBase.Modes.OverTime)]
 		public MMTweenType SpeedCurve = new MMTweenType(new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1)));
-		/// the value to remap the curve's 0 to
-		[Tooltip("the value to remap the curve's 0 to")]
+		/// the value to remap the curve's 0 to, randomized between its min and max - put the same value in both min and max if you don't want any randomness
+		[Tooltip("the value to remap the curve's 0 to, randomized between its min and max - put the same value in both min and max if you don't want any randomness")]
 		[MMFEnumCondition("Mode", (int)MMFeedbackBase.Modes.OverTime)]
+		[MMFVector("Min", "Max")]
 		public Vector2 RemapZero = Vector2.zero;
-		/// the value to remap the curve's 1 to
-		[Tooltip("the value to remap the curve's 1 to")]
+		/// the value to remap the curve's 1 to, randomized between its min and max - put the same value in both min and max if you don't want any randomness
+		[Tooltip("the value to remap the curve's 1 to, randomized between its min and max - put the same value in both min and max if you don't want any randomness")]
 		[MMFEnumCondition("Mode", (int)MMFeedbackBase.Modes.OverTime, (int)MMFeedbackBase.Modes.Instant)]
+		[MMFVector("Min", "Max")]
 		public Vector2 RemapOne = Vector2.one;
         
 		protected override void FillTargets()

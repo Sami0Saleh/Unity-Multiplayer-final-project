@@ -284,7 +284,10 @@ namespace MoreMountains.Tools
 		{
 			CurrentRoom = false;
 			OnExitZoneEvent.Invoke();
-			StartCoroutine(EnableCamera(false, 0));
+			if (this.gameObject.activeInHierarchy)
+			{
+				StartCoroutine(EnableCamera(false, 0));	
+			}
 			foreach (GameObject go in ActivationList)
 			{
 				go.SetActive(false);

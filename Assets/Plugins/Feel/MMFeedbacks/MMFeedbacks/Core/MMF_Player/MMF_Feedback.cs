@@ -111,7 +111,8 @@ namespace MoreMountains.Feedbacks
 		public AnimationCurve RangeFalloff = new AnimationCurve(new Keyframe(0f, 1f), new Keyframe(1f, 0f));
 
 		/// the values to remap the falloff curve's y axis' 0 and 1
-		[Tooltip("the values to remap the falloff curve's y axis' 0 and 1")] [MMFVector("Zero", "One")]
+		[Tooltip("the values to remap the falloff curve's y axis' 0 and 1")] 
+		[MMFVector("Zero", "One")]
 		public Vector2 RemapRangeFalloff = new Vector2(0f, 1f);
 		
 		[MMFInspectorGroup(_automaticSetupGroupName, true, 49, false, true)]
@@ -341,10 +342,11 @@ namespace MoreMountains.Feedbacks
 			{
 				_requiresSetup = false;
 			}
-			if (RequiredTargetText != _requiredTargetTextCached)
+			if ((RequiredTargetText != _requiredTargetTextCached) || (RequiredTargetTextExtra != _requiredTargetTextCachedExtra))
 			{
-				_requiredTarget = RequiredTargetText == "" ? "" : "[" + RequiredTargetText + "]";
+				_requiredTarget = RequiredTargetText == "" ? "" : "[" + RequiredTargetText + "]" + RequiredTargetTextExtra;
 				_requiredTargetTextCached = RequiredTargetText;
+				_requiredTargetTextCachedExtra = RequiredTargetTextExtra;
 			}
 			
 			#endif
@@ -357,6 +359,8 @@ namespace MoreMountains.Feedbacks
 		public virtual string RequiresSetupText => "This feedback requires some additional setup.";
 		/// the text used to describe the required target
 		public virtual string RequiredTargetText => "";
+		/// the text used to describe the required target, if more info is needed
+		public virtual string RequiredTargetTextExtra => "";
 
 		/// <summary>
 		/// Override this method to determine if a feedback requires setup 
@@ -429,6 +433,7 @@ namespace MoreMountains.Feedbacks
 		protected float _totalDuration = 0f;
 		protected int _indexInOwnerFeedbackList = 0;
 		protected string _requiredTargetTextCached = ".";
+		protected string _requiredTargetTextCachedExtra = "";
 		protected float _repeatOffset = 0f;
 
 		#endregion Properties

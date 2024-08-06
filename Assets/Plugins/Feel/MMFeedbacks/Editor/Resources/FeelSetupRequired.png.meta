@@ -94,6 +94,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 183370
   packageName: Feel
-  packageVersion: 4.1.2
-  assetPath: Assets/Feel/MMFeedbacks/Editor/Resources/FeelSetupRequired.png
-  uploadId: 667855
+  packageVersion: 4.2
+  assetPath: Assets/Plugins/Feel/MMFeedbacks/Editor/Resources/FeelSetupRequired.png
+  uploadId: 682473

@@ -22,6 +22,14 @@ namespace MoreMountains.FeedbacksForThirdParty
 			#endif
 			
 			#if MM_CINEMACHINE 
+				//looks for a Cinemachine Brain in the scene
+				CinemachineBrain cinemachineBrain = (CinemachineBrain)Object.FindObjectOfType(typeof(CinemachineBrain));
+				if (cinemachineBrain == null)
+				{
+					cinemachineBrain = Camera.main.gameObject.AddComponent<CinemachineBrain>();
+					additions += "Added a Cinemachine Brain to the scene. ";
+				}
+			
 				// looks for a vcam in the scene
 				CinemachineVirtualCamera virtualCamera = (CinemachineVirtualCamera)Object.FindObjectOfType(typeof(CinemachineVirtualCamera));
 				if (virtualCamera == null)

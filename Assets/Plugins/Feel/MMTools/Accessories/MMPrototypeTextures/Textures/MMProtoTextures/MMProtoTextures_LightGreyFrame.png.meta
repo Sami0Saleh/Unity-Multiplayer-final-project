@@ -93,6 +93,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 183370
   packageName: Feel
-  packageVersion: 4.1.2
-  assetPath: Assets/Feel/MMTools/Accessories/MMPrototypeTextures/Textures/MMProtoTextures/MMProtoTextures_LightGreyFrame.png
-  uploadId: 667855
+  packageVersion: 4.2
+  assetPath: Assets/Plugins/Feel/MMTools/Accessories/MMPrototypeTextures/Textures/MMProtoTextures/MMProtoTextures_LightGreyFrame.png
+  uploadId: 682473
