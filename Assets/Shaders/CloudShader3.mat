@@ -55,9 +55,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _EffectSmoothing: 4
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
-    - _EffectColor: {r: 1.371484, g: 2.528302, b: 2.516974, a: 0}
+    - _EffectColor: {r: 1.8538713, g: 2.101715, b: 2.101715, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
