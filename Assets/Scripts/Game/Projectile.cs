@@ -41,7 +41,7 @@ namespace Game
         {
             yield return new WaitForSeconds(delay);
 
-            if (photonView.IsMine || PhotonNetwork.IsMasterClient)
+            if (photonView.AmController || PhotonNetwork.IsMasterClient)
             {
                 PhotonNetwork.Destroy(gameObject);
             }
