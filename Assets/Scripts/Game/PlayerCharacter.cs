@@ -48,22 +48,29 @@ namespace Game
 		{
 			photonView.RPC(RECEIVE_DAMAGE, RpcTarget.All, damage, photonView.Owner.ActorNumber);
 		}
+        public void ReassignOwnership(Player newOwner)
+        {
+            photonView.TransferOwnership(newOwner);
+        }
 
-		[PunRPC]
-		private void ReceiveDamage(int damage, int damagedActorNumber)
-		{
-			if (damagedActorNumber != ThisPlayer.ActorNumber)
-				return;
-			HP -= damage;
-			PlayerDamaged?.Invoke(this);
-			Debug.Log(photonView.Owner + " HP Left: " + HP);
-			if (IsDead)
-			{
-				HP = 0;
-				PlayerDied?.Invoke(this);
-				if (photonView.IsMine)
-					PhotonNetwork.Destroy(gameObject);
-			}
-		}
-	}
+        [PunRPC]
+        private void ReceiveDamage(int damage, int damagedActorNumber)
+        {
+            if (damagedActorNumber != ThisPlayer.ActorNumber)
+                return;
+
+            HP -= damage;
+            PlayerDamaged?.Invoke(this);
+            Debug.Log(photonView.Owner + " HP Left: " + HP);
+
+            if (IsDead)
+            {
+                HP = 0;
+                PlayerDied?.Invoke(this);
+
+                if (photonView.IsMine)
+                    PhotonNetwork.Destroy(gameObject); // Only the owner destroys the object
+            }
+        }
+    }
 }

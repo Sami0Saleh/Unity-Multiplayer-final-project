@@ -44,9 +44,17 @@ namespace Game
 			transform.eulerAngles = eulerRotation;
 		}
 
-		private void Shoot()
-		{
-			PhotonNetwork.Instantiate(PROJECTILE_PREFAB, ProjectileSpawnTransform.position, ProjectileSpawnTransform.rotation);
-		}
-	}
+        private void Shoot()
+        {
+            if (Physics.Raycast(_cachedCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hit))
+            {
+                var projectile = PhotonNetwork.Instantiate(PROJECTILE_PREFAB, ProjectileSpawnTransform.position, ProjectileSpawnTransform.rotation);
+                // Apply initial direction to projectile
+            }
+            else
+            {
+                Debug.Log("No valid target, not shooting.");
+            }
+        }
+    }
 }

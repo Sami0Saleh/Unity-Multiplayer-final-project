@@ -4,44 +4,54 @@ using Photon.Pun;
 
 namespace Game
 {
-	public class Projectile : MonoBehaviourPun
-	{
-		[SerializeField] private GameObject _visuals;
-		[SerializeField] private Collider _collider;
-		[SerializeField] private float _velocity = 20f;
-		[field: SerializeField] public int Damage { get; private set; } = 1;
+    public class Projectile : MonoBehaviourPun
+    {
+        [SerializeField] private GameObject _visuals;
+        [SerializeField] private Collider _collider;
+        [SerializeField] private float _velocity = 20f;
+        [field: SerializeField] public int Damage { get; private set; } = 1;
 
-		private void Awake()
-		{
-			if (!photonView.IsMine)
-				enabled = false;
-		}
+        private void Awake()
+        {
+            if (!photonView.IsMine)
+                enabled = false;
+        }
 
-		private void FixedUpdate()
-		{
-			transform.Translate(Vector3.forward * (Time.fixedDeltaTime * _velocity));
-		}
+        private void FixedUpdate()
+        {
+            transform.Translate(Vector3.forward * (Time.fixedDeltaTime * _velocity));
+        }
 
-		private void OnTriggerEnter(Collider other)
-		{
-			if (other.TryGetComponent<PlayerCharacter>(out var player) && player.ThisPlayer.ActorNumber != photonView.Owner.ActorNumber)
-			{
-				_collider.enabled = false;
-				SetVisibility(false);
-				if (PhotonNetwork.IsMasterClient && Damage > 0)
-				{
-					player.ReceiveDamage(Damage);
-					StartCoroutine(DestroyDelay());
-				}
-			}
-		}
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.TryGetComponent<PlayerCharacter>(out var player) && player.ThisPlayer.ActorNumber != photonView.OwnerActorNr)
+            {
+                _collider.enabled = false;
+                SetVisibility(false);
 
-		IEnumerator DestroyDelay(float delay = 1f)
-		{
-			yield return new WaitForSeconds(delay);
-			PhotonNetwork.Destroy(gameObject);
-		}
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    player.ReceiveDamage(Damage);
+                    StartCoroutine(DestroyDelay());
+                }
+            }
+        }
 
-		public void SetVisibility(bool visible) => _visuals.SetActive(visible);
-	}
+        IEnumerator DestroyDelay(float delay = 0.5f)
+        {
+            yield return new WaitForSeconds(delay);
+
+            if (photonView.IsMine || PhotonNetwork.IsMasterClient)
+            {
+                PhotonNetwork.Destroy(gameObject);
+            }
+            else
+            {
+                Debug.LogWarning($"Cannot destroy object. Not the owner nor the MasterClient. ViewID: {photonView.ViewID}");
+            }
+        }
+
+        public void SetVisibility(bool visible) => _visuals.SetActive(visible);
+    }
 }
+
