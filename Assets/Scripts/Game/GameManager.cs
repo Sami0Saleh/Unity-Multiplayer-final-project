@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
-using UnityEngine.UI;
+using TMPro;
 
 namespace Game
 {
@@ -18,7 +18,7 @@ namespace Game
 
         [SerializeField] private List<Transform> _spawnPoints;
         [SerializeField] private GameObject _powerUpPrefab;
-        [SerializeField] private Text _uiMessageText;
+        [SerializeField] private TextMeshProUGUI _uiMessageText;
 
         private void Awake()
         {
