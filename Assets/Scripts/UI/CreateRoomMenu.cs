@@ -39,7 +39,7 @@ public class CreateRoomMenu : MonoBehaviour
             MaxPlayers = MaxPlayerCount,
             IsVisible = true,          
             IsOpen = true,             
-            EmptyRoomTtl = 30000       
+            PlayerTtl = 30000
         };
 
         PhotonNetwork.CreateRoom(RoomName, roomOptions);

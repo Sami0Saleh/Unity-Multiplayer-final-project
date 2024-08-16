@@ -29,12 +29,33 @@ namespace Game
             }
         }
 
+        private void TryRejoinRoom()
+        {
+            if (!string.IsNullOrEmpty(roomName))
+            {
+                bool rejoinResult = PhotonNetwork.RejoinRoom(roomName);
+                Debug.Log("Rejoin attempt: " + rejoinResult);
+            }
+            else
+            {
+                Debug.LogError("Room name is empty. Cannot rejoin.");
+            }
+        }
+        
+        private IEnumerator TryReconnectAndRejoin()
+        {
+            yield return new WaitForSeconds(2f);
+            if (!_intentionalDisconnect)
+            {
+                PhotonNetwork.ReconnectAndRejoin();
+            }
+        }
+
         public void SetIntentionalDisconnect(string currentRoomName)
         {
             _intentionalDisconnect = true;
             roomName = currentRoomName;
         }
-
         public override void OnConnectedToMaster()
         {
             if (!_intentionalDisconnect)
@@ -42,7 +63,6 @@ namespace Game
                 PhotonNetwork.JoinLobby();
             }
         }
-
         public override void OnJoinedLobby()
         {
             if (_intentionalDisconnect)
@@ -54,20 +74,6 @@ namespace Game
                 PhotonNetwork.JoinLobby();
             }
         }
-
-        private void TryRejoinRoom()
-        {
-            if (!string.IsNullOrEmpty(roomName) && PhotonNetwork.RejoinRoom(roomName))
-            {
-                Debug.Log("Rejoining room...");
-            }
-            else
-            {
-                Debug.LogError("RejoinRoom failed. Trying to join via lobby.");
-                PhotonNetwork.JoinLobby();
-            }
-        }
-
         public override void OnRoomListUpdate(System.Collections.Generic.List<RoomInfo> roomList)
         {
             if (_intentionalDisconnect)
@@ -82,26 +88,14 @@ namespace Game
                 }
             }
         }
-
         public override void OnJoinRoomFailed(short returnCode, string message)
         {
             Debug.LogError($"Failed to rejoin room: {message}");
-
             if (!_intentionalDisconnect)
             {
                 StartCoroutine(TryReconnectAndRejoin());
             }
         }
-
-        private IEnumerator TryReconnectAndRejoin()
-        {
-            yield return new WaitForSeconds(2f);
-            if (!_intentionalDisconnect)
-            {
-                PhotonNetwork.ReconnectAndRejoin();
-            }
-        }
-
         public override void OnJoinedRoom()
         {
             if (_intentionalDisconnect)

@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
-using UnityEngine.SceneManagement;
 
 
 namespace Game
@@ -77,6 +76,7 @@ namespace Game
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
             base.OnPlayerLeftRoom(otherPlayer);
+            _uiManager.UpdateText($"{otherPlayer.NickName} joined the room.");
             Debug.Log($"{otherPlayer.NickName} left the room with inactive: {otherPlayer.IsInactive}");
 
             if (otherPlayer.CustomProperties.ContainsKey("IsInactive") && (bool)otherPlayer.CustomProperties["IsInactive"])
@@ -112,10 +112,6 @@ namespace Game
             photonView.RPC(nameof(UpdateNextSpawnIndex), RpcTarget.OthersBuffered, _nextSpawnIndex);
         }
 
-        /*public override void OnLeftRoom()
-        {
-            SceneManager.LoadScene(MENU_SCENE_INDEX);
-        }*/
 
         [PunRPC]
         private void GameOver(int winningPlayerActorNumber, PhotonMessageInfo info)
@@ -151,6 +147,7 @@ namespace Game
         private void UpdateMasterClientUI(string newMasterClientName)
         {
             _uiManager.UpdateText($"New MasterClient: {newMasterClientName}");
+            _uiManager.UpdateMasterClientButtonState(PhotonNetwork.IsMasterClient);
         }
 
         [PunRPC]
@@ -159,7 +156,6 @@ namespace Game
             var player = PhotonNetwork.CurrentRoom.Players.Values.FirstOrDefault(p => p.ActorNumber == actorNumber);
             if (player != null)
             {
-                // Set a custom property to indicate inactivity
                 var properties = new ExitGames.Client.Photon.Hashtable { { "IsInactive", true } };
                 player.SetCustomProperties(properties);
             }

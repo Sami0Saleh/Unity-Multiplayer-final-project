@@ -4,11 +4,15 @@ using TMPro;
 using UnityEngine;
 using Photon.Realtime;
 using System.Linq;
+using UnityEngine.SceneManagement;
+
 
 namespace Game
 {
     public class UIManager : MonoBehaviour
     {
+        private const int MENU_SCENE_INDEX = 0;
+
         [SerializeField] private TextMeshProUGUI _uiMessageText;
         [SerializeField] private GameObject _rejoinButton;
         [SerializeField] private GameObject _transferMasterClientButton;
@@ -41,8 +45,11 @@ namespace Game
         public void RejoinRoom()
         {
             UpdateText("Rejoining the room...");
-
-            PhotonNetwork.ReconnectAndRejoin();
+            var reconnectManager = FindObjectOfType<ReconnectManager>();
+            if (reconnectManager != null)
+            {
+                PhotonNetwork.RejoinRoom(reconnectManager.roomName);
+            }
 
             _rejoinButton.SetActive(false);
         }
@@ -55,16 +62,18 @@ namespace Game
 
                 bool success = PhotonNetwork.SetMasterClient(candidateMC);
                 Debug.Log("set master client result " + success);
-                _transferMasterClientButton.SetActive(PhotonNetwork.IsMasterClient);
+
             }
             
         }
-
+        public void UpdateMasterClientButtonState(bool isActive)
+        {
+            _transferMasterClientButton.SetActive(isActive);
+        }
         private IEnumerator EmptyText()
         {
             yield return new WaitForSeconds(2f);
             _uiMessageText.text = null;
         }
-        
     }
 }
