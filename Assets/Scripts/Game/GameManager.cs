@@ -4,13 +4,16 @@ using System.Linq;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
-using TMPro;
+using UnityEngine.SceneManagement;
+
 
 namespace Game
 {
-	public class GameManager : MonoBehaviourPunCallbacks
-	{
+    public class GameManager : MonoBehaviourPunCallbacks
+    {
         private const int MENU_SCENE_INDEX = 0;
+        private const float INACTIVITY_TTL = 3f;
+
         public static GameManager Instance;
 
         private List<PlayerCharacter> _activePlayers;
@@ -18,7 +21,7 @@ namespace Game
 
         [SerializeField] private List<Transform> _spawnPoints;
         [SerializeField] private GameObject _powerUpPrefab;
-        [SerializeField] private TextMeshProUGUI _uiMessageText;
+        [SerializeField] private UIManager _uiManager;
 
         private void Awake()
         {
@@ -54,7 +57,7 @@ namespace Game
         public override void OnMasterClientSwitched(Player newMasterClient)
         {
             Debug.Log($"New MasterClient is {newMasterClient.NickName}");
-            _uiMessageText.text = $"New MasterClient: {newMasterClient.NickName}";
+            _uiManager.UpdateText($"New MasterClient: {newMasterClient.NickName}");
             photonView.RPC(nameof(UpdateMasterClientUI), RpcTarget.All, newMasterClient.NickName);
 
             if (PhotonNetwork.IsMasterClient)
@@ -67,14 +70,19 @@ namespace Game
         public override void OnPlayerEnteredRoom(Player newPlayer)
         {
             Debug.Log($"{newPlayer.NickName} joined the room.");
-            _uiMessageText.text = $"{newPlayer.NickName} joined the room.";
+            _uiManager.UpdateText($"{newPlayer.NickName} joined the room.");
             photonView.RPC(nameof(SyncGameState), newPlayer, _nextSpawnIndex);
         }
 
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
-            Debug.Log($"{otherPlayer.NickName} left the room.");
-            _uiMessageText.text = $"{otherPlayer.NickName} left the room.";
+            base.OnPlayerLeftRoom(otherPlayer);
+            Debug.Log($"{otherPlayer.NickName} left the room with inactive: {otherPlayer.IsInactive}");
+
+            if (otherPlayer.CustomProperties.ContainsKey("IsInactive") && (bool)otherPlayer.CustomProperties["IsInactive"])
+            {
+                StartCoroutine(RemovePlayerAfterTTL(otherPlayer, INACTIVITY_TTL));
+            }
         }
 
         private void OnPlayerDeath(PlayerCharacter player)
@@ -104,26 +112,31 @@ namespace Game
             photonView.RPC(nameof(UpdateNextSpawnIndex), RpcTarget.OthersBuffered, _nextSpawnIndex);
         }
 
+        /*public override void OnLeftRoom()
+        {
+            SceneManager.LoadScene(MENU_SCENE_INDEX);
+        }*/
+
         [PunRPC]
         private void GameOver(int winningPlayerActorNumber, PhotonMessageInfo info)
         {
             Debug.Assert(info.Sender.IsMasterClient, "Game Over can only be sent by master client");
-            _uiMessageText.text = PhotonNetwork.LocalPlayer.ActorNumber == winningPlayerActorNumber
+            _uiManager.UpdateText(PhotonNetwork.LocalPlayer.ActorNumber == winningPlayerActorNumber
                 ? "Game Over! You won."
-                : "Game Over! You lost.";
+                : "Game Over! You lost.");
 
             if (PhotonNetwork.IsMasterClient)
                 StartCoroutine(LeaveMatch());
         }
 
         [PunRPC]
-        private void UpdateNextSpawnIndex(int index)
+        public void UpdateNextSpawnIndex(int index)
         {
             _nextSpawnIndex = index;
         }
 
         [PunRPC]
-        private void SyncGameState(int nextSpawnIndex)
+        public void SyncGameState(int nextSpawnIndex)
         {
             _nextSpawnIndex = nextSpawnIndex;
         }
@@ -137,7 +150,19 @@ namespace Game
         [PunRPC]
         private void UpdateMasterClientUI(string newMasterClientName)
         {
-            _uiMessageText.text = $"New MasterClient: {newMasterClientName}";
+            _uiManager.UpdateText($"New MasterClient: {newMasterClientName}");
+        }
+
+        [PunRPC]
+        private void SetPlayerInactive(int actorNumber)
+        {
+            var player = PhotonNetwork.CurrentRoom.Players.Values.FirstOrDefault(p => p.ActorNumber == actorNumber);
+            if (player != null)
+            {
+                // Set a custom property to indicate inactivity
+                var properties = new ExitGames.Client.Photon.Hashtable { { "IsInactive", true } };
+                player.SetCustomProperties(properties);
+            }
         }
 
         private IEnumerator LeaveMatch()
@@ -153,6 +178,24 @@ namespace Game
             {
                 yield return new WaitForSeconds(10f);
                 SpawnPowerUp();
+            }
+        }
+        private IEnumerator RemovePlayerAfterTTL(Player player, float ttl)
+        {
+            yield return new WaitForSeconds(ttl);
+
+            if (PhotonNetwork.CurrentRoom.Players.ContainsKey(player.ActorNumber))
+            {
+                // Remove player from active players list
+                var playerCharacter = _activePlayers.FirstOrDefault(p => p.ThisPlayer.ActorNumber == player.ActorNumber);
+                if (playerCharacter != null)
+                {
+                    _activePlayers.Remove(playerCharacter);
+                    PhotonNetwork.Destroy(playerCharacter.gameObject); // Destroy player object if necessary
+                }
+
+                // Optionally, handle the player leaving the room
+                PhotonNetwork.CloseConnection(player);
             }
         }
     }

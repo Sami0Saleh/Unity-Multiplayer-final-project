@@ -18,7 +18,8 @@ namespace Game
 		public static event UnityAction<PlayerCharacter> PlayerDamaged;
 		public static event UnityAction<PlayerCharacter> PlayerDied;
 
-		public Player ThisPlayer => photonView.Owner;
+        private bool _isInactive;
+        public Player ThisPlayer => photonView.Owner;
 		public bool IsDead => HP <= 0;
 		[field: SerializeField] public int HP { get; private set; } = 10;
 
@@ -51,6 +52,13 @@ namespace Game
         public void ReassignOwnership(Player newOwner)
         {
             photonView.TransferOwnership(newOwner);
+        }
+        public void SetInactive(bool isInactive)
+        {
+            _isInactive = isInactive;
+            
+            GetComponent<Collider>().enabled = !_isInactive;
+            
         }
 
         [PunRPC]

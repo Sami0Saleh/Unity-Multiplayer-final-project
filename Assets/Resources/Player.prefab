@@ -156,6 +156,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ProjectileSpawnTransform: {fileID: 3198430377306024909}
+  speed: 10
 --- !u!1 &7657162699437373641
 GameObject:
   m_ObjectHideFlags: 0

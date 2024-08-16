@@ -46,4 +46,8 @@ public class RoomElement : MonoBehaviour
 	{
 		_joinButton.interactable = active;
 	}
+    public void HighlightRoom()
+    {
+        _roomName.color = Color.yellow; 
+    }
 }

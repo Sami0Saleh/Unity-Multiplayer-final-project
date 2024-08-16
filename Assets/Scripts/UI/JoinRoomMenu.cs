@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.Pool;
 using Photon.Pun;
 using Photon.Realtime;
+using  Game;
 
 public class JoinRoomMenu : MonoBehaviourPunCallbacks
 {
@@ -16,20 +17,28 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
 	[SerializeField] private Toggle _hideFullRooms;
 	[SerializeField] private Toggle _hideClosedRooms;
 
-	private void Awake()
-	{
-		InitPool(_roomElementPrefab);
-		_dict = new(ELEMENT_LIST_CAPACITY);
-	}
+    private string _lastRoomName;
 
-	private void Start()
-	{
-		_createRoomButton.onClick.AddListener(CreateRoomButton);
-		_joinRandomRoomButton.onClick.AddListener(JoinRandomRoomButton);
-		_backButton.onClick.AddListener(BackButton);
-		_hideFullRooms.onValueChanged.AddListener(ApplySearchFiltersOnToggle);
-		_hideClosedRooms.onValueChanged.AddListener(ApplySearchFiltersOnToggle);
-	}
+    private void Awake()
+    {
+        InitPool(_roomElementPrefab);
+        _dict = new Dictionary<string, RoomElement>(ELEMENT_LIST_CAPACITY);
+    }
+
+    private void Start()
+    {
+        _createRoomButton.onClick.AddListener(CreateRoomButton);
+        _joinRandomRoomButton.onClick.AddListener(JoinRandomRoomButton);
+        _backButton.onClick.AddListener(BackButton);
+        _hideFullRooms.onValueChanged.AddListener(ApplySearchFiltersOnToggle);
+        _hideClosedRooms.onValueChanged.AddListener(ApplySearchFiltersOnToggle);
+
+        var reconnectManager = FindObjectOfType<ReconnectManager>();
+        if (reconnectManager != null)
+        {
+            _lastRoomName = reconnectManager.roomName;
+        }
+    }
 
     public override void OnEnable()
     {
@@ -38,24 +47,13 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
     }
 
     public override void OnDisable()
-	{
-		base.OnDisable();
-		ClearAllRooms();
-	}
+    {
+        base.OnDisable();
+        ClearAllRooms();
+    }
 
-	public override void OnRoomListUpdate(List<RoomInfo> roomList)
-	{
-		foreach (RoomInfo roomInfo in roomList)
-		{
-			if (roomInfo.RemovedFromList)
-				UpdateClosedRoom(roomInfo);
-			else
-				UpdateOpenRoom(roomInfo);
-		}
-		ApplySearchFilters();
-	}
-
-	public void CreateRoomButton()
+    
+    public void CreateRoomButton()
 	{
 		MainMenuManager.Instance.ToCreateRoomMenu();
 
@@ -115,16 +113,33 @@ public class JoinRoomMenu : MonoBehaviourPunCallbacks
     private const int ELEMENT_LIST_CAPACITY = 10;
 
 	private Dictionary<string, RoomElement> _dict;
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+        foreach (RoomInfo roomInfo in roomList)
+        {
+            if (roomInfo.RemovedFromList)
+                UpdateClosedRoom(roomInfo);
+            else
+                UpdateOpenRoom(roomInfo);
+        }
+        ApplySearchFilters();
+    }
 
-	private void UpdateOpenRoom(RoomInfo roomInfo)
-	{
-		if (!_dict.TryGetValue(roomInfo.Name, out RoomElement roomElement))
-			roomElement = _pool.Get();
-		roomElement.SetProperties(roomInfo);
-		_dict.TryAdd(roomInfo.Name, roomElement);
-	}
+    private void UpdateOpenRoom(RoomInfo roomInfo)
+    {
+        if (!_dict.TryGetValue(roomInfo.Name, out RoomElement roomElement))
+            roomElement = _pool.Get();
 
-	private bool UpdateClosedRoom(RoomInfo roomInfo) => UpdateClosedRoom(roomInfo.Name);
+        roomElement.SetProperties(roomInfo);
+
+        // Highlight the room if it's the last room the player was in
+        if (roomInfo.Name == _lastRoomName)
+            roomElement.HighlightRoom();
+
+        _dict.TryAdd(roomInfo.Name, roomElement);
+    }
+
+    private bool UpdateClosedRoom(RoomInfo roomInfo) => UpdateClosedRoom(roomInfo.Name);
 
 	private bool UpdateClosedRoom(string roomName)
 	{

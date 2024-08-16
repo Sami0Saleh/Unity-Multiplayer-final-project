@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using Photon.Pun;
 using WebSocketSharp;
+using Photon.Realtime;
 
 public class CreateRoomMenu : MonoBehaviour
 {
@@ -11,8 +12,7 @@ public class CreateRoomMenu : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI _maxPlayerText;
 	[SerializeField] private Button _createRoomButton;
 	[SerializeField] private Button _backButton;
-
-	private string RoomName => _roomName.text;
+    private string RoomName => _roomName.text;
 	private int MaxPlayerCount => Mathf.Clamp((int)_maxPlayerCount.value, 2, MainMenuManager.MAX_PLAYERS_PER_ROOM);
 
 	private void OnValidate() => _maxPlayerCount.maxValue = MainMenuManager.MAX_PLAYERS_PER_ROOM;
@@ -33,7 +33,16 @@ public class CreateRoomMenu : MonoBehaviour
 	{
 		if (RoomName.IsNullOrEmpty())
 			return;
-		PhotonNetwork.CreateRoom(RoomName, new() {MaxPlayers = MaxPlayerCount});
+
+        RoomOptions roomOptions = new RoomOptions
+        {
+            MaxPlayers = MaxPlayerCount,
+            IsVisible = true,          
+            IsOpen = true,             
+            EmptyRoomTtl = 30000       
+        };
+
+        PhotonNetwork.CreateRoom(RoomName, roomOptions);
 
         ToggleButtonsState(false);
     }

@@ -10,8 +10,12 @@ namespace Game
 		[Header("Projectile")]
 		[SerializeField] private Transform ProjectileSpawnTransform;
 
-		private Camera _cachedCamera;
+        [SerializeField] private float speed = 10;
+        private Vector3 movementVector = new Vector3();
+
+        private Camera _cachedCamera;
 		private Vector3 raycastPos;
+
 
 		private void Awake()
 		{
@@ -29,27 +33,44 @@ namespace Game
 
 		void Update()
 		{
-			Ray ray = _cachedCamera.ScreenPointToRay(Input.mousePosition);
-			if (Physics.Raycast(ray, out RaycastHit hit))
-				raycastPos = hit.point;
+			if (photonView.AmOwner)
+            {
+                Ray ray = _cachedCamera.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit))
+                    raycastPos = hit.point;
 
-			if (Input.GetKeyDown(KeyCode.Mouse0))
-				Shoot();
+                movementVector = new Vector3();
+                if (Input.GetKey(KeyCode.W))
+                    movementVector.z = 1;
+                if (Input.GetKey(KeyCode.S))
+                    movementVector.z = -1;
+                if (Input.GetKey(KeyCode.D))
+                    movementVector.x = 1;
+                if (Input.GetKey(KeyCode.A))
+                    movementVector.x = -1;
 
-			Vector3 directionToFace = raycastPos - transform.position;
-			Quaternion lookAtRotatin = Quaternion.LookRotation(directionToFace);
-			Vector3 eulerRotation = lookAtRotatin.eulerAngles;
-			eulerRotation.x = 0f;
-			eulerRotation.z = 0f;
-			transform.eulerAngles = eulerRotation;
+                if (Input.GetKeyDown(KeyCode.Mouse0))
+                    Shoot();
+
+                Vector3 directionToFace = raycastPos - gameObject.transform.position;
+                Quaternion lookAtRotation = Quaternion.LookRotation(directionToFace);
+                Vector3 eulerRotation = lookAtRotation.eulerAngles;
+                eulerRotation.x = 0;
+                eulerRotation.z = 0;
+                transform.eulerAngles = eulerRotation;
+                transform.Translate(movementVector * (Time.deltaTime * speed));
+            }
+        
 		}
 
         private void Shoot()
         {
             if (Physics.Raycast(_cachedCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hit))
             {
-                var projectile = PhotonNetwork.Instantiate(PROJECTILE_PREFAB, ProjectileSpawnTransform.position, ProjectileSpawnTransform.rotation);
-                // Apply initial direction to projectile
+                if (hit.collider.tag != "Player")
+                    return;
+                PhotonNetwork.Instantiate(PROJECTILE_PREFAB, ProjectileSpawnTransform.position, ProjectileSpawnTransform.rotation);
             }
             else
             {
