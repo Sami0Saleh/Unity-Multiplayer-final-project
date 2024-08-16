@@ -517,6 +517,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Knight D Pelegrini
       objectReference: {fileID: 0}
+    - target: {fileID: 2406806850868728178, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}
+      propertyPath: knightMat
+      value: 
+      objectReference: {fileID: 5210487481128305043, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

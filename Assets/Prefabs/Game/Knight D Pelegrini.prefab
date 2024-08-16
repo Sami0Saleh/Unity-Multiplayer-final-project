@@ -52,6 +52,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Knight D Pelegrini
       objectReference: {fileID: 0}
+    - target: {fileID: 1630794972795428178, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1630794972795428178, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 53a724bdafd44a34ca6fa59945dc5494, type: 2}
+    - target: {fileID: 6952581982351725339, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6952581982351725339, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 53a724bdafd44a34ca6fa59945dc5494, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -68,7 +84,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
       insertIndex: -1
       addedObject: {fileID: 866583763489472931}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2406806850868728178}
   m_SourcePrefab: {fileID: 100100000, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
+--- !u!137 &181806131933185195 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1630794972795428178, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
+  m_PrefabInstance: {fileID: 1451382654341175801}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1793893921926309032 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
@@ -153,3 +177,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 4312996634580267199}
+--- !u!114 &2406806850868728178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1793893921926309032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c8b601d2fe62c544afd18910a41c375, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shaders:
+  - {fileID: 2100000, guid: a5422092c36015445902292e276a8f87, type: 2}
+  - {fileID: 2100000, guid: f57a98c65f14a9a45aafda0a9c580652, type: 2}
+  - {fileID: 2100000, guid: 53a724bdafd44a34ca6fa59945dc5494, type: 2}
+  - {fileID: 2100000, guid: 3dd6f541992991546bb5f247ede99e21, type: 2}
+  bodyTopHalf: {fileID: 8383680158953917154}
+  bodyBottomHalf: {fileID: 181806131933185195}
+--- !u!137 &8383680158953917154 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6952581982351725339, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
+  m_PrefabInstance: {fileID: 1451382654341175801}
+  m_PrefabAsset: {fileID: 0}
