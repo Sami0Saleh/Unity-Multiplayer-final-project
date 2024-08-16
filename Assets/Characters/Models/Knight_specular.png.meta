@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Knight_specular_0: -78043155104191588
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

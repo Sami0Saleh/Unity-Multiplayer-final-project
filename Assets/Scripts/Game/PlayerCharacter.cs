@@ -7,9 +7,7 @@ namespace Game
 {
 	public class PlayerCharacter : MonoBehaviourPun
 	{
-		[SerializeField] private PlayerColors _colorConfig;
 		[SerializeField] private PlayerCursor _cursorPrefab;
-		[SerializeField, HideInInspector] private MeshRenderer _renderer;
 		public InputActions InputActions { get; private set; }
 		public PlayerCursor Cursor { get; private set; }
 		public static PlayerCharacter Mine { get; private set; } 
@@ -19,11 +17,8 @@ namespace Game
 
 		public Player ThisPlayer => photonView.Owner;
 
-		private void OnValidate() => _renderer = GetComponentInChildren<MeshRenderer>();
-
 		private void Awake()
 		{
-			SetMaterial();
 			gameObject.name = ThisPlayer.NickName;
 			transform.SetParent(Board.Instance.PlayerParent);
 			if (!photonView.AmOwner)
@@ -36,12 +31,6 @@ namespace Game
 			{
 				if (Mine == null)
 					Mine = this;
-			}
-
-			void SetMaterial()
-			{
-				if (_colorConfig.TryGetMaterial(ThisPlayer, out var mat))
-					_renderer.material = mat;
 			}
 		}
 

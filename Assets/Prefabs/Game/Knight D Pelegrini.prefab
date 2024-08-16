@@ -189,11 +189,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c8b601d2fe62c544afd18910a41c375, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shaders:
-  - {fileID: 2100000, guid: a5422092c36015445902292e276a8f87, type: 2}
-  - {fileID: 2100000, guid: f57a98c65f14a9a45aafda0a9c580652, type: 2}
-  - {fileID: 2100000, guid: 53a724bdafd44a34ca6fa59945dc5494, type: 2}
-  - {fileID: 2100000, guid: 3dd6f541992991546bb5f247ede99e21, type: 2}
+  _colorConfig: {fileID: 11400000, guid: 59f0b44d65fa7b440b6af1910403bdcb, type: 2}
+  knightMat: {fileID: 5210487481128305043, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
   bodyTopHalf: {fileID: 8383680158953917154}
   bodyBottomHalf: {fileID: 181806131933185195}
 --- !u!137 &8383680158953917154 stripped
