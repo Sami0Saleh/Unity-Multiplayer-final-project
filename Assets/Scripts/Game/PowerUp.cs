@@ -6,6 +6,10 @@ namespace Game
 {
     public class PowerUp : MonoBehaviourPun
     {
+        private const string ON_POWERUP_PICKED = nameof(OnPowerUpPicked);
+        private const string BROADCAST_POWERUP_PICKED = nameof(BroadcastPowerUpPickup);
+
+
         [SerializeField] private int _healthBonus = 2;
         [SerializeField] private int _damageBonus = 1;
         [SerializeField] private PowerUpType _powerUpType;
@@ -25,7 +29,7 @@ namespace Game
             {
                 ApplyPowerUp(player);
 
-                photonView.RPC(nameof(OnPowerUpPicked), RpcTarget.MasterClient, player.ThisPlayer, _powerUpType);
+                photonView.RPC(ON_POWERUP_PICKED, RpcTarget.MasterClient, player.ThisPlayer, _powerUpType);
 
                 PhotonNetwork.Destroy(gameObject);
             }
@@ -52,7 +56,7 @@ namespace Game
             string powerUpName = type == PowerUpType.Health ? "Health" : "Damage";
             string playerName = player.NickName;
 
-            photonView.RPC(nameof(BroadcastPowerUpPickup), RpcTarget.All, playerName, powerUpName);
+            photonView.RPC(BROADCAST_POWERUP_PICKED, RpcTarget.All, playerName, powerUpName);
         }
 
         [PunRPC]

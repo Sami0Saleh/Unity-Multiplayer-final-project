@@ -108,7 +108,7 @@ namespace Game
                 PlayerDied?.Invoke(this);
 
                 if (photonView.IsMine)
-                    PhotonNetwork.Destroy(gameObject); // Only the owner destroys the object
+                    PhotonNetwork.Destroy(gameObject);
             }
         }
 

@@ -12,6 +12,10 @@ namespace Game
     {
         private const int MENU_SCENE_INDEX = 0;
         private const float INACTIVITY_TTL = 3f;
+        private const string REQUEST_GAME_STATE_SYNC = nameof(RequestGameStateSync);
+        private const string SYNC_GAME_STATE = nameof(SyncGameState);
+        private const string GAME_OVER = nameof(GameOver);
+        private const string IS_INACTIVE = "IsInactive";
 
         public static GameManager Instance;
 
@@ -60,7 +64,7 @@ namespace Game
 
 			if (PhotonNetwork.IsMasterClient)
             {
-                photonView.RPC(nameof(RequestGameStateSync), newMasterClient);
+                photonView.RPC(REQUEST_GAME_STATE_SYNC, newMasterClient);
                 StartCoroutine(SpawnPowerUpRoutine());
             }
         }
@@ -76,7 +80,7 @@ namespace Game
                 playerCharacter.SetInactive(false);
             }
 
-            photonView.RPC(nameof(SyncGameState), newPlayer, _nextSpawnIndex);
+            photonView.RPC(SYNC_GAME_STATE, newPlayer, _nextSpawnIndex);
         }
 
         public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -91,7 +95,7 @@ namespace Game
                 playerCharacter.SetInactive(true);
             }
 
-            if (otherPlayer.CustomProperties.ContainsKey("IsInactive") && (bool)otherPlayer.CustomProperties["IsInactive"])
+            if (otherPlayer.CustomProperties.ContainsKey(IS_INACTIVE) && (bool)otherPlayer.CustomProperties[IS_INACTIVE])
             {
                 StartCoroutine(RemovePlayerAfterTTL(otherPlayer, INACTIVITY_TTL));
             }
@@ -113,7 +117,7 @@ namespace Game
 
         private void TriggerGameOver(int winningPlayerActorNumber)
         {
-            photonView.RPC(nameof(GameOver), RpcTarget.All, winningPlayerActorNumber);
+            photonView.RPC(GAME_OVER, RpcTarget.All, winningPlayerActorNumber);
         }
 
         private void SpawnPowerUp()
@@ -165,7 +169,7 @@ namespace Game
         [PunRPC]
         private void RequestGameStateSync(PhotonMessageInfo info)
         {
-            photonView.RPC(nameof(SyncGameState), info.Sender, _nextSpawnIndex);
+            photonView.RPC(SYNC_GAME_STATE, info.Sender, _nextSpawnIndex);
         }
 
         [PunRPC]
@@ -181,7 +185,7 @@ namespace Game
             var player = PhotonNetwork.CurrentRoom.Players.Values.FirstOrDefault(p => p.ActorNumber == actorNumber);
             if (player != null)
             {
-                var properties = new ExitGames.Client.Photon.Hashtable { { "IsInactive", true } };
+                var properties = new ExitGames.Client.Photon.Hashtable { { IS_INACTIVE, true } };
                 player.SetCustomProperties(properties);
             }
         }
