@@ -56,9 +56,9 @@ namespace Game
         {
             Debug.Log($"New MasterClient is {newMasterClient.NickName}");
             UIManager.Instance.UpdateText($"New MasterClient: {newMasterClient.NickName}");
-            photonView.RPC(nameof(UpdateMasterClientUI), RpcTarget.All, newMasterClient.NickName);
+            UpdateMasterClientUI();
 
-            if (PhotonNetwork.IsMasterClient)
+			if (PhotonNetwork.IsMasterClient)
             {
                 photonView.RPC(nameof(RequestGameStateSync), newMasterClient);
                 StartCoroutine(SpawnPowerUpRoutine());
@@ -169,9 +169,9 @@ namespace Game
         }
 
         [PunRPC]
-        private void UpdateMasterClientUI(string newMasterClientName)
+        private void UpdateMasterClientUI()
         {
-            UIManager.Instance.UpdateText($"New MasterClient: {newMasterClientName}");
+            UIManager.Instance.UpdateText($"New MasterClient: {PhotonNetwork.MasterClient.NickName}");
             UIManager.Instance.UpdateMasterClientButtonState(PhotonNetwork.IsMasterClient);
         }
 
