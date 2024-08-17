@@ -3,11 +3,14 @@ using UnityEngine;
 using UnityEngine.Events;
 using Photon.Pun;
 using Photon.Realtime;
+using System.Collections.Generic;
 
 namespace Game
 {
     public class PlayerCharacter : MonoBehaviourPun
     {
+        public static Dictionary<Player, PlayerCharacter> PlayerDictionary = new(4);
+
         private const string RECEIVE_DAMAGE = nameof(ReceiveDamage);
 
         [SerializeField] private PlayerColors _colorConfig;
@@ -33,6 +36,7 @@ namespace Game
             SetMaterial();
             gameObject.name = ThisPlayer.NickName;
             _currentDamage = _baseDamage;
+            PlayerDictionary.TryAdd(ThisPlayer, this);
 
             if (!photonView.IsMine)
                 return;
@@ -46,7 +50,12 @@ namespace Game
             }
         }
 
-        private void Start()
+		private void OnDestroy()
+		{
+			PlayerDictionary.Remove(ThisPlayer);
+		}
+
+		private void Start()
         {
             PlayerJoined?.Invoke(this);
         }
@@ -118,5 +127,7 @@ namespace Game
                 SetInactive(true);
             }
         }
+
+        private void ClearDictionary() => PlayerDictionary.Clear();
     }
 }

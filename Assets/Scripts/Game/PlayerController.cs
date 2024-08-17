@@ -16,21 +16,14 @@ namespace Game
         private Camera _cachedCamera;
 		private Vector3 raycastPos;
 
-        private PlayerCharacter _character;
-
 
 		private void Awake()
 		{
-			if (!photonView.IsMine)
+			if (!photonView.AmController)
 			{
-				enabled = false;
+				Destroy(this);
 				return;
 			}
-            _character = GetComponent<PlayerCharacter>();
-		}
-
-        private void Start()
-		{
 			_cachedCamera = Camera.main;
 		}
 
@@ -74,7 +67,7 @@ namespace Game
                 if (hit.collider.tag != "Player")
                     return;
                 var projectile = PhotonNetwork.Instantiate(PROJECTILE_PREFAB, ProjectileSpawnTransform.position, ProjectileSpawnTransform.rotation).GetComponent<Projectile>();
-                projectile.ownerPlayer = _character;
+                projectile.photonView.TransferOwnership(PhotonNetwork.MasterClient);
             }
             else
             {

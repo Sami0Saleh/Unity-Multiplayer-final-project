@@ -10,8 +10,6 @@ namespace Game
         [SerializeField] private Collider _collider;
         [SerializeField] private float _velocity = 20f;
 
-        public PlayerCharacter ownerPlayer;
-
         private void Awake()
         {
             if (!photonView.IsMine)
@@ -34,7 +32,7 @@ namespace Game
 
                 if (PhotonNetwork.IsMasterClient)
                 {
-                    int damage = ownerPlayer.GetDamage();
+                    int damage = PlayerCharacter.PlayerDictionary[photonView.Owner].GetDamage();
                     player.ReceiveDamage(damage);
                     StartCoroutine(DestroyDelay());
                 }
@@ -45,7 +43,7 @@ namespace Game
         {
             yield return new WaitForSeconds(delay);
 
-            if (photonView.AmController || PhotonNetwork.IsMasterClient)
+            if (photonView.IsMine || PhotonNetwork.IsMasterClient)
             {
                 PhotonNetwork.Destroy(gameObject);
             }
