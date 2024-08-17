@@ -111,7 +111,7 @@ MonoBehaviour:
   _visuals: {fileID: 8009365097858150651}
   _collider: {fileID: 678257964040140177}
   _velocity: 20
-  <Damage>k__BackingField: 1
+  ownerPlayer: {fileID: 0}
 --- !u!1 &8009365097858150651
 GameObject:
   m_ObjectHideFlags: 0

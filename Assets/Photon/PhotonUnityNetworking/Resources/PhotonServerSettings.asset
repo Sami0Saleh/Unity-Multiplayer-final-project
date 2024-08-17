@@ -47,6 +47,10 @@ MonoBehaviour:
   - SyncGameState
   - UpdateMasterClientUI
   - SetPlayerInactive
+  - BroadcastPowerUpCollected
+  - NotifyPowerUpCollected
+  - BroadcastPowerUpPickup
+  - OnPowerUpPicked
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

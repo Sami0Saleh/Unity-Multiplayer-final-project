@@ -19,8 +19,7 @@ namespace Game
         private int _nextSpawnIndex = 0;
 
         [SerializeField] private List<Transform> _spawnPoints;
-        [SerializeField] private GameObject _powerUpPrefab;
-        [SerializeField] private UIManager _uiManager;
+        [SerializeField] private List<GameObject> _randomPowerUpToSpawn;
 
         private void Awake()
         {
@@ -56,7 +55,7 @@ namespace Game
         public override void OnMasterClientSwitched(Player newMasterClient)
         {
             Debug.Log($"New MasterClient is {newMasterClient.NickName}");
-            _uiManager.UpdateText($"New MasterClient: {newMasterClient.NickName}");
+            UIManager.Instance.UpdateText($"New MasterClient: {newMasterClient.NickName}");
             photonView.RPC(nameof(UpdateMasterClientUI), RpcTarget.All, newMasterClient.NickName);
 
             if (PhotonNetwork.IsMasterClient)
@@ -69,15 +68,28 @@ namespace Game
         public override void OnPlayerEnteredRoom(Player newPlayer)
         {
             Debug.Log($"{newPlayer.NickName} joined the room.");
-            _uiManager.UpdateText($"{newPlayer.NickName} joined the room.");
+            UIManager.Instance.UpdateText($"{newPlayer.NickName} joined the room.");
+
+            var playerCharacter = _activePlayers.FirstOrDefault(p => p.ThisPlayer.ActorNumber == newPlayer.ActorNumber);
+            if (playerCharacter != null)
+            {
+                playerCharacter.SetInactive(false);
+            }
+
             photonView.RPC(nameof(SyncGameState), newPlayer, _nextSpawnIndex);
         }
 
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
             base.OnPlayerLeftRoom(otherPlayer);
-            _uiManager.UpdateText($"{otherPlayer.NickName} joined the room.");
+            UIManager.Instance.UpdateText($"{otherPlayer.NickName} left the room.");
             Debug.Log($"{otherPlayer.NickName} left the room with inactive: {otherPlayer.IsInactive}");
+
+            var playerCharacter = _activePlayers.FirstOrDefault(p => p.ThisPlayer.ActorNumber == otherPlayer.ActorNumber);
+            if (playerCharacter != null)
+            {
+                playerCharacter.SetInactive(true);
+            }
 
             if (otherPlayer.CustomProperties.ContainsKey("IsInactive") && (bool)otherPlayer.CustomProperties["IsInactive"])
             {
@@ -106,8 +118,21 @@ namespace Game
 
         private void SpawnPowerUp()
         {
+            if (_randomPowerUpToSpawn == null || _randomPowerUpToSpawn.Count == 0)
+            {
+                Debug.LogError("No power-ups available to spawn.");
+                return;
+            }
+
+            // Select a random power-up from the list
+            int randomIndex = Random.Range(0, _randomPowerUpToSpawn.Count);
+            GameObject selectedPowerUp = _randomPowerUpToSpawn[randomIndex];
+
+            // Spawn the selected power-up at the next spawn point
             Transform spawnPoint = _spawnPoints[_nextSpawnIndex];
-            PhotonNetwork.InstantiateRoomObject(_powerUpPrefab.name, spawnPoint.position, spawnPoint.rotation);
+            PhotonNetwork.InstantiateRoomObject(selectedPowerUp.name, spawnPoint.position, spawnPoint.rotation);
+
+            // Update the next spawn index
             _nextSpawnIndex = (_nextSpawnIndex + 1) % _spawnPoints.Count;
             photonView.RPC(nameof(UpdateNextSpawnIndex), RpcTarget.OthersBuffered, _nextSpawnIndex);
         }
@@ -117,7 +142,7 @@ namespace Game
         private void GameOver(int winningPlayerActorNumber, PhotonMessageInfo info)
         {
             Debug.Assert(info.Sender.IsMasterClient, "Game Over can only be sent by master client");
-            _uiManager.UpdateText(PhotonNetwork.LocalPlayer.ActorNumber == winningPlayerActorNumber
+            UIManager.Instance.UpdateText(PhotonNetwork.LocalPlayer.ActorNumber == winningPlayerActorNumber
                 ? "Game Over! You won."
                 : "Game Over! You lost.");
 
@@ -146,8 +171,8 @@ namespace Game
         [PunRPC]
         private void UpdateMasterClientUI(string newMasterClientName)
         {
-            _uiManager.UpdateText($"New MasterClient: {newMasterClientName}");
-            _uiManager.UpdateMasterClientButtonState(PhotonNetwork.IsMasterClient);
+            UIManager.Instance.UpdateText($"New MasterClient: {newMasterClientName}");
+            UIManager.Instance.UpdateMasterClientButtonState(PhotonNetwork.IsMasterClient);
         }
 
         [PunRPC]
@@ -187,10 +212,9 @@ namespace Game
                 if (playerCharacter != null)
                 {
                     _activePlayers.Remove(playerCharacter);
-                    PhotonNetwork.Destroy(playerCharacter.gameObject); // Destroy player object if necessary
+                    PhotonNetwork.Destroy(playerCharacter.gameObject);
                 }
 
-                // Optionally, handle the player leaving the room
                 PhotonNetwork.CloseConnection(player);
             }
         }

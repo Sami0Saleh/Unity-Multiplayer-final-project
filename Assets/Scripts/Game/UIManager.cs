@@ -17,6 +17,17 @@ namespace Game
         [SerializeField] private GameObject _rejoinButton;
         [SerializeField] private GameObject _transferMasterClientButton;
 
+        public static UIManager Instance;
+
+        private void Awake()
+        {
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+        }
         private void Start()
         {
             _rejoinButton.SetActive(false);

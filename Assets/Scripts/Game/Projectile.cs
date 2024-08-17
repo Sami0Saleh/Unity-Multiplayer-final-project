@@ -9,12 +9,15 @@ namespace Game
         [SerializeField] private GameObject _visuals;
         [SerializeField] private Collider _collider;
         [SerializeField] private float _velocity = 20f;
-        [field: SerializeField] public int Damage { get; private set; } = 1;
+
+        public PlayerCharacter ownerPlayer;
 
         private void Awake()
         {
             if (!photonView.IsMine)
+            {
                 enabled = false;
+            }
         }
 
         private void FixedUpdate()
@@ -31,7 +34,8 @@ namespace Game
 
                 if (PhotonNetwork.IsMasterClient)
                 {
-                    player.ReceiveDamage(Damage);
+                    int damage = ownerPlayer.GetDamage();
+                    player.ReceiveDamage(damage);
                     StartCoroutine(DestroyDelay());
                 }
             }

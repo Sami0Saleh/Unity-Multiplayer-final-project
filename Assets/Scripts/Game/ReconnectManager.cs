@@ -103,7 +103,6 @@ namespace Game
                 _intentionalDisconnect = false;
                 Debug.Log("Successfully rejoined the room.");
 
-                // Handle player state and synchronization
                 var playerObjects = FindObjectsOfType<PlayerCharacter>();
                 foreach (var obj in playerObjects)
                 {
