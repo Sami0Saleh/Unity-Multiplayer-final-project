@@ -1,10 +1,12 @@
 ﻿using System;
+using Unity.Burst;
 using static Game.Board;
 
 namespace Game
 {
 	public static class Pathfinding
 	{
+		[BurstCompile]
 		public static BoardMask GetArea(byte centerX, byte centerY, byte radius)
 		{
 			BoardMask mask = new();
@@ -17,6 +19,7 @@ namespace Game
 				Column(x);
 			return mask;
 
+			[BurstCompile]
 			void Column(byte x)
 			{
 				int height = diameter - Math.Abs(centerX - x);
