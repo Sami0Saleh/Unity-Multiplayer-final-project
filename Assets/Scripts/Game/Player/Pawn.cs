@@ -22,7 +22,6 @@ namespace Game.Player
 				return;
 			RegisterMine();
 			InputActions = new();
-			PlayerJoined?.Invoke(this);
 
 			void RegisterMine()
 			{
@@ -33,12 +32,14 @@ namespace Game.Player
 
 		private void OnEnable()
 		{
+			PlayerJoined?.Invoke(this);
 			if (photonView.AmOwner)
 				InputActions.Cursor.Enable();
 		}
 
 		private void OnDisable()
 		{
+			PlayerEliminated?.Invoke(this);
 			if (photonView.AmOwner)
 				InputActions.Cursor.Disable();
 		}

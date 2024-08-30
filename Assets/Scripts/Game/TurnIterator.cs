@@ -14,11 +14,6 @@ namespace Game
 	/// </summary>
 	public class TurnIterator : MonoBehaviourPun, IEnumerator<PunPlayer>, IEnumerable<PunPlayer>
 	{
-		private void Awake()
-		{
-			_currentStable = GameManager.Instance.ActivePlayers.Last().Key;
-		}
-
 		public event UnityAction<PunPlayer, PunPlayer> OnTurnChange;
 
 		public int CurrentTurn { get; private set; } = -1;
@@ -27,6 +22,14 @@ namespace Game
 
 		private PunPlayer _currentStable;
 		private PunPlayer _currentTemp;
+
+		private void Awake() => GameManager.Instance.AllPlayerConnected += OnAllPlayersConnected;
+
+		private void OnDestroy() => GameManager.Instance.AllPlayerConnected -= OnAllPlayersConnected;
+
+		private void Start() => _currentStable = GameManager.Instance.ActivePlayers.Last().Key;
+
+		private void OnAllPlayersConnected() => enabled = true;
 
 		public bool MoveNext()
 		{

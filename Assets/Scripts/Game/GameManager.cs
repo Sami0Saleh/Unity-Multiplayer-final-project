@@ -13,6 +13,7 @@ namespace Game
 		private const string GAME_OVER = nameof(OnGameOver);
 		public static GameManager Instance;
 
+		public event UnityAction AllPlayerConnected;
 		public event UnityAction<Photon.Realtime.Player> GameOver;
 
 		public Dictionary<Photon.Realtime.Player, Pawn> ActivePlayers { get; private set; }
@@ -66,7 +67,12 @@ namespace Game
 				TriggerGameOver(pawn.Owner);
 		}
 
-		private void OnPlayerJoined(Pawn pawn) => ActivePlayers.Add(pawn.Owner, pawn);
+		private void OnPlayerJoined(Pawn pawn)
+		{
+			ActivePlayers.Add(pawn.Owner, pawn);
+			if (ActivePlayers.Count == PhotonNetwork.CurrentRoom.PlayerCount)
+				AllPlayerConnected?.Invoke();
+		}
 
 		IEnumerator LeaveMatch()
 		{
