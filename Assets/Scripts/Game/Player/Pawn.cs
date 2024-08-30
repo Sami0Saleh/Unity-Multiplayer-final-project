@@ -1,21 +1,20 @@
 using UnityEngine;
 using UnityEngine.Events;
 using Photon.Pun;
-using Photon.Realtime;
 
-namespace Game
+namespace Game.Player
 {
-	public class PlayerCharacter : MonoBehaviourPun
+	public class Pawn : MonoBehaviourPun
 	{
-		[SerializeField] private PlayerCursor _cursorPrefab;
+		[SerializeField] private Cursor _cursorPrefab;
 		public InputActions InputActions { get; private set; }
-		public PlayerCursor Cursor { get; private set; }
-		public static PlayerCharacter Mine { get; private set; } 
+		public Cursor Cursor { get; private set; }
+		public static Pawn Mine { get; private set; }
 
-		public static event UnityAction<PlayerCharacter> PlayerJoined;
-		public static event UnityAction<PlayerCharacter> PlayerEliminated;
+		public static event UnityAction<Pawn> PlayerJoined;
+		public static event UnityAction<Pawn> PlayerEliminated;
 
-		public Player ThisPlayer => photonView.Owner;
+		public Photon.Realtime.Player ThisPlayer => photonView.Owner;
 
 		private void Awake()
 		{
@@ -25,7 +24,7 @@ namespace Game
 				return;
 			RegisterMine();
 			InputActions = new();
-			Cursor = PhotonNetwork.Instantiate(_cursorPrefab.name, transform.position, transform.rotation).GetComponent<PlayerCursor>();
+			Cursor = PhotonNetwork.Instantiate(_cursorPrefab.name, transform.position, transform.rotation).GetComponent<Cursor>();
 
 			void RegisterMine()
 			{

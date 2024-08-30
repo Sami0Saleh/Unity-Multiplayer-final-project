@@ -4,55 +4,58 @@ using TMPro;
 using Photon.Pun;
 using WebSocketSharp;
 
-public class CreateRoomMenu : MonoBehaviour
+namespace UI
 {
-	[SerializeField] private TMP_InputField _roomName;
-	[SerializeField] private Slider _maxPlayerCount;
-	[SerializeField] private TextMeshProUGUI _maxPlayerText;
-	[SerializeField] private Button _createRoomButton;
-	[SerializeField] private Button _backButton;
-
-	private string RoomName => _roomName.text;
-	private int MaxPlayerCount => Mathf.Clamp((int)_maxPlayerCount.value, 2, MainMenuManager.MAX_PLAYERS_PER_ROOM);
-
-	private void OnValidate() => _maxPlayerCount.maxValue = MainMenuManager.MAX_PLAYERS_PER_ROOM;
-
-	private void Start()
+	public class CreateRoomMenu : MonoBehaviour
 	{
-		_createRoomButton.onClick.AddListener(CreateRoomButton);
-		_backButton.onClick.AddListener(BackButton);
-		_roomName.text = $"{PhotonNetwork.LocalPlayer.NickName}'s Room";
+		[SerializeField] private TMP_InputField _roomName;
+		[SerializeField] private Slider _maxPlayerCount;
+		[SerializeField] private TextMeshProUGUI _maxPlayerText;
+		[SerializeField] private Button _createRoomButton;
+		[SerializeField] private Button _backButton;
+
+		private string RoomName => _roomName.text;
+		private int MaxPlayerCount => Mathf.Clamp((int)_maxPlayerCount.value, 2, MainMenuManager.MAX_PLAYERS_PER_ROOM);
+
+		private void OnValidate() => _maxPlayerCount.maxValue = MainMenuManager.MAX_PLAYERS_PER_ROOM;
+
+		private void Start()
+		{
+			_createRoomButton.onClick.AddListener(CreateRoomButton);
+			_backButton.onClick.AddListener(BackButton);
+			_roomName.text = $"{PhotonNetwork.LocalPlayer.NickName}'s Room";
+		}
+
+		private void OnEnable()
+		{
+			ToggleButtonsState(true);
+		}
+
+		public void CreateRoomButton()
+		{
+			if (RoomName.IsNullOrEmpty())
+				return;
+			PhotonNetwork.CreateRoom(RoomName, new() { MaxPlayers = MaxPlayerCount });
+
+			ToggleButtonsState(false);
+		}
+
+		public void BackButton()
+		{
+			MainMenuManager.Instance.ExitCreateRoomMenu();
+
+			ToggleButtonsState(false);
+		}
+
+		public void UpdateMaxPlayersText(float value)
+		{
+			_maxPlayerText.text = $"Max Players: {(int)value}";
+		}
+
+		public void ToggleButtonsState(bool active)
+		{
+			_createRoomButton.interactable = active;
+			_backButton.interactable = active;
+		}
 	}
-
-    private void OnEnable()
-    {
-        ToggleButtonsState(true);
-    }
-
-    public void CreateRoomButton()
-	{
-		if (RoomName.IsNullOrEmpty())
-			return;
-		PhotonNetwork.CreateRoom(RoomName, new() {MaxPlayers = MaxPlayerCount});
-
-        ToggleButtonsState(false);
-    }
-
-    public void BackButton()
-	{
-		MainMenuManager.Instance.ExitCreateRoomMenu();
-
-        ToggleButtonsState(false);
-    }
-
-    public void UpdateMaxPlayersText(float value)
-	{
-		_maxPlayerText.text = $"Max Players: {(int)value}";
-	}
-
-    public void ToggleButtonsState(bool active)
-    {
-        _createRoomButton.interactable = active;
-        _backButton.interactable = active;
-    }
 }

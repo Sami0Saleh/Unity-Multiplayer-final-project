@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Game
+namespace Game.Player
 {
 	public class MousePositionTracker : MonoBehaviour
 	{
@@ -10,9 +10,9 @@ namespace Game
 
 		[field: SerializeField] public Transform Target { get; private set; }
 
-		private void OnEnable() => PlayerCharacter.Mine.InputActions.Cursor.Look.performed += OnLook;
+		private void OnEnable() => Pawn.Mine.InputActions.Cursor.Look.performed += OnLook;
 
-		private void OnDisable() => PlayerCharacter.Mine.InputActions.Cursor.Look.performed -= OnLook;
+		private void OnDisable() => Pawn.Mine.InputActions.Cursor.Look.performed -= OnLook;
 
 		private void Start()
 		{

@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using Photon.Pun;
 
-namespace Game
+namespace Game.Player
 {
-	public class PlayerCursor : MonoBehaviourPun
+	public class Cursor : MonoBehaviourPun
 	{
 		[SerializeField] private MousePositionTracker _mousePositionTracker;
 

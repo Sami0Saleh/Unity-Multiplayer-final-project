@@ -16,7 +16,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 using UnityEngine;
 
-namespace Game
+namespace Game.Player
 {
     public partial class @InputActions: IInputActionCollection2, IDisposable
     {

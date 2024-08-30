@@ -1,10 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Photon.Pun;
-using Photon.Realtime;
+using Game.Player;
 
 namespace Game
 {
@@ -14,9 +13,9 @@ namespace Game
 		private const string GAME_OVER = nameof(OnGameOver);
 		public static GameManager Instance;
 
-		public event UnityAction<int> GameOver;
+		public event UnityAction<Photon.Realtime.Player> GameOver;
 
-		public Dictionary<Player, PlayerCharacter> ActivePlayers { get; private set; }
+		public Dictionary<Photon.Realtime.Player, Pawn> ActivePlayers { get; private set; }
 
 		private void Awake()
 		{
@@ -32,42 +31,42 @@ namespace Game
 		public override void OnEnable()
 		{
 			base.OnEnable();
-			PlayerCharacter.PlayerEliminated += OnPlayerEliminated;
-			PlayerCharacter.PlayerJoined += OnPlayerJoined;
+			Pawn.PlayerEliminated += OnPlayerEliminated;
+			Pawn.PlayerJoined += OnPlayerJoined;
 		}
 
 		public override void OnDisable()
 		{
 			base.OnDisable();
-			PlayerCharacter.PlayerEliminated -= OnPlayerEliminated;
-			PlayerCharacter.PlayerJoined -= OnPlayerJoined;
+			Pawn.PlayerEliminated -= OnPlayerEliminated;
+			Pawn.PlayerJoined -= OnPlayerJoined;
 		}
 
 		[PunRPC]
-		public void OnGameOver(int winningPlayerActorNumber, PhotonMessageInfo info)
+		public void OnGameOver(Photon.Realtime.Player winningPlayer, PhotonMessageInfo info)
 		{
 			Debug.Assert(info.Sender.IsMasterClient, "Game Over can only be sent by master client");
-			GameOver?.Invoke(winningPlayerActorNumber);
+			GameOver?.Invoke(winningPlayer);
 
 			if (PhotonNetwork.IsMasterClient)
 				StartCoroutine(LeaveMatch());
 		}
 
-		public void TriggerGameOver(int winningPlayerActorNumber)
+		public void TriggerGameOver(Photon.Realtime.Player winningPlayer)
 		{
-			photonView.RPC(GAME_OVER, RpcTarget.All, winningPlayerActorNumber);
+			photonView.RPC(GAME_OVER, RpcTarget.All, winningPlayer);
 		}
 
-		private void OnPlayerEliminated(PlayerCharacter player)
+		private void OnPlayerEliminated(Pawn pawn)
 		{
 			if (!PhotonNetwork.IsMasterClient)
 				return;
-			ActivePlayers.Remove(player.ThisPlayer);
+			ActivePlayers.Remove(pawn.ThisPlayer);
 			if (ActivePlayers.Count <= 1)
-				TriggerGameOver(ActivePlayers.Single().Key.ActorNumber);
+				TriggerGameOver(pawn.ThisPlayer);
 		}
 
-		private void OnPlayerJoined(PlayerCharacter player) => ActivePlayers.Add(player.ThisPlayer, player);
+		private void OnPlayerJoined(Pawn pawn) => ActivePlayers.Add(pawn.ThisPlayer, pawn);
 
 		IEnumerator LeaveMatch()
 		{

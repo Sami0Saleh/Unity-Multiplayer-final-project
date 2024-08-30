@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Photon.Realtime;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 [CreateAssetMenu(fileName = "PlayerColors", menuName = "Scriptable Objects/PlayerColors")]
@@ -13,7 +12,7 @@ public class PlayerColors : ScriptableObject, IDictionary<string, Material>
 	public const string DEFAULT_COLOR = "None";
 
 	[SerializeField] private Material _defaultColor;
-    [SerializeField] private List<Material> _materials;
+	[SerializeField] private List<Material> _materials;
 	private Dictionary<string, Material> _dict;
 
 	private void OnEnable()
@@ -23,7 +22,7 @@ public class PlayerColors : ScriptableObject, IDictionary<string, Material>
 		void InitDictionary()
 		{
 			_dict = new(_materials.Count + 1)
-			{ { DEFAULT_COLOR, _defaultColor } };
+		{ { DEFAULT_COLOR, _defaultColor } };
 			foreach (var mat in _materials)
 				_dict.Add(mat.name, mat);
 		}
@@ -36,7 +35,7 @@ public class PlayerColors : ScriptableObject, IDictionary<string, Material>
 
 	public ICollection<Material> Values => ((IDictionary<string, Material>)_dict).Values;
 
-	public int Count => ((ICollection<KeyValuePair<string, Material>>)_dict).Count-1;
+	public int Count => ((ICollection<KeyValuePair<string, Material>>)_dict).Count - 1;
 
 	public bool IsReadOnly => true;
 
@@ -60,7 +59,7 @@ public class PlayerColors : ScriptableObject, IDictionary<string, Material>
 
 	public bool TryGetValue(string key, out Material value) => (_dict as IDictionary<string, Material>).TryGetValue(key, out value);
 
-	public string this[int index] => _dict.ElementAt(index+1).Key;
+	public string this[int index] => _dict.ElementAt(index + 1).Key;
 
 	public int IndexOf(string color)
 	{
@@ -82,9 +81,9 @@ public static class PlayerColorsExtension
 {
 	public static bool HasColorProperty(this Hashtable properties) => properties.ContainsKey(PlayerColors.COLOR_PROPERTY);
 
-	public static bool TryGetColorProperty(this Player player, out string color) => player.CustomProperties.TryGetColorProperty(out color);
+	public static bool TryGetColorProperty(this Photon.Realtime.Player player, out string color) => player.CustomProperties.TryGetColorProperty(out color);
 
-	public static void SetColorProperty(this Player player, string color)
+	public static void SetColorProperty(this Photon.Realtime.Player player, string color)
 	{
 		var hashedProperties = new Hashtable
 		{
@@ -104,7 +103,7 @@ public static class PlayerColorsExtension
 		return false;
 	}
 
-	public static bool TryGetMaterial(this PlayerColors playerColors, Player player, out Material material)
+	public static bool TryGetMaterial(this PlayerColors playerColors, Photon.Realtime.Player player, out Material material)
 	{
 		material = null;
 		return player.TryGetColorProperty(out var color) && playerColors.TryGetValue(color, out material);

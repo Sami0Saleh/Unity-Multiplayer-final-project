@@ -5,44 +5,47 @@ using TMPro;
 using Photon.Pun;
 using WebSocketSharp;
 
-public class LoginMenu : MonoBehaviour
+namespace UI
 {
-	[SerializeField] private TMP_InputField _nicknameInput;
-	[SerializeField] private Button _connectButton;
-	[SerializeField] private Button _exitButton;
-
-	private void Start()
+	public class LoginMenu : MonoBehaviour
 	{
-		_nicknameInput.text = Environment.UserName;
-		_connectButton.onClick.AddListener(ConnectButton);
-		_exitButton.onClick.AddListener(ExitButton);
-		_nicknameInput.onSubmit.AddListener(ConnectButton);
-	}
+		[SerializeField] private TMP_InputField _nicknameInput;
+		[SerializeField] private Button _connectButton;
+		[SerializeField] private Button _exitButton;
 
-	private void OnEnable() => ToggleButtonsState(true);
+		private void Start()
+		{
+			_nicknameInput.text = Environment.UserName;
+			_connectButton.onClick.AddListener(ConnectButton);
+			_exitButton.onClick.AddListener(ExitButton);
+			_nicknameInput.onSubmit.AddListener(ConnectButton);
+		}
 
-	public void ConnectButton() => ConnectButton(_nicknameInput.text);
+		private void OnEnable() => ToggleButtonsState(true);
 
-    public void ConnectButton(string nickname)
-	{
-		if (nickname.IsNullOrEmpty())
-			return;
-		PhotonNetwork.LocalPlayer.NickName = nickname;
-		PhotonNetwork.ConnectUsingSettings();
+		public void ConnectButton() => ConnectButton(_nicknameInput.text);
 
-        ToggleButtonsState(false);
-    }
+		public void ConnectButton(string nickname)
+		{
+			if (nickname.IsNullOrEmpty())
+				return;
+			PhotonNetwork.LocalPlayer.NickName = nickname;
+			PhotonNetwork.ConnectUsingSettings();
 
-    public void ExitButton()
-	{
-		Application.Quit();
+			ToggleButtonsState(false);
+		}
 
-        ToggleButtonsState(false);
-    }
+		public void ExitButton()
+		{
+			Application.Quit();
 
-	public void ToggleButtonsState(bool active)
-	{
-		_connectButton.interactable = active;
-		_exitButton.interactable = active;
+			ToggleButtonsState(false);
+		}
+
+		public void ToggleButtonsState(bool active)
+		{
+			_connectButton.interactable = active;
+			_exitButton.interactable = active;
+		}
 	}
 }
