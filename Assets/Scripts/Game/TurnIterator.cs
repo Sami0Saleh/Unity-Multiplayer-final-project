@@ -12,45 +12,41 @@ namespace Game
 	/// Keeps track of the current turn order and current acting <see cref="PunPlayer"/>.
 	/// Iterate this to advance the turn order.
 	/// </summary>
-	public class TurnIterator : MonoBehaviourPun, IEnumerator<PunPlayer>, IEnumerator<Pawn>
+	public class TurnIterator : MonoBehaviourPun, IEnumerator<PunPlayer>, IEnumerable<PunPlayer>
 	{
 		private void Awake()
 		{
-			_currentStable = GameManager.Instance.ActivePlayers.Last();
+			_currentStable = GameManager.Instance.ActivePlayers.Last().Key;
 		}
 
 		public event UnityAction<PunPlayer, PunPlayer> OnTurnChange;
 
 		public int CurrentTurn { get; private set; } = -1;
-		KeyValuePair<PunPlayer, Pawn> Current => _currentTemp.Key == null ? _currentStable : _currentTemp;
-		PunPlayer IEnumerator<PunPlayer>.Current => Current.Key;
-		Pawn IEnumerator<Pawn>.Current => Current.Value;
+		public PunPlayer Current => _currentTemp ?? _currentStable;
 		object IEnumerator.Current => Current;
 
-		private KeyValuePair<PunPlayer, Pawn> _currentStable;
-		private KeyValuePair<PunPlayer, Pawn> _currentTemp;
-
-		public void Dispose() => Destroy(gameObject);
+		private PunPlayer _currentStable;
+		private PunPlayer _currentTemp;
 
 		public bool MoveNext()
 		{
 			var activePlayers = GameManager.Instance.ActivePlayers;
-			PunPlayer lastPlayer = Current.Key;
+			PunPlayer lastPlayer = Current;
 			if (activePlayers.Count == 1)
 			{
-				_currentStable = activePlayers.Single();
+				_currentStable = activePlayers.Single().Key;
 				_currentTemp = default;
 				return false;
 			}
 			else if (TryGetOutOfBoardPawn(out var pawn))
 			{
-				_currentTemp = activePlayers.Where(kvp => kvp.Key == pawn.ThisPlayer).Single();
+				_currentTemp = pawn.ThisPlayer;
 				InvokeOnTurnChange();
 				return true;
 			}
-			else if (Current.Key == activePlayers.Last().Key)
+			else if (Current == activePlayers.Last().Key)
 			{
-				_currentStable = activePlayers.First();
+				_currentStable = activePlayers.First().Key;
 				_currentTemp = default;
 				CurrentTurn++;
 				InvokeOnTurnChange();
@@ -58,13 +54,13 @@ namespace Game
 			}
 			else
 			{
-				_currentStable = activePlayers.ElementAt(GetIndexOf(_currentStable.Key)+1);
+				_currentStable = activePlayers.ElementAt(GetIndexOf(_currentStable)+1).Key;
 				_currentTemp = default;
 				InvokeOnTurnChange();
 				return true;
 			}
 
-			void InvokeOnTurnChange() => OnTurnChange?.Invoke(lastPlayer, Current.Key);
+			void InvokeOnTurnChange() => OnTurnChange?.Invoke(lastPlayer, Current);
 
 			int GetIndexOf(PunPlayer player)
 			{
@@ -85,5 +81,11 @@ namespace Game
 		}
 
 		public void Reset() { }
+
+		public void Dispose() { }
+
+		public IEnumerator<PunPlayer> GetEnumerator() => this;
+
+		IEnumerator IEnumerable.GetEnumerator() => this;
 	}
 }
