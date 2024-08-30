@@ -40,7 +40,7 @@ namespace Game
 			}
 			else if (TryGetOutOfBoardPawn(out var pawn))
 			{
-				_currentTemp = pawn.ThisPlayer;
+				_currentTemp = pawn.Owner;
 				InvokeOnTurnChange();
 				return true;
 			}

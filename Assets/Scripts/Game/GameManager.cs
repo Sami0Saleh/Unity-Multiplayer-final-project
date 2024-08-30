@@ -61,12 +61,12 @@ namespace Game
 		{
 			if (!PhotonNetwork.IsMasterClient)
 				return;
-			ActivePlayers.Remove(pawn.ThisPlayer);
+			ActivePlayers.Remove(pawn.Owner);
 			if (ActivePlayers.Count <= 1)
-				TriggerGameOver(pawn.ThisPlayer);
+				TriggerGameOver(pawn.Owner);
 		}
 
-		private void OnPlayerJoined(Pawn pawn) => ActivePlayers.Add(pawn.ThisPlayer, pawn);
+		private void OnPlayerJoined(Pawn pawn) => ActivePlayers.Add(pawn.Owner, pawn);
 
 		IEnumerator LeaveMatch()
 		{

@@ -12,11 +12,11 @@ namespace Game.Player
 		public static event UnityAction<Pawn> PlayerJoined;
 		public static event UnityAction<Pawn> PlayerEliminated;
 
-		public Photon.Realtime.Player ThisPlayer => photonView.Owner;
+		public Photon.Realtime.Player Owner => photonView.Owner;
 
 		private void Awake()
 		{
-			gameObject.name = ThisPlayer.NickName;
+			gameObject.name = Owner.NickName;
 			transform.SetParent(Board.Instance.PlayerParent);
 			if (!photonView.AmOwner)
 				return;
