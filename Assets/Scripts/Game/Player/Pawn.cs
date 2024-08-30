@@ -1,4 +1,3 @@
-using UnityEngine;
 using UnityEngine.Events;
 using Photon.Pun;
 
@@ -6,9 +5,8 @@ namespace Game.Player
 {
 	public class Pawn : MonoBehaviourPun
 	{
-		[SerializeField] private Cursor _cursorPrefab;
 		public InputActions InputActions { get; private set; }
-		public Cursor Cursor { get; private set; }
+		public Cursor Cursor { get; set; }
 		public static Pawn Mine { get; private set; }
 
 		public static event UnityAction<Pawn> PlayerJoined;
@@ -24,7 +22,7 @@ namespace Game.Player
 				return;
 			RegisterMine();
 			InputActions = new();
-			Cursor = PhotonNetwork.Instantiate(_cursorPrefab.name, transform.position, transform.rotation).GetComponent<Cursor>();
+			PlayerJoined?.Invoke(this);
 
 			void RegisterMine()
 			{
@@ -43,11 +41,6 @@ namespace Game.Player
 		{
 			if (photonView.AmOwner)
 				InputActions.Cursor.Disable();
-		}
-
-		private void Start()
-		{
-			PlayerJoined?.Invoke(this);
 		}
 	}
 }

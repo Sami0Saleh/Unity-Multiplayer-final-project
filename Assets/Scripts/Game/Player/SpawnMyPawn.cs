@@ -4,11 +4,11 @@ using UnityEngine;
 using Photon.Pun;
 using static Utility;
 
-namespace Game
+namespace Game.Player
 {
-	public class StartGame : MonoBehaviour
+	public class SpawnMyPawn : MonoBehaviour
 	{
-		[SerializeField] private Player.Pawn _pawnPrefab;
+		[SerializeField] private Pawn _pawnPrefab;
 		private IEnumerable<GameObject> StartPositions => Board.Instance.TilesFromMask(Board.STARTING_POSITIONS);
 
         private void Start()

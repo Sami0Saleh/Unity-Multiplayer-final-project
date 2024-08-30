@@ -298,8 +298,8 @@ GameObject:
   - component: {fileID: 1462565764}
   - component: {fileID: 1462565763}
   - component: {fileID: 1462565762}
-  - component: {fileID: 1462565765}
   - component: {fileID: 1462565766}
+  - component: {fileID: 1462565765}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -368,7 +368,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b21c9513f9725834182006eb5c0dade7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerPrefab: {fileID: 4497678083692367122, guid: 7149252fa1554e4488ec84e9c23d0a94, type: 3}
+  _pawnPrefab: {fileID: 4497678083692367122, guid: 7149252fa1554e4488ec84e9c23d0a94, type: 3}
 --- !u!114 &1462565766
 MonoBehaviour:
   m_ObjectHideFlags: 0
