@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Events;
 using Photon.Pun;
 using PunPlayer = Photon.Realtime.Player;
 using Game.Player;
@@ -18,10 +19,12 @@ namespace Game
 			_currentStable = GameManager.Instance.ActivePlayers.Last();
 		}
 
+		public event UnityAction<PunPlayer, PunPlayer> OnTurnChange;
+
 		public int CurrentTurn { get; private set; } = -1;
 		KeyValuePair<PunPlayer, Pawn> Current => _currentTemp.Key == null ? _currentStable : _currentTemp;
 		PunPlayer IEnumerator<PunPlayer>.Current => Current.Key;
-		Player.Pawn IEnumerator<Pawn>.Current => Current.Value;
+		Pawn IEnumerator<Pawn>.Current => Current.Value;
 		object IEnumerator.Current => Current;
 
 		private KeyValuePair<PunPlayer, Pawn> _currentStable;
@@ -32,8 +35,8 @@ namespace Game
 		public bool MoveNext()
 		{
 			var activePlayers = GameManager.Instance.ActivePlayers;
-			bool lastPlayer = activePlayers.Count == 1;
-			if (lastPlayer)
+			PunPlayer lastPlayer = Current.Key;
+			if (activePlayers.Count == 1)
 			{
 				_currentStable = activePlayers.Single();
 				_currentTemp = default;
@@ -42,20 +45,26 @@ namespace Game
 			else if (TryGetOutOfBoardPawn(out var pawn))
 			{
 				_currentTemp = activePlayers.Where(kvp => kvp.Key == pawn.ThisPlayer).Single();
+				InvokeOnTurnChange();
 				return true;
 			}
 			else if (Current.Key == activePlayers.Last().Key)
 			{
 				_currentStable = activePlayers.First();
 				_currentTemp = default;
+				CurrentTurn++;
+				InvokeOnTurnChange();
 				return true;
 			}
 			else
 			{
 				_currentStable = activePlayers.ElementAt(GetIndexOf(_currentStable.Key)+1);
 				_currentTemp = default;
+				InvokeOnTurnChange();
 				return true;
 			}
+
+			void InvokeOnTurnChange() => OnTurnChange?.Invoke(lastPlayer, Current.Key);
 
 			int GetIndexOf(PunPlayer player)
 			{
