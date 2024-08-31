@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Tile = UnityEngine.GameObject;
 
@@ -82,7 +83,7 @@ namespace Game
 			void CreateTiles()
 			{
 				_tiles = new Tile[MAX_NUMBER_OF_TILES];
-				foreach ((var x, var y) in _initialBoardState)
+				foreach ((var x, var y) in _initialBoardState.Indices)
 					CreateTile(x, y);
 				CheckForValidInit(_initialBoardState);
 			}
@@ -110,18 +111,20 @@ namespace Game
 		public IEnumerable<Tile> TilesFromMask(BoardMask mask)
 		{
 			mask &= CurrentBoardState;
-			foreach ((var x, var y) in mask)
-				yield return _tiles[BoardMask.IndexToBitNumber(x, y)];
+			foreach (var bit in mask)
+				yield return _tiles[bit];
 		}
 		#endregion
 		#endregion
 
-		public struct BoardMask : IEquatable<BoardMask>, IEnumerable<(byte, byte)>
+		public struct BoardMask : IEquatable<BoardMask>, IEnumerable< byte>
 		{
 			public const ulong FULL = ulong.MaxValue >> 1;
 
 			private ulong _mask;
 
+			#region FUNCTIONS
+			#region OPERATORS
 			public bool this[byte x, byte y]
 			{
 				readonly get => (_mask & IndexToMask(x, y)) != 0;
@@ -137,32 +140,39 @@ namespace Game
 			public static implicit operator ulong(BoardMask mask) => mask._mask;
 
 			public static implicit operator BoardMask(ulong mask) => new() { _mask = mask };
+			#endregion
 
+			#region CONVERSIONS
 			public static ulong IndexToMask(byte x, byte y) => BitNumberToMask(IndexToBitNumber(x, y));
 
 			public static ulong BitNumberToMask(byte bitNumber) => (ulong)1 << bitNumber;
 
+			public static (byte, byte) BitNumberToIndex(byte bitNumber) => ((byte)(bitNumber % WIDTH), (byte)(bitNumber / WIDTH));
+
 			public static byte IndexToBitNumber(byte x, byte y) => (byte)(x + y * WIDTH);
+			#endregion
+
+			#region CHECKS
+			public readonly bool Contains(byte bitNumber) => (BitNumberToMask(bitNumber) & _mask) != 0;
 
 			public readonly bool Equals(BoardMask other) => _mask == other._mask;
+			#endregion
 
-			public readonly IEnumerator<(byte, byte)> GetEnumerator()
+			#region ENUMERATION
+			public readonly IEnumerator<byte> GetEnumerator()
 			{
-				for (byte y = 0; y < HEIGHT; y++)
+				for (byte b = 0; b <= MAX_NUMBER_OF_TILES; b++)
 				{
-					for (byte x = 0; x < WIDTH; x++)
-					{
-						if ((_mask & IndexToMask(x, y)) != 0)
-							yield return (x, y);
-					}
+					if (Contains(b))
+						yield return b;
 				}
 			}
 
-			readonly IEnumerator IEnumerable.GetEnumerator()
-			{
-				IEnumerator<(byte, byte)> e = GetEnumerator();
-				return e;
-			}
+			readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+			public readonly IEnumerable<(byte, byte)> Indices => this.Select(BitNumberToIndex);
+			#endregion
+			#endregion
 		}
 	}
 }
