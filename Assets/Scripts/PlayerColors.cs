@@ -1,12 +1,14 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
+/// <summary>
+/// Contains data pertaining to associating <see cref="Material"/>s and <see cref="Color"/>s to <see cref="Game.Player.Pawn"/> and <see cref="Photon.Realtime.Player"/>s.
+/// </summary>
 [CreateAssetMenu(fileName = "PlayerColors", menuName = "Scriptable Objects/PlayerColors")]
-public class PlayerColors : ScriptableObject, IDictionary<string, Material>
+public class PlayerColors : ScriptableObject, IReadOnlyDictionary<string, Material>
 {
 	public const string COLOR_PROPERTY = "PlayerColor";
 	public const string DEFAULT_COLOR = "None";
@@ -31,31 +33,15 @@ public class PlayerColors : ScriptableObject, IDictionary<string, Material>
 	public Material this[string key] { get => ((IDictionary<string, Material>)_dict)[key]; set => ((IDictionary<string, Material>)_dict)[key] = value; }
 
 	#region DICTIONARY_OVERRIDES
-	public ICollection<string> Keys => ((IDictionary<string, Material>)_dict).Keys;
+	public IEnumerable<string> Keys => _dict.Keys;
 
-	public ICollection<Material> Values => ((IDictionary<string, Material>)_dict).Values;
+	public IEnumerable<Material> Values => _dict.Values;
 
 	public int Count => ((ICollection<KeyValuePair<string, Material>>)_dict).Count - 1;
 
-	public bool IsReadOnly => true;
-
-	public void Add(string key, Material value) => throw new InvalidOperationException("PlayerColors dictionary is readonly.");
-
-	public void Add(KeyValuePair<string, Material> item) => throw new InvalidOperationException("PlayerColors dictionary is readonly.");
-
-	public void Clear() => throw new InvalidOperationException("PlayerColors dictionary is readonly.");
-
-	public bool Contains(KeyValuePair<string, Material> item) => (_dict as ICollection<KeyValuePair<string, Material>>).Contains(item);
-
-	public bool ContainsKey(string key) => (_dict as IDictionary<string, Material>).ContainsKey(key);
-
-	public void CopyTo(KeyValuePair<string, Material>[] array, int arrayIndex) => (_dict as ICollection<KeyValuePair<string, Material>>).CopyTo(array, arrayIndex);
+	public bool ContainsKey(string key) => _dict.ContainsKey(key);
 
 	public IEnumerator<KeyValuePair<string, Material>> GetEnumerator() => (_dict as IEnumerable<KeyValuePair<string, Material>>).GetEnumerator();
-
-	public bool Remove(string key) => throw new InvalidOperationException("PlayerColors dictionary is readonly.");
-
-	public bool Remove(KeyValuePair<string, Material> item) => throw new InvalidOperationException("PlayerColors dictionary is readonly.");
 
 	public bool TryGetValue(string key, out Material value) => (_dict as IDictionary<string, Material>).TryGetValue(key, out value);
 
@@ -77,6 +63,9 @@ public class PlayerColors : ScriptableObject, IDictionary<string, Material>
 	#endregion
 }
 
+/// <summary>
+/// Assortment of convenience functions extending <see cref="PlayerColors"/>.
+/// </summary>
 public static class PlayerColorsExtension
 {
 	public static bool HasColorProperty(this Hashtable properties) => properties.ContainsKey(PlayerColors.COLOR_PROPERTY);
