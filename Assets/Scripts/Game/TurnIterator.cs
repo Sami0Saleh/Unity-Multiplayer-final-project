@@ -10,7 +10,7 @@ namespace Game
 {
 	/// <summary>
 	/// Keeps track of the current turn order and current acting <see cref="PunPlayer"/>.
-	/// Iterate this to advance the turn order.
+	/// The MasterClient iterates this to advance the turn order.
 	/// </summary>
 	public class TurnIterator : MonoBehaviourPun, IEnumerator<PunPlayer>, IEnumerable<PunPlayer>
 	{
@@ -27,7 +27,7 @@ namespace Game
 
 		private void OnDestroy() => GameManager.Instance.GameStart -= OnGameStart;
 
-		private void Start() => _currentStable = GameManager.Instance.ActivePlayers.Last().Key;
+		private void Start() => _currentStable = GameManager.Instance.ActivePlayers.First().Key;
 
 		private void OnGameStart() => enabled = true;
 
