@@ -28,26 +28,10 @@ PrefabInstance:
       propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1630794972795428178, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
-      propertyPath: m_Materials.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1630794972795428178, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
-      propertyPath: 'm_Materials.Array.data[1]'
-      value: 
-      objectReference: {fileID: 2100000, guid: aca645d1b5fe7f34f949b1d8176ff164, type: 2}
     - target: {fileID: 6952581982351725339, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
       propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6952581982351725339, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
-      propertyPath: m_Materials.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6952581982351725339, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
-      propertyPath: 'm_Materials.Array.data[1]'
-      value: 
-      objectReference: {fileID: 2100000, guid: aca645d1b5fe7f34f949b1d8176ff164, type: 2}
     - target: {fileID: 7038496851037034636, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
       propertyPath: m_CastShadows
       value: 0
@@ -148,9 +132,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _colorConfig: {fileID: 11400000, guid: 59f0b44d65fa7b440b6af1910403bdcb, type: 2}
-  knightMat: {fileID: 5210487481128305043, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}
-  bodyTopHalf: {fileID: 8383680158953917154}
-  bodyBottomHalf: {fileID: 181806131933185195}
+  _renderers:
+  - {fileID: 181806131933185195}
+  - {fileID: 8383680158953917154}
 --- !u!137 &8383680158953917154 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 6952581982351725339, guid: 98603f9aa9400c14590c10fa9df31779, type: 3}

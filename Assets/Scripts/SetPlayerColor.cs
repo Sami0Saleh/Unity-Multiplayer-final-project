@@ -1,14 +1,13 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 
-public class PlayerOutlineSelector : MonoBehaviourPun
+public class SetPlayerColor : MonoBehaviourPun
 {
 	[SerializeField] private PlayerColors _colorConfig;
-	[SerializeField] private Material knightMat;
-    [SerializeField] private Renderer bodyTopHalf;
-    [SerializeField] private Renderer bodyBottomHalf;
+    [SerializeField] private List<Renderer> _renderers;
 
 	public Player ThisPlayer => photonView.Owner;
 
@@ -26,7 +25,7 @@ public class PlayerOutlineSelector : MonoBehaviourPun
 
 	public void SetOutline(Material mat)
     {
-		bodyTopHalf.SetMaterials(new List<Material>() {knightMat, mat});
-        bodyBottomHalf.SetMaterials(new List<Material>() {knightMat, mat});
+		foreach (Renderer renderer in _renderers)
+			renderer.SetMaterials(renderer.materials.Append(mat).ToList());
     }
 }

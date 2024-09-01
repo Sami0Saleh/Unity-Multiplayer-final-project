@@ -185,6 +185,7 @@ GameObject:
   - component: {fileID: 2768904840649043187}
   - component: {fileID: 2963582785093949732}
   - component: {fileID: 1411884053682763223}
+  - component: {fileID: 8986426328423920011}
   m_Layer: 0
   m_Name: Player Cursor
   m_TagString: Untagged
@@ -274,6 +275,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _camera: {fileID: 0}
   <Target>k__BackingField: {fileID: 771532608116789204}
+--- !u!114 &8986426328423920011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5485945444279674405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c8b601d2fe62c544afd18910a41c375, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _colorConfig: {fileID: 11400000, guid: 59f0b44d65fa7b440b6af1910403bdcb, type: 2}
+  _renderers:
+  - {fileID: 4040512864780152483}
+  - {fileID: 2429619131182427578}
 --- !u!1 &8938729038810142954
 GameObject:
   m_ObjectHideFlags: 0
