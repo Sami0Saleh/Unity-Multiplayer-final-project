@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7473303096218599689
+--- !u!114 &-4480540493994383192
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,8 +20,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CloudShader3
-  m_Shader: {fileID: -6465566751694194690, guid: 0982515f23a8c7c46863788df5d0be97, type: 3}
+  m_Name: DissolveMaterial
+  m_Shader: {fileID: -6465566751694194690, guid: 915625c0ad83c4540ae56ad222bef4b7, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -37,10 +37,6 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _CloudTexture:
-        m_Texture: {fileID: 2800000, guid: 4814dd85f19886045b28b9a5600d0fd9, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -55,20 +51,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _DissolveEdgeWidth: 0.08
     - _DissolveValue: 1
-    - _EffectSmoothing: 5
-    - _GlowScale: 10
-    - _GlowSmoothing: 1.7
+    - _EdgeWidth: 0.03
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Scale: 10
-    - _Scle: 7.94
-    - _Speed: 0.05
     m_Colors:
-    - _DissolveColor: {r: 1.417303, g: 0.3561809, b: 0, a: 0}
-    - _EffectColor: {r: 8.802401, g: 8.802401, b: 8.802401, a: 1}
-    - _GlowColor: {r: 1.371484, g: 2.528302, b: 2.516974, a: 0}
-    - _Tiling: {r: 1, g: 1, b: 0, a: 0}
+    - _EdgeColor: {r: 1.417303, g: 0.3561809, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
