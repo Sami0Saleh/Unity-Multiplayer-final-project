@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Photon.Pun;
@@ -10,10 +11,11 @@ namespace Game
 	public class GameManager : MonoBehaviourPunCallbacks
 	{
 		private const int MENU_SCENE_INDEX = 0;
-		private const string GAME_OVER = nameof(OnGameOver);
+		private const string GAME_OVER = nameof(GameOverRPC);
+		private const string GAME_START = nameof(GameStartRPC);
 		public static GameManager Instance;
 
-		public event UnityAction AllPlayerConnected;
+		public event UnityAction GameStart;
 		public event UnityAction<Photon.Realtime.Player> GameOver;
 
 		public Dictionary<Photon.Realtime.Player, Pawn> ActivePlayers { get; private set; }
@@ -44,7 +46,14 @@ namespace Game
 		}
 
 		[PunRPC]
-		public void OnGameOver(Photon.Realtime.Player winningPlayer, PhotonMessageInfo info)
+		public void GameStartRPC(PhotonMessageInfo info)
+		{
+			Debug.Assert(info.Sender.IsMasterClient, "Game Start can only be sent by master client");
+			GameStart?.Invoke();
+		}
+
+		[PunRPC]
+		public void GameOverRPC(Photon.Realtime.Player winningPlayer, PhotonMessageInfo info)
 		{
 			Debug.Assert(info.Sender.IsMasterClient, "Game Over can only be sent by master client");
 			GameOver?.Invoke(winningPlayer);
@@ -53,25 +62,23 @@ namespace Game
 				StartCoroutine(LeaveMatch());
 		}
 
-		public void TriggerGameOver(Photon.Realtime.Player winningPlayer)
+		private void TriggerGameOver(Photon.Realtime.Player winningPlayer)
 		{
-			photonView.RPC(GAME_OVER, RpcTarget.All, winningPlayer);
+			photonView.RPC(GAME_OVER, RpcTarget.AllViaServer, winningPlayer);
 		}
 
 		private void OnPlayerEliminated(Pawn pawn)
 		{
-			if (!PhotonNetwork.IsMasterClient)
-				return;
 			ActivePlayers.Remove(pawn.Owner);
-			if (ActivePlayers.Count <= 1)
-				TriggerGameOver(pawn.Owner);
+			if (PhotonNetwork.IsMasterClient && ActivePlayers.Count <= 1)
+				TriggerGameOver(ActivePlayers.Single().Key);
 		}
 
 		private void OnPlayerJoined(Pawn pawn)
 		{
 			ActivePlayers.Add(pawn.Owner, pawn);
-			if (ActivePlayers.Count == PhotonNetwork.CurrentRoom.PlayerCount)
-				AllPlayerConnected?.Invoke();
+			if (PhotonNetwork.IsMasterClient && ActivePlayers.Count == PhotonNetwork.CurrentRoom.PlayerCount)
+				photonView.RPC(GAME_START, RpcTarget.AllViaServer);
 		}
 
 		IEnumerator LeaveMatch()

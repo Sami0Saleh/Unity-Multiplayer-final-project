@@ -23,13 +23,13 @@ namespace Game
 		private PunPlayer _currentStable;
 		private PunPlayer _currentTemp;
 
-		private void Awake() => GameManager.Instance.AllPlayerConnected += OnAllPlayersConnected;
+		private void Awake() => GameManager.Instance.GameStart += OnGameStart;
 
-		private void OnDestroy() => GameManager.Instance.AllPlayerConnected -= OnAllPlayersConnected;
+		private void OnDestroy() => GameManager.Instance.GameStart -= OnGameStart;
 
 		private void Start() => _currentStable = GameManager.Instance.ActivePlayers.Last().Key;
 
-		private void OnAllPlayersConnected() => enabled = true;
+		private void OnGameStart() => enabled = true;
 
 		public bool MoveNext()
 		{

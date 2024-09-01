@@ -37,12 +37,11 @@ MonoBehaviour:
   - ClickRpc
   - DestroyRpc
   - DisplayChatMessage
-  - GameOver
-  - ReceiveDamage
+  - 
+  - GameOverRPC
+  - GameStartRPC
   - RequestColor
-  - SetTakenPopup
   - ReturnColor
-  - OnGameOver
   DisableAutoOpenWizard: 1
-  ShowSettings: 1
-  DevRegionSetOnce: 1
+  ShowSettings: 0
+  DevRegionSetOnce: 0
