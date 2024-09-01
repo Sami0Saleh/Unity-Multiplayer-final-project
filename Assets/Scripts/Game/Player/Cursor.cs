@@ -9,6 +9,7 @@ namespace Game.Player
 
 		private void Awake()
 		{
+			gameObject.name = $"{photonView.Owner.NickName}'s Cursor";
 			if (!photonView.AmOwner)
 				_mousePositionTracker.enabled = false;
 		}

@@ -9,7 +9,6 @@ namespace Game.Player
 
 		private void Start()
 		{
-			transform.SetParent(Board.Instance.PlayerParent);
 			if (!photonView.AmOwner)
 				return;
 			var cursor = PhotonNetwork.Instantiate(_cursorPrefab.name, transform.position, transform.rotation).GetComponent<Cursor>();
