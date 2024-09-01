@@ -117,7 +117,7 @@ namespace Game
 		#endregion
 		#endregion
 
-		public struct BoardMask : IEquatable<BoardMask>, IEnumerable< byte>
+		public struct BoardMask : IEquatable<BoardMask>, IEnumerable<byte>
 		{
 			public const ulong FULL = ulong.MaxValue >> 1;
 
@@ -153,6 +153,8 @@ namespace Game
 			#endregion
 
 			#region CHECKS
+			public readonly bool Empty() => _mask == 0;
+
 			public readonly bool Contains(byte bitNumber) => (BitNumberToMask(bitNumber) & _mask) != 0;
 
 			public readonly bool Equals(BoardMask other) => _mask == other._mask;
