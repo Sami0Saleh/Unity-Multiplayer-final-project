@@ -9,10 +9,8 @@ namespace Game.Player
 
 		private void Start()
 		{
-			if (!photonView.AmOwner)
-				return;
-			var cursor = PhotonNetwork.Instantiate(_cursorPrefab.name, transform.position, transform.rotation).GetComponent<Cursor>();
-			GameManager.Instance.ActivePlayers[photonView.Owner].Cursor = cursor;
+			if (photonView.AmOwner)
+				PhotonNetwork.Instantiate(_cursorPrefab.name, transform.position, transform.rotation);
 			Destroy(this);
 		}
 	}

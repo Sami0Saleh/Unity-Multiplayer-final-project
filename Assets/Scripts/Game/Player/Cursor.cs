@@ -9,9 +9,11 @@ namespace Game.Player
 
 		private void Awake()
 		{
-			gameObject.name = $"{photonView.Owner.NickName}'s Cursor";
+			var owner = photonView.Owner;
+			GameManager.Instance.ActivePlayers[owner].Cursor = this;
+			gameObject.name = $"{owner.NickName}'s Cursor";
 			if (!photonView.AmOwner)
-				_mousePositionTracker.enabled = false;
+				Destroy(_mousePositionTracker);
 		}
 	}
 }
