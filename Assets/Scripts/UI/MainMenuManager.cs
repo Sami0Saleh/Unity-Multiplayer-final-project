@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using Game.Player.Visuals;
 
 namespace UI
 {

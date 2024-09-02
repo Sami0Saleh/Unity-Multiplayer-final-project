@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using Photon.Realtime;
 using Photon.Pun;
+using Game.Player.Visuals;
 
 namespace UI
 {
