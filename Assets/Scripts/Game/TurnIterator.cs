@@ -46,33 +46,21 @@ namespace Game
 			PunPlayer lastPlayer = Current;
 			if (activePlayers.Count == 1)
 			{
-				_currentStable = activePlayers.Single().Key;
-				_currentTemp = default;
+				GameManager.Instance.TriggerGameOver(activePlayers.Single().Key);
 				return false;
-			}
-			else if (TryGetOutOfBoardPawn(out var pawn))
-			{
-				_currentTemp = pawn.Owner;
-				InvokeOnTurnChange(_currentTemp);
-				return true;
-			}
-			else if (_currentStable == activePlayers.Last().Key)
-			{
-				_currentStable = activePlayers.First().Key;
-				_currentTemp = default;
-				CurrentTurn++;
-				InvokeOnTurnChange(_currentStable);
-				return true;
 			}
 			else
 			{
-				_currentStable = activePlayers.ElementAt(GetIndexOf(_currentStable)+1).Key;
-				_currentTemp = default;
-				InvokeOnTurnChange(_currentStable);
+				if (TryGetOutOfBoardPawn(out var pawn)) // Give priority to Pawns out of board
+					InvokeOnTurnChange(new TurnChangeEvent(pawn.Owner, lastPlayer, CurrentTurn));
+				else if (CurrentPlayerIsLast()) // Loop back to the first player and advance the turn counter
+					InvokeOnTurnChange(new TurnChangeEvent(activePlayers.First().Key, lastPlayer, CurrentTurn + 1));
+				else // Continue to next player normally
+					InvokeOnTurnChange(new TurnChangeEvent(GetNextPlayer(), lastPlayer, CurrentTurn));
 				return true;
 			}
 
-			void InvokeOnTurnChange(PunPlayer current) => photonView.RPC(TURN_CHANGE, RpcTarget.All, new TurnChangeEvent(current, lastPlayer, CurrentTurn));
+			void InvokeOnTurnChange(TurnChangeEvent turnChangeEvent) => photonView.RPC(TURN_CHANGE, RpcTarget.All, turnChangeEvent);
 
 			int GetIndexOf(PunPlayer player)
 			{
@@ -85,6 +73,10 @@ namespace Game
 				}
 				return index;
 			}
+
+			PunPlayer GetNextPlayer() => activePlayers.ElementAt(GetIndexOf(_currentStable) + 1).Key;
+
+			bool CurrentPlayerIsLast() => _currentStable == activePlayers.Last().Key;
 
 			bool TryGetOutOfBoardPawn(out Pawn pawn)
 			{

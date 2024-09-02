@@ -50,14 +50,14 @@ namespace Game
 		}
 
 		[PunRPC]
-		public void GameStartRPC(PhotonMessageInfo info)
+		private void GameStartRPC(PhotonMessageInfo info)
 		{
 			Debug.Assert(info.Sender.IsMasterClient, "Game Start can only be sent by master client");
 			GameStart?.Invoke();
 		}
 
 		[PunRPC]
-		public void GameOverRPC(Photon.Realtime.Player winningPlayer, PhotonMessageInfo info)
+		private void GameOverRPC(Photon.Realtime.Player winningPlayer, PhotonMessageInfo info)
 		{
 			Debug.Assert(info.Sender.IsMasterClient, "Game Over can only be sent by master client");
 			GameOver?.Invoke(winningPlayer);
@@ -66,7 +66,7 @@ namespace Game
 				StartCoroutine(LeaveMatch());
 		}
 
-		private void TriggerGameOver(Photon.Realtime.Player winningPlayer)
+		public void TriggerGameOver(Photon.Realtime.Player winningPlayer)
 		{
 			const string GAME_OVER = nameof(GameOverRPC);
 			photonView.RPC(GAME_OVER, RpcTarget.AllViaServer, winningPlayer);
