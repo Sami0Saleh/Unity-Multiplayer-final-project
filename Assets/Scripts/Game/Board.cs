@@ -18,8 +18,8 @@ namespace Game
 		public static BoardMask STARTING_POSITIONS =
 			BoardMask.IndexToMask(0, 1) |
 			BoardMask.IndexToMask(WIDTH - 1, 1) |
-			BoardMask.IndexToMask(0, HEIGHT-1) |
-			BoardMask.IndexToMask(WIDTH - 1, HEIGHT -1);
+			BoardMask.IndexToMask(0, HEIGHT-2) |
+			BoardMask.IndexToMask(WIDTH - 1, HEIGHT -2);
 		#endregion
 
 		#region VARIABLES_AND_PROPERTIES
