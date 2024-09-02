@@ -11,8 +11,6 @@ namespace Game
 	public class GameManager : MonoBehaviourPunCallbacks
 	{
 		private const int MENU_SCENE_INDEX = 0;
-		private const string GAME_OVER = nameof(GameOverRPC);
-		private const string GAME_START = nameof(GameStartRPC);
 		public static GameManager Instance;
 
 		public event UnityAction GameStart;
@@ -22,13 +20,19 @@ namespace Game
 
 		private void Awake()
 		{
-			if (Instance != null)
-			{
-				Destroy(gameObject);
+			if (!TryRegisterSingleton())
 				return;
-			}
-			Instance = this;
 			ActivePlayers = new();
+
+			bool TryRegisterSingleton()
+			{
+				bool created = Instance == null;
+				if (created)
+					Instance = this;
+				else
+					Destroy(gameObject);
+				return created;
+			}
 		}
 
 		public override void OnEnable()
@@ -64,6 +68,7 @@ namespace Game
 
 		private void TriggerGameOver(Photon.Realtime.Player winningPlayer)
 		{
+			const string GAME_OVER = nameof(GameOverRPC);
 			photonView.RPC(GAME_OVER, RpcTarget.AllViaServer, winningPlayer);
 		}
 
@@ -76,6 +81,7 @@ namespace Game
 
 		private void OnPlayerJoined(Pawn pawn)
 		{
+			const string GAME_START = nameof(GameStartRPC);
 			ActivePlayers.Add(pawn.Owner, pawn);
 			if (PhotonNetwork.IsMasterClient && ActivePlayers.Count == PhotonNetwork.CurrentRoom.PlayerCount)
 				photonView.RPC(GAME_START, RpcTarget.AllViaServer);
