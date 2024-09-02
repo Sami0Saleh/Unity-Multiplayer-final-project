@@ -25,10 +25,10 @@ namespace Game
 		#region VARIABLES_AND_PROPERTIES
 		public static Board Instance;
 
+		[field: SerializeField] public Grid Grid { get; private set; }
 		[field: SerializeField] public Transform TilesParent { get; private set; }
 		[field: SerializeField] public Transform PlayerParent { get; private set; }
 		[SerializeField] private Tile _tilePrefab;
-		[SerializeField] private Grid _grid;
 		[SerializeField, HideInInspector] private BoardMask _initialBoardState;
 		private Tile[] _tiles;
 
@@ -91,7 +91,7 @@ namespace Game
 			Tile CreateTile(byte x, byte y)
 			{
 				var cell = IndexToCell(x, y);
-				var tile = Instantiate(_tilePrefab, _grid.CellToWorld(cell), Quaternion.identity, TilesParent);
+				var tile = Instantiate(_tilePrefab, Grid.CellToWorld(cell), Quaternion.identity, TilesParent);
 				tile.name = $"Tile @ {x}, {y}";
 				var bitNumber = BoardMask.IndexToBitNumber(x, y);
 				_tiles[bitNumber] = tile;

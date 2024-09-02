@@ -20,7 +20,7 @@ namespace Game
 		public event UnityAction<TurnChangeEvent> OnTurnChange;
 
 		public int CurrentTurn { get; private set; } = 0;
-		public PunPlayer Current { get; private set; }
+		public PunPlayer Current => _currentTemp ?? _currentStable;
 		object IEnumerator.Current => Current;
 
 		private PunPlayer _currentStable;
@@ -88,9 +88,8 @@ namespace Game
 
 			bool TryGetOutOfBoardPawn(out Pawn pawn)
 			{
-				pawn = null;
-				return false;
-				throw new System.NotImplementedException(); // TODO Implement
+				pawn = GameManager.Instance.ActivePlayers.Select(kvp => kvp.Value).FirstOrDefault(p => !p.IsOnBoard);
+				return pawn != null;
 			}
 		}
 
@@ -107,7 +106,14 @@ namespace Game
 		{
 			if (!info.Sender.IsMasterClient || !turnChange.Valid)
 				return;
-			Current = turnChange.currentPlayer;
+			var currentPlayer = turnChange.currentPlayer;
+			if (GameManager.Instance.ActivePlayers[currentPlayer].IsOnBoard)
+			{
+				_currentStable = currentPlayer;
+				_currentTemp = default;
+			}
+			else
+				_currentTemp = currentPlayer;
 			CurrentTurn = turnChange.turn;
 			OnTurnChange?.Invoke(turnChange);
 		}
