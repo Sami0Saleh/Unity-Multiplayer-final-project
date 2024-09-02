@@ -44,7 +44,7 @@ namespace Game.Player
 			}
 		}
 
-		private void OnDestroy() => InputActions.Dispose();
+		private void OnDestroy() => InputActions?.Dispose();
 
 		private void OnEnable()
 		{
