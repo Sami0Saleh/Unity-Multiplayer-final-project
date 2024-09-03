@@ -18,6 +18,8 @@ namespace Game.Player
 
 		public static event UnityAction<Pawn> PlayerJoined;
 		public static event UnityAction<Pawn> PlayerEliminated;
+		public event UnityAction<Pawn> TurnStart;
+		public event UnityAction<Pawn> TurnEnd;
 
 		public Photon.Realtime.Player Owner => photonView.Owner;
 
@@ -49,6 +51,7 @@ namespace Game.Player
 		private void OnEnable()
 		{
 			PlayerJoined?.Invoke(this);
+			TurnIterator.Instance.OnTurnChange += OnTurnChange;
 			if (photonView.AmController)
 				InputActions.Cursor.Enable();
 		}
@@ -56,8 +59,17 @@ namespace Game.Player
 		private void OnDisable()
 		{
 			PlayerEliminated?.Invoke(this);
+			TurnIterator.Instance.OnTurnChange -= OnTurnChange;
 			if (photonView.AmController)
 				InputActions.Cursor.Disable();
+		}
+
+		private void OnTurnChange(TurnIterator.TurnChangeEvent turnChangeEvent)
+		{
+			if (turnChangeEvent.currentPlayer == Owner)
+				TurnStart?.Invoke(this);
+			else if (turnChangeEvent.lastPlayer == Owner)
+				TurnEnd?.Invoke(this);
 		}
 	}
 }

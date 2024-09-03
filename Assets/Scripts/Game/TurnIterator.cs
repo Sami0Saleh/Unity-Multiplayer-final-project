@@ -15,6 +15,8 @@ namespace Game
 	/// </summary>
 	public class TurnIterator : MonoBehaviourPun, IEnumerator<PunPlayer>, IEnumerable<PunPlayer>
 	{
+		public static TurnIterator Instance { get; private set; }
+
 		private const string TURN_CHANGE = nameof(OnTurnChangeRPC);
 
 		public event UnityAction<TurnChangeEvent> OnTurnChange;
@@ -26,7 +28,22 @@ namespace Game
 		private PunPlayer _currentStable;
 		private PunPlayer _currentTemp;
 
-		private void Awake() => GameManager.Instance.GameStart += OnGameStart;
+		private void Awake()
+		{
+			if (!TryRegisterSingleton())
+				return;
+			GameManager.Instance.GameStart += OnGameStart;
+
+			bool TryRegisterSingleton()
+			{
+				bool created = Instance == null;
+				if (created)
+					Instance = this;
+				else
+					Destroy(gameObject);
+				return created;
+			}
+		}
 
 		private void OnDestroy() => GameManager.Instance.GameStart -= OnGameStart;
 
