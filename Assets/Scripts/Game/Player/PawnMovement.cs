@@ -16,15 +16,11 @@ namespace Game.Player
 
 		public event UnityAction<PawnMovementEvent> OnPawnMoved;
 
-		private void OnEnable()
-		{
-			TurnIterator.Instance.OnTurnChange += OnTurnChange;
-		}
+		private void Awake() => enabled = photonView.AmController;
 
-		private void OnDisable()
-		{
-			TurnIterator.Instance.OnTurnChange -= OnTurnChange;
-		}
+		private void OnEnable() => TurnIterator.Instance.OnTurnChange += OnTurnChange;
+
+		private void OnDisable() => TurnIterator.Instance.OnTurnChange -= OnTurnChange;
 
 		private void OnTurnChange(TurnIterator.TurnChangeEvent turnChangeEvent)
 		{
