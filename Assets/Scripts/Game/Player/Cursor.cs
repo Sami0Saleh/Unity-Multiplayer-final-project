@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using Photon.Pun;
 using PunPlayer = Photon.Realtime.Player;
 
@@ -8,10 +9,11 @@ namespace Game.Player
 	public class Cursor : MonoBehaviourPun
 	{
 		[SerializeField] private MousePositionTracker _mousePositionTracker;
-		private Grid _grid;
-		private Vector2Int _lastPosition;
+		private Board _board;
+		private byte _currentPosition;
 
-		public event UnityAction<Vector2Int> PositionChanged;
+		[Tooltip("Called whenever the cursor changes the tile on which it points.")] public event UnityAction<byte> PositionChanged;
+		[Tooltip("Called once the player picks a tile and clicks it.")] public event UnityAction<byte> PositionPicked;
 
 		public PunPlayer Owner => photonView.Owner;
 		public Pawn OwnerPawn => GameManager.Instance.ActivePlayers[Owner];
@@ -26,16 +28,33 @@ namespace Game.Player
 				enabled = false;
 		}
 
-		private void Start() => _grid = Board.Instance.Grid;
+		private void OnEnable()
+		{
+			OwnerPawn.InputActions.Cursor.Select.started += OnPick;
+		}
+
+		private void OnDisable()
+		{
+			OwnerPawn.InputActions.Cursor.Select.started -= OnPick;
+		}
+
+		private void Start() => _board = Board.Instance;
 
 		private void Update()
 		{
-			var currentPosition = (Vector2Int)_grid.WorldToCell(transform.position);
-			if (currentPosition != _lastPosition)
+			var currentPosition = _board.WorldPositionToBitNumber(transform.position);
+			if (_currentPosition != currentPosition)
 			{
-				_lastPosition = currentPosition;
+				_currentPosition = currentPosition;
 				PositionChanged?.Invoke(currentPosition);
 			}
+		}
+
+		private void OnPick(InputAction.CallbackContext context)
+		{
+			if (!_board.CurrentBoardState.Contains(_currentPosition))
+				return;
+			PositionPicked?.Invoke(_currentPosition);
 		}
 	}
 }

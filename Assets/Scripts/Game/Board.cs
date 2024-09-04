@@ -120,9 +120,17 @@ namespace Game
 		#endregion
 
 		#region INDEXING_AND_ENUMERATION
+		public byte WorldPositionToBitNumber(Vector3 worldPosition) => CellToBitNumber(Grid.WorldToCell(worldPosition));
+
 		public static Vector3Int IndexToCell(byte x, byte y) => new(y + Y_OFFSET, x + X_OFFSET);
 
 		public (byte, byte) CellToIndex(Vector3Int cell) => ((byte)(cell.y - Y_OFFSET), (byte)(cell.x - X_OFFSET));
+
+		public byte CellToBitNumber(Vector3Int cell)
+		{
+			(byte x, byte y) = CellToIndex(cell);
+			return BoardMask.IndexToBitNumber(x, y);
+		}
 
 		public Tile TileFromBitNumber(byte bit) => _tiles[bit];
 

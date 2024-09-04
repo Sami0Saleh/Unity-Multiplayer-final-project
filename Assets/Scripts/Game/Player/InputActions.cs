@@ -38,6 +38,15 @@ namespace Game.Player
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Select"",
+                    ""type"": ""Button"",
+                    ""id"": ""f7345336-d681-4dbb-baf3-97c154e12df5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -49,6 +58,17 @@ namespace Game.Player
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse;Touch"",
                     ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fc78ebb3-b243-4967-b480-688f903cd4b1"",
+                    ""path"": ""<Pointer>/press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Select"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -71,7 +91,7 @@ namespace Game.Player
                     ""name"": ""Submit"",
                     ""type"": ""Button"",
                     ""id"": ""7607c7b6-cd76-4816-beef-bd0341cfe950"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -593,6 +613,7 @@ namespace Game.Player
             // Cursor
             m_Cursor = asset.FindActionMap("Cursor", throwIfNotFound: true);
             m_Cursor_Look = m_Cursor.FindAction("Look", throwIfNotFound: true);
+            m_Cursor_Select = m_Cursor.FindAction("Select", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -673,11 +694,13 @@ namespace Game.Player
         private readonly InputActionMap m_Cursor;
         private List<ICursorActions> m_CursorActionsCallbackInterfaces = new List<ICursorActions>();
         private readonly InputAction m_Cursor_Look;
+        private readonly InputAction m_Cursor_Select;
         public struct CursorActions
         {
             private @InputActions m_Wrapper;
             public CursorActions(@InputActions wrapper) { m_Wrapper = wrapper; }
             public InputAction @Look => m_Wrapper.m_Cursor_Look;
+            public InputAction @Select => m_Wrapper.m_Cursor_Select;
             public InputActionMap Get() { return m_Wrapper.m_Cursor; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -690,6 +713,9 @@ namespace Game.Player
                 @Look.started += instance.OnLook;
                 @Look.performed += instance.OnLook;
                 @Look.canceled += instance.OnLook;
+                @Select.started += instance.OnSelect;
+                @Select.performed += instance.OnSelect;
+                @Select.canceled += instance.OnSelect;
             }
 
             private void UnregisterCallbacks(ICursorActions instance)
@@ -697,6 +723,9 @@ namespace Game.Player
                 @Look.started -= instance.OnLook;
                 @Look.performed -= instance.OnLook;
                 @Look.canceled -= instance.OnLook;
+                @Select.started -= instance.OnSelect;
+                @Select.performed -= instance.OnSelect;
+                @Select.canceled -= instance.OnSelect;
             }
 
             public void RemoveCallbacks(ICursorActions instance)
@@ -844,6 +873,7 @@ namespace Game.Player
         public interface ICursorActions
         {
             void OnLook(InputAction.CallbackContext context);
+            void OnSelect(InputAction.CallbackContext context);
         }
         public interface IUIActions
         {
