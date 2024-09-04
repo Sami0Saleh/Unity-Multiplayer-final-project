@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Tile = UnityEngine.GameObject;
+using Game.Player;
 
 namespace Game
 {
@@ -106,10 +107,28 @@ namespace Game
 
 			void CheckForValidInit(BoardMask input) => Debug.Assert(CurrentBoardState == input, "CurrentBoardState must match the input from GetBoardMaskForTileCreation.");
 		}
+
+		private void OnEnable()
+		{
+			Pawn.PlayerJoined += OnPlayerJoined;
+			Pawn.PlayerEliminated += OnPlayerEliminated;
+		}
+
+		private void OnDisable()
+		{
+			Pawn.PlayerJoined -= OnPlayerJoined;
+			Pawn.PlayerEliminated -= OnPlayerEliminated;
+		}
 		#endregion
 
 		#region GAMEPLAY
-		public void RemoveTiles(IEnumerable<byte> toRemove)
+		private void OnPlayerJoined(Pawn pawn) => pawn.Movement.OnPawnMoved += OnPlayerMoved;
+
+		private void OnPlayerEliminated(Pawn pawn) => pawn.Movement.OnPawnMoved -= OnPlayerMoved;
+
+		private void OnPlayerMoved(PawnMovement.PawnMovementEvent movementEvent) => RemoveTiles(movementEvent.AllStepsButLast);
+
+		private void RemoveTiles(IEnumerable<byte> toRemove)
 		{
 			var removedTilesMask = BoardMask.BitNumbersToMask(toRemove);
 			OnTilesRemoved?.Invoke(toRemove);

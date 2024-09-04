@@ -82,10 +82,8 @@ namespace Game.Player
 			if (movementEvent.player != Owner)
 				return;
 			Position = movementEvent.steps.Last();
-			var board = Board.Instance;
-			var tileTransform = board.BitNumberToTile(Position).transform;
+			var tileTransform = Board.Instance.BitNumberToTile(Position).transform;
 			transform.SetPositionAndRotation(tileTransform.position, tileTransform.rotation);
-			board.RemoveTiles(movementEvent.AllStepsButLast);
 		}
 	}
 }
