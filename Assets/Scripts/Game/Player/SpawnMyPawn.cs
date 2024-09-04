@@ -9,7 +9,7 @@ namespace Game.Player
 	public class SpawnMyPawn : MonoBehaviour
 	{
 		[SerializeField] private Pawn _pawnPrefab;
-		private IEnumerable<GameObject> StartPositions => Board.Instance.TilesFromMask(Board.STARTING_POSITIONS);
+		private IEnumerable<GameObject> StartPositions => Board.Instance.MaskToTiles(Board.STARTING_POSITIONS);
 
         private void Start()
 		{

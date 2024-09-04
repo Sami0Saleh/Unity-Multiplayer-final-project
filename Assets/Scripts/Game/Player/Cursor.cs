@@ -49,7 +49,7 @@ namespace Game.Player
 		private void Update()
 		{
 			var currentPosition = _board.WorldPositionToBitNumber(transform.position);
-			if (_currentPosition != currentPosition)
+			if (_currentPosition != currentPosition && _board.CurrentBoardState.Contains(currentPosition))
 			{
 				_currentPosition = currentPosition;
 				PositionChanged?.Invoke(currentPosition);

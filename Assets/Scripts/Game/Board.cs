@@ -88,17 +88,17 @@ namespace Game
 			void CreateTiles()
 			{
 				_tiles = new Tile[MAX_NUMBER_OF_TILES];
-				foreach ((var x, var y) in _initialBoardState.Indices)
-					CreateTile(x, y);
+				foreach (var bitNumber in _initialBoardState)
+					CreateTile(bitNumber);
 				CheckForValidInit(_initialBoardState);
 			}
 
-			Tile CreateTile(byte x, byte y)
+			Tile CreateTile(byte bitNumber)
 			{
+				(var x, var y) = BoardMask.BitNumberToIndex(bitNumber);
 				var cell = IndexToCell(x, y);
 				var tile = Instantiate(_tilePrefab, Grid.CellToWorld(cell), Quaternion.identity, TilesParent);
 				tile.name = $"Tile @ {x}, {y}";
-				var bitNumber = BoardMask.IndexToBitNumber(x, y);
 				_tiles[bitNumber] = tile;
 				CurrentBoardState |= BoardMask.BitNumberToMask(bitNumber);
 				return tile;
@@ -113,7 +113,7 @@ namespace Game
 		{
 			var removedTilesMask = BoardMask.BitNumbersToMask(toRemove);
 			OnTilesRemoved?.Invoke(toRemove);
-			foreach (var tile in TilesFromMask(removedTilesMask))
+			foreach (var tile in MaskToTiles(removedTilesMask))
 				Destroy(tile);
 			CurrentBoardState &= ~removedTilesMask;
 		}
@@ -132,13 +132,13 @@ namespace Game
 			return BoardMask.IndexToBitNumber(x, y);
 		}
 
-		public Tile TileFromBitNumber(byte bit) => _tiles[bit];
+		public Tile BitNumberToTile(byte bit) => _tiles[bit];
 
-		public IEnumerable<Tile> TilesFromMask(BoardMask mask)
+		public IEnumerable<Tile> MaskToTiles(BoardMask mask)
 		{
 			mask &= CurrentBoardState;
 			foreach (var bit in mask)
-				yield return TileFromBitNumber(bit);
+				yield return BitNumberToTile(bit);
 		}
 		#endregion
 		#endregion

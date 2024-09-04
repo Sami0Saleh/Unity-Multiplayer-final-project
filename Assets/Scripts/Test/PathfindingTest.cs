@@ -12,7 +12,7 @@ namespace Test
 		[ContextMenu("ShowRadius")]
 		private void ShowRadius()
 		{
-			foreach (var tile in Board.Instance.TilesFromMask(Pathfinding.GetArea(_x, _y, _radius)))
+			foreach (var tile in Board.Instance.MaskToTiles(Pathfinding.GetArea(_x, _y, _radius)))
 				tile.GetComponentInChildren<MeshRenderer>().material.color = _color;
 		}
 	}
