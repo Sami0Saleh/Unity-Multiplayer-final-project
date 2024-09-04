@@ -16,12 +16,6 @@ namespace Game.Player
 
 		public event UnityAction<PawnMovementEvent> OnPawnMoved;
 
-		private void Awake()
-		{
-			if (!photonView.AmOwner)
-				enabled = false;
-		}
-
 		private void OnEnable()
 		{
 			TurnIterator.Instance.OnTurnChange += OnTurnChange;
@@ -48,7 +42,6 @@ namespace Game.Player
 
 		private void OnPositionPicked(byte position)
 		{
-			Debug.Log("Moved to " + Board.BoardMask.BitNumberToIndex(position)); // TODO Debug
 			const string PAWN_MOVED = nameof(OnPawnMovedRPC);
 			photonView.RPC(PAWN_MOVED, RpcTarget.All, new PawnMovementEvent(photonView.Owner, new byte[] { _pawn.Position, position })); // TODO Pass movement path
 		}
