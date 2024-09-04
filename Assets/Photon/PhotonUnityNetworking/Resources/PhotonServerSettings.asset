@@ -43,6 +43,7 @@ MonoBehaviour:
   - RequestColor
   - ReturnColor
   - OnTurnChangeRPC
+  - OnPawnMovedRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 0

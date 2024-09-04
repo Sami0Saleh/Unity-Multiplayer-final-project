@@ -7,22 +7,13 @@ using ExitGames.Client.Photon;
 
 namespace Game.Player
 {
-	[RequireComponent(typeof(Pawn))]
 	public class PawnMovement : MonoBehaviourPun
 	{
 		public const int MAX_STEPS = 2;
 
 		public static PawnMovement Instance;
 
-		[SerializeField, HideInInspector] private Pawn _pawn;
-
 		public event UnityAction<PawnMovementEvent> OnPawnMoved;
-
-		private void OnValidate()
-		{
-			if (_pawn != null)
-				_pawn = GetComponent<Pawn>();
-		}
 
 		private void Awake()
 		{

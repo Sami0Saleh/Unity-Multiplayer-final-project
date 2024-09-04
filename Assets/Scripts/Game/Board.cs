@@ -28,7 +28,7 @@ namespace Game
 
 		[field: SerializeField] public Grid Grid { get; private set; }
 		[field: SerializeField] public Transform TilesParent { get; private set; }
-		[field: SerializeField] public Transform PlayerParent { get; private set; }
+		[field: SerializeField] public Transform PawnsParent { get; private set; }
 		[SerializeField] private Tile _tilePrefab;
 		[SerializeField, HideInInspector] private BoardMask _initialBoardState;
 		private Tile[] _tiles;
