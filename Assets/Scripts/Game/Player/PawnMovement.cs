@@ -60,7 +60,28 @@ namespace Game.Player
 			[Tooltip("Contains the tiles on which this player's Pawn has stepped (Inclusive of both start and end tiles.)")] public byte[] steps;
 			
 			public readonly Pawn Pawn => GameManager.Instance.ActivePlayers[player];
-			public readonly bool Valid => player != null && TurnIterator.Instance.Current == player && Pawn != null && steps.Length > 1 && steps.Distinct().Count() == steps.Length && Pawn.Position == steps.First() && Board.Instance.CurrentBoardState.Contains(steps.Last());
+			public readonly bool Valid
+			{
+				get
+				{
+					return PlayerValid(player) && StepsValid(steps, Pawn);
+
+					static bool PlayerValid(PunPlayer player) => player != null && GameManager.Instance.ActivePlayers.ContainsKey(player) && TurnIterator.Instance.Current == player;
+
+					static bool StepsValid(byte[] steps, Pawn pawn)
+					{
+						return HasEnoughSteps() && AllStepsAreValid();
+
+						bool HasEnoughSteps() => steps.Length > 1 && steps.AllUnique();
+
+						bool AllStepsAreValid() => pawn.Position == steps.First() && AllStepsAreIncludedInBoard();
+
+						bool AllStepsAreIncludedInBoard() => Board.Instance.CurrentBoardState.Contains(Board.BoardMask.BitNumbersToMask(steps));
+					}
+				}
+			}
+
+			public readonly IEnumerable<byte> AllStepsButLast => steps.Take(steps.Length-1);
 
 			public PawnMovementEvent(PunPlayer player, IEnumerable<byte> steps)
 			{

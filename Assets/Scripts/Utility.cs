@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Photon.Pun;
@@ -18,7 +19,7 @@ public static class Utility
 	public static void DestroyAllChildren(this Transform parent)
 	{
         foreach (var item in parent.GetAllChildren())
-			Object.Destroy(item.gameObject);
+			UnityEngine.Object.Destroy(item.gameObject);
     }
 
 	/// <summary>
@@ -27,7 +28,7 @@ public static class Utility
 	public static void DestroyAllChildrenImmediate(this Transform parent)
 	{
 		foreach (var item in parent.GetAllChildren())
-			Object.DestroyImmediate(item.gameObject);
+			UnityEngine.Object.DestroyImmediate(item.gameObject);
 	}
 
 	/// <returns>All children transforms of <paramref name="parent"/>.</returns>
@@ -36,4 +37,6 @@ public static class Utility
 		for (int n = parent.childCount - 1; n >= 0; n--)
 			yield return parent.GetChild(n);
 	}
+
+	public static bool AllUnique<TSource>(this IEnumerable<TSource> source) => source.Distinct().Count() == source.Count();
 }

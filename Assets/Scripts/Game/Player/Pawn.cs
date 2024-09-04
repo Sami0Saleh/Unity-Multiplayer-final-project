@@ -85,7 +85,7 @@ namespace Game.Player
 			var board = Board.Instance;
 			var tileTransform = board.BitNumberToTile(Position).transform;
 			transform.SetPositionAndRotation(tileTransform.position, tileTransform.rotation);
-			board.RemoveTiles(movementEvent.steps);
+			board.RemoveTiles(movementEvent.AllStepsButLast);
 		}
 	}
 }

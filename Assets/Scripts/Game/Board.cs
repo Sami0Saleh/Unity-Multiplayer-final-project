@@ -191,6 +191,9 @@ namespace Game
 
 			public readonly bool Contains(byte bitNumber) => (BitNumberToMask(bitNumber) & _mask) != 0;
 
+			/// <returns>Whether <paramref name="other"/> is entirely contained within <see langword="this"/>.</returns>
+			public readonly bool Contains(BoardMask other) => other.Equals(other & this);
+
 			public readonly bool Equals(BoardMask other) => _mask == other._mask;
 			#endregion
 
