@@ -11,7 +11,7 @@ public static class PunRegisterCustomTypes
 	{
 		if (!PhotonPeer.RegisterType(typeof(TurnChangeEvent), (byte)'T', TurnChangeEvent.Serialize, TurnChangeEvent.Deserialize))
 			LogError(typeof(TurnChangeEvent));
-		if (!PhotonPeer.RegisterType(typeof(PawnMovementEvent), (byte)'M', PawnMovementEvent.Serialize, TurnChangeEvent.Deserialize))
+		if (!PhotonPeer.RegisterType(typeof(PawnMovementEvent), (byte)'M', PawnMovementEvent.Serialize, PawnMovementEvent.Deserialize))
 			LogError(typeof(PawnMovementEvent));
 
 		static void LogError(Type type) => Debug.LogWarning($"Couldn't register custom type {type} for serialization.");
