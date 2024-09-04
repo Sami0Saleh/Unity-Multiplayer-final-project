@@ -124,7 +124,7 @@ namespace Game
 
 		public static Vector3Int IndexToCell(byte x, byte y) => new(y + Y_OFFSET, x + X_OFFSET);
 
-		public (byte, byte) CellToIndex(Vector3Int cell) => ((byte)(cell.y - Y_OFFSET), (byte)(cell.x - X_OFFSET));
+		public (byte, byte) CellToIndex(Vector3Int cell) => ((byte)(cell.y - X_OFFSET), (byte)(cell.x - Y_OFFSET));
 
 		public byte CellToBitNumber(Vector3Int cell)
 		{
