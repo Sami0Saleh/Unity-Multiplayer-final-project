@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine.Events;
 using Photon.Pun;
 
@@ -7,7 +8,7 @@ namespace Game.Player
 	{
 		public InputActions InputActions { get; private set; }
 		public Cursor Cursor { get; set; }
-		public byte Position { get; private set; }
+		public byte Position { get; set; }
 		public (byte, byte) PositionIndex
 		{
 			get => Board.BoardMask.BitNumberToIndex(Position);
@@ -20,6 +21,7 @@ namespace Game.Player
 		public static event UnityAction<Pawn> PlayerEliminated;
 		public event UnityAction<Pawn> TurnStart;
 		public event UnityAction<Pawn> TurnEnd;
+		public event UnityAction<PawnMovement.PawnMovementEvent> PawnMoved;
 
 		public Photon.Realtime.Player Owner => photonView.Owner;
 
@@ -52,6 +54,7 @@ namespace Game.Player
 		{
 			PlayerJoined?.Invoke(this);
 			TurnIterator.Instance.OnTurnChange += OnTurnChange;
+			PawnMovement.Instance.OnPawnMoved += OnPawnMoved;
 			if (photonView.AmController)
 				InputActions.Cursor.Enable();
 		}
@@ -60,6 +63,7 @@ namespace Game.Player
 		{
 			PlayerEliminated?.Invoke(this);
 			TurnIterator.Instance.OnTurnChange -= OnTurnChange;
+			PawnMovement.Instance.OnPawnMoved -= OnPawnMoved;
 			if (photonView.AmController)
 				InputActions.Cursor.Disable();
 		}
@@ -70,6 +74,18 @@ namespace Game.Player
 				TurnStart?.Invoke(this);
 			else if (turnChangeEvent.lastPlayer == Owner)
 				TurnEnd?.Invoke(this);
+		}
+
+		private void OnPawnMoved(PawnMovement.PawnMovementEvent movementEvent)
+		{
+			if (movementEvent.player != Owner)
+				return;
+			Position = movementEvent.steps.Last();
+			var board = Board.Instance;
+			var tileTransform = board.TileFromBitNumber(Position).transform;
+			transform.SetPositionAndRotation(tileTransform.position, tileTransform.rotation);
+			board.RemoveTiles(movementEvent.steps);
+			PawnMoved?.Invoke(movementEvent);
 		}
 	}
 }

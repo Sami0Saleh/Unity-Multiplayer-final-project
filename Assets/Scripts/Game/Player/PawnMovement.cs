@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 using UnityEngine.Events;
 using Photon.Pun;
 using PunPlayer = Photon.Realtime.Player;
@@ -6,13 +7,22 @@ using ExitGames.Client.Photon;
 
 namespace Game.Player
 {
+	[RequireComponent(typeof(Pawn))]
 	public class PawnMovement : MonoBehaviourPun
 	{
 		public const int MAX_STEPS = 2;
 
 		public static PawnMovement Instance;
 
-		public event UnityAction<PawnMovementEvent> PawnMoved;
+		[SerializeField, HideInInspector] private Pawn _pawn;
+
+		public event UnityAction<PawnMovementEvent> OnPawnMoved;
+
+		private void OnValidate()
+		{
+			if (_pawn != null)
+				_pawn = GetComponent<Pawn>();
+		}
 
 		private void Awake()
 		{
@@ -30,12 +40,21 @@ namespace Game.Player
 			}
 		}
 
-		public struct PawnMovementEvent
+		[PunRPC]
+		private void OnPawnMovedRPC(PawnMovementEvent movement, PhotonMessageInfo info)
+		{
+			if (!movement.Valid || (info.Sender != movement.player && info.Sender != PhotonNetwork.MasterClient))
+				return;
+			OnPawnMoved?.Invoke(movement);
+		}
+
+		public struct PawnMovementEvent : IValidateable
 		{
 			[Tooltip("The player whose Pawn has moved.")] public PunPlayer player;
 			[Tooltip("Contains the tiles on which this player's Pawn has stepped (Inclusive of both start and end tiles.)")] public byte[] steps;
 			
 			public readonly Pawn Pawn => GameManager.Instance.ActivePlayers[player];
+			public readonly bool Valid => player != null && TurnIterator.Instance.Current == player && Pawn != null && steps.Length > 1 && steps.Distinct().Count() == steps.Length && Pawn.Position == steps.First() && Board.Instance.CurrentBoardState.Contains(steps.Last());
 
 			#region SERIALIZATION
 			private const int MAX_ELEMENTS_IN_STEPS = MAX_STEPS + 1;

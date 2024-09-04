@@ -130,7 +130,7 @@ namespace Game
 		/// <summary>
 		/// Describes an event in the game in which the acting <see cref="PunPlayer"/> changes.
 		/// </summary>
-		public struct TurnChangeEvent
+		public struct TurnChangeEvent : IValidateable
 		{
 			public PunPlayer currentPlayer;
 			public PunPlayer lastPlayer;

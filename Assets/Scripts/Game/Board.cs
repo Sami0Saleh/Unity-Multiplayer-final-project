@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using Tile = UnityEngine.GameObject;
 
 namespace Game
@@ -34,6 +35,10 @@ namespace Game
 
 		public BoardMask CurrentBoardState { get; private set; }
 		public IEnumerable<Tile> Tiles => _tiles;
+		#endregion
+
+		#region EVENTS
+		public event UnityAction<IEnumerable<byte>> OnTilesRemoved;
 		#endregion
 
 		#region METHODS
@@ -103,16 +108,29 @@ namespace Game
 		}
 		#endregion
 
+		#region GAMEPLAY
+		public void RemoveTiles(IEnumerable<byte> toRemove)
+		{
+			var removedTilesMask = BoardMask.BitNumbersToMask(toRemove);
+			CurrentBoardState &= ~removedTilesMask;
+			OnTilesRemoved?.Invoke(toRemove);
+			foreach (var tile in TilesFromMask(removedTilesMask))
+				Destroy(tile);
+		}
+		#endregion
+
 		#region INDEXING_AND_ENUMERATION
 		public static Vector3Int IndexToCell(byte x, byte y) => new(y + Y_OFFSET, x + X_OFFSET);
 
 		public (byte, byte) CellToIndex(Vector3Int cell) => ((byte)(cell.y - Y_OFFSET), (byte)(cell.x - X_OFFSET));
 
+		public Tile TileFromBitNumber(byte bit) => _tiles[bit];
+
 		public IEnumerable<Tile> TilesFromMask(BoardMask mask)
 		{
 			mask &= CurrentBoardState;
 			foreach (var bit in mask)
-				yield return _tiles[bit];
+				yield return TileFromBitNumber(bit);
 		}
 		#endregion
 		#endregion
@@ -150,6 +168,14 @@ namespace Game
 			public static (byte, byte) BitNumberToIndex(byte bitNumber) => ((byte)(bitNumber % WIDTH), (byte)(bitNumber / WIDTH));
 
 			public static byte IndexToBitNumber(byte x, byte y) => (byte)(x + y * WIDTH);
+
+			public static BoardMask BitNumbersToMask(IEnumerable<byte> steps)
+			{
+				BoardMask mask = new();
+				foreach (var step in steps)
+					mask |= BitNumberToMask(step);
+				return mask;
+			}
 			#endregion
 
 			#region CHECKS
