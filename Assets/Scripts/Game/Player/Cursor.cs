@@ -30,12 +30,18 @@ namespace Game.Player
 
 		private void OnEnable()
 		{
-			OwnerPawn.InputActions.Cursor.Select.started += OnPick;
+			var input = OwnerPawn.InputActions;
+			if (input == null)
+				return;
+			input.Cursor.Select.started += OnPick;
 		}
 
 		private void OnDisable()
 		{
-			OwnerPawn.InputActions.Cursor.Select.started -= OnPick;
+			var input = OwnerPawn.InputActions;
+			if (input == null)
+				return;
+			input.Cursor.Select.started -= OnPick;
 		}
 
 		private void Start() => _board = Board.Instance;

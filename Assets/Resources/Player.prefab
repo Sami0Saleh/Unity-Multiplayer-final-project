@@ -71,6 +71,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efa724f1524d4d4479fe12c9c3f0e3c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <Movement>k__BackingField: {fileID: 1857945172621769012}
 --- !u!114 &1857945172621769012
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83,6 +84,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1144b30aacbb92b4cbc31af3373571db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _pawn: {fileID: 4497678083692367122}
 --- !u!114 &7803533810926509056
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,6 +121,26 @@ PrefabInstance:
     - target: {fileID: 1793893921926309032, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}
       propertyPath: m_Name
       value: Visuals
+      objectReference: {fileID: 0}
+    - target: {fileID: 2228125723860331726, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}
+      propertyPath: m_SynchronizeParameters.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2228125723860331726, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}
+      propertyPath: m_SynchronizeParameters.Array.data[1].Name
+      value: TrWalk
+      objectReference: {fileID: 0}
+    - target: {fileID: 2228125723860331726, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}
+      propertyPath: m_SynchronizeParameters.Array.data[1].Type
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 2228125723860331726, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}
+      propertyPath: m_SynchronizeParameters.Array.data[2].Name
+      value: TrStopWalk
+      objectReference: {fileID: 0}
+    - target: {fileID: 2228125723860331726, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}
+      propertyPath: m_SynchronizeParameters.Array.data[2].Type
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

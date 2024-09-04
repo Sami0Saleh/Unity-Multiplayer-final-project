@@ -112,10 +112,10 @@ namespace Game
 		public void RemoveTiles(IEnumerable<byte> toRemove)
 		{
 			var removedTilesMask = BoardMask.BitNumbersToMask(toRemove);
-			CurrentBoardState &= ~removedTilesMask;
 			OnTilesRemoved?.Invoke(toRemove);
 			foreach (var tile in TilesFromMask(removedTilesMask))
 				Destroy(tile);
+			CurrentBoardState &= ~removedTilesMask;
 		}
 		#endregion
 
