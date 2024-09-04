@@ -1,4 +1,5 @@
 using System.Linq;
+using UnityEngine;
 using UnityEngine.Events;
 using Photon.Pun;
 
@@ -8,6 +9,7 @@ namespace Game.Player
 	{
 		public InputActions InputActions { get; private set; }
 		public Cursor Cursor { get; set; }
+		[field: SerializeField] public PawnMovement Movement { get; private set; }
 		public byte Position { get; set; }
 		public (byte, byte) PositionIndex
 		{
@@ -21,7 +23,6 @@ namespace Game.Player
 		public static event UnityAction<Pawn> PlayerEliminated;
 		public event UnityAction<Pawn> TurnStart;
 		public event UnityAction<Pawn> TurnEnd;
-		public event UnityAction<PawnMovement.PawnMovementEvent> PawnMoved;
 
 		public Photon.Realtime.Player Owner => photonView.Owner;
 
@@ -54,7 +55,7 @@ namespace Game.Player
 		{
 			PlayerJoined?.Invoke(this);
 			TurnIterator.Instance.OnTurnChange += OnTurnChange;
-			PawnMovement.Instance.OnPawnMoved += OnPawnMoved;
+			Movement.OnPawnMoved += OnPawnMoved;
 			if (photonView.AmController)
 				InputActions.Cursor.Enable();
 		}
@@ -63,7 +64,7 @@ namespace Game.Player
 		{
 			PlayerEliminated?.Invoke(this);
 			TurnIterator.Instance.OnTurnChange -= OnTurnChange;
-			PawnMovement.Instance.OnPawnMoved -= OnPawnMoved;
+			Movement.OnPawnMoved -= OnPawnMoved;
 			if (photonView.AmController)
 				InputActions.Cursor.Disable();
 		}
@@ -85,7 +86,6 @@ namespace Game.Player
 			var tileTransform = board.TileFromBitNumber(Position).transform;
 			transform.SetPositionAndRotation(tileTransform.position, tileTransform.rotation);
 			board.RemoveTiles(movementEvent.steps);
-			PawnMoved?.Invoke(movementEvent);
 		}
 	}
 }

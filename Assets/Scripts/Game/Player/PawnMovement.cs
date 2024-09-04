@@ -4,6 +4,7 @@ using UnityEngine.Events;
 using Photon.Pun;
 using PunPlayer = Photon.Realtime.Player;
 using ExitGames.Client.Photon;
+using System.Collections.Generic;
 
 namespace Game.Player
 {
@@ -11,24 +12,44 @@ namespace Game.Player
 	{
 		public const int MAX_STEPS = 2;
 
-		public static PawnMovement Instance;
+		[SerializeField] private Pawn _pawn;
 
 		public event UnityAction<PawnMovementEvent> OnPawnMoved;
 
 		private void Awake()
 		{
-			if (!TryRegisterSingleton())
-				return;
+			if (!photonView.AmOwner)
+				enabled = false;
+		}
 
-			bool TryRegisterSingleton()
-			{
-				bool created = Instance == null;
-				if (created)
-					Instance = this;
-				else
-					Destroy(gameObject);
-				return created;
-			}
+		private void OnEnable()
+		{
+			TurnIterator.Instance.OnTurnChange += OnTurnChange;
+		}
+
+		private void OnDisable()
+		{
+			TurnIterator.Instance.OnTurnChange -= OnTurnChange;
+		}
+
+		private void OnTurnChange(TurnIterator.TurnChangeEvent turnChangeEvent)
+		{
+			if (!turnChangeEvent.Valid)
+				return;
+			if (turnChangeEvent.currentPlayer.IsLocal)
+				ListenToCursorEvents(_pawn.Cursor);
+			else
+				UnListenToCursorEvents(_pawn.Cursor);
+
+			void ListenToCursorEvents(Cursor cursor) => cursor.PositionPicked += OnPositionPicked;
+
+			void UnListenToCursorEvents(Cursor cursor) => cursor.PositionPicked -= OnPositionPicked;
+		}
+
+		private void OnPositionPicked(byte position)
+		{
+			const string PAWN_MOVED = nameof(OnPawnMovedRPC);
+			photonView.RPC(PAWN_MOVED, RpcTarget.All, new PawnMovementEvent(photonView.Owner, new byte[] { _pawn.Position, position })); // TODO Pass movement path
 		}
 
 		[PunRPC]
@@ -46,6 +67,18 @@ namespace Game.Player
 			
 			public readonly Pawn Pawn => GameManager.Instance.ActivePlayers[player];
 			public readonly bool Valid => player != null && TurnIterator.Instance.Current == player && Pawn != null && steps.Length > 1 && steps.Distinct().Count() == steps.Length && Pawn.Position == steps.First() && Board.Instance.CurrentBoardState.Contains(steps.Last());
+
+			public PawnMovementEvent(PunPlayer player, IEnumerable<byte> steps)
+			{
+				this.player = player;
+				this.steps = steps.ToArray();
+			}
+
+			public PawnMovementEvent(PunPlayer player, byte[] steps)
+			{
+				this.player = player;
+				this.steps = steps;
+			}
 
 			#region SERIALIZATION
 			private const int MAX_ELEMENTS_IN_STEPS = MAX_STEPS + 1;
