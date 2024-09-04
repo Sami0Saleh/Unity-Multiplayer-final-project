@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      NephilimUI_0: -7948781568241019227
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
