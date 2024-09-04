@@ -10,7 +10,7 @@ namespace Game.Player
 	{
 		[SerializeField] private MousePositionTracker _mousePositionTracker;
 		private Board _board;
-		private byte _currentPosition;
+		private Vector3Int _currentCell;
 
 		[Tooltip("Called whenever the cursor changes the tile on which it points.")] public event UnityAction<byte> PositionChanged;
 		[Tooltip("Called once the player picks a tile and clicks it.")] public event UnityAction<byte> PositionPicked;
@@ -48,19 +48,18 @@ namespace Game.Player
 
 		private void Update()
 		{
-			var currentPosition = _board.WorldPositionToBitNumber(transform.position);
-			if (_currentPosition != currentPosition && _board.CurrentBoardState.Contains(currentPosition))
-			{
-				_currentPosition = currentPosition;
-				PositionChanged?.Invoke(currentPosition);
-			}
+			var currentCell = GetCurrentCell();
+			if (_currentCell != currentCell && _board.IsCellOnBoard(currentCell))
+				PositionChanged?.Invoke(Board.CellToBitNumber(_currentCell = currentCell));
 		}
 
 		private void OnPick(InputAction.CallbackContext context)
 		{
-			if (!_board.CurrentBoardState.Contains(_currentPosition))
-				return;
-			PositionPicked?.Invoke(_currentPosition);
+			var currentCell = GetCurrentCell();
+			if (_board.IsCellOnBoard(currentCell))
+				PositionPicked?.Invoke(Board.CellToBitNumber(_currentCell = currentCell));
 		}
+
+		private Vector3Int GetCurrentCell() => _board.Grid.WorldToCell(transform.position);
 	}
 }

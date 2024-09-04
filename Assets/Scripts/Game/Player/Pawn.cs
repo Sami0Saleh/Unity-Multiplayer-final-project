@@ -45,7 +45,7 @@ namespace Game.Player
 			{
 				transform.SetParent(Board.Instance.PawnsParent);
 				var board = Board.Instance;
-				PositionIndex = board.CellToIndex(board.Grid.WorldToCell(transform.position));
+				PositionIndex = Board.CellToIndex(board.Grid.WorldToCell(transform.position));
 			}
 		}
 

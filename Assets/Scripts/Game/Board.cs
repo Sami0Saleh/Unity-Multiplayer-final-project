@@ -22,10 +22,16 @@ namespace Game
 			BoardMask.IndexToMask(WIDTH - 1, 1) |
 			BoardMask.IndexToMask(0, HEIGHT-2) |
 			BoardMask.IndexToMask(WIDTH - 1, HEIGHT -2);
+		#region CELL_BOUNDS
+		private const int X_MIN = Y_OFFSET;
+		private const int X_MAX = -Y_OFFSET;
+		private const int Y_MIN = X_OFFSET;
+		private const int Y_MAX = -X_OFFSET;
+		#endregion
 		#endregion
 
 		#region VARIABLES_AND_PROPERTIES
-		public static Board Instance;
+		public static Board Instance { get; private set; }
 
 		[field: SerializeField] public Grid Grid { get; private set; }
 		[field: SerializeField] public Transform TilesParent { get; private set; }
@@ -139,13 +145,23 @@ namespace Game
 		#endregion
 
 		#region INDEXING_AND_ENUMERATION
+		public bool IsCellOnBoard(Vector3Int cell) => WithinBounds(cell) && CurrentBoardState.Contains(CellToBitNumber(cell));
+
+		public bool WithinBounds(Vector3Int cell) => cell.x >= X_MIN && cell.x <= X_MAX && cell.y >= Y_MIN && cell.y <= Y_MAX;
+		
 		public byte WorldPositionToBitNumber(Vector3 worldPosition) => CellToBitNumber(Grid.WorldToCell(worldPosition));
+
+		public static Vector3Int BitNumberToCell(byte bitNumber)
+		{
+			(byte x, byte y) = BoardMask.BitNumberToIndex(bitNumber);
+			return IndexToCell(x, y);
+		}
 
 		public static Vector3Int IndexToCell(byte x, byte y) => new(y + Y_OFFSET, x + X_OFFSET);
 
-		public (byte, byte) CellToIndex(Vector3Int cell) => ((byte)(cell.y - X_OFFSET), (byte)(cell.x - Y_OFFSET));
+		public static (byte, byte) CellToIndex(Vector3Int cell) => ((byte)(cell.y - X_OFFSET), (byte)(cell.x - Y_OFFSET));
 
-		public byte CellToBitNumber(Vector3Int cell)
+		public static byte CellToBitNumber(Vector3Int cell)
 		{
 			(byte x, byte y) = CellToIndex(cell);
 			return BoardMask.IndexToBitNumber(x, y);
