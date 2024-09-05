@@ -11,6 +11,20 @@ namespace Game
 	public static class Pathfinding
 	{
 		/// <summary>
+		/// Shows where an entity starting in <paramref name="bitNumber"/> can reach in <paramref name="steps"/> steps given the <paramref name="traversable"/> area.
+		/// </summary>
+		/// <param name="bitNumber">Position of the entity.</param>
+		/// <param name="steps">How many steps the entity can take.</param>
+		/// <param name="traversable">Mask detailing where the entity can reach.</param>
+		/// <returns>Where the entity can reach.</returns>
+		[BurstCompile]
+		public static BoardMask GetTraversableArea(byte bitNumber, byte steps, BoardMask traversable)
+		{
+			(var x, var y) = BoardMask.BitNumberToIndex(bitNumber);
+			return GetTraversableArea(x, y, steps, traversable);
+		}
+
+		/// <summary>
 		/// Shows where an entity starting in (<paramref name="centerX"/>, <paramref name="centerY"/>) can reach in <paramref name="steps"/> steps given the <paramref name="traversable"/> area.
 		/// </summary>
 		/// <param name="centerX">Starting X coordinate of the entity.</param>

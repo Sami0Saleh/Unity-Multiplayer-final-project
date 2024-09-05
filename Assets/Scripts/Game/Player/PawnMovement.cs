@@ -19,6 +19,8 @@ namespace Game.Player
 
 		public event UnityAction<PawnMovementEvent> OnPawnMoved;
 
+		public Board.BoardMask ReachableArea => Pathfinding.GetTraversableArea(_pawn.Position, MAX_STEPS, Board.Instance.TraversableArea);
+
 		private void Awake() => enabled = photonView.AmController;
 
 		private void OnEnable() => TurnIterator.Instance.OnTurnChange += OnTurnChange;
@@ -73,9 +75,11 @@ namespace Game.Player
 
 						bool HasEnoughSteps() => steps.Length > 1 && steps.AllUnique();
 
-						bool AllStepsAreValid() => pawn.Position == steps.First() && AllStepsButFirstAreIncludedInBoard();
+						bool AllStepsAreValid() => pawn.Position == steps.First() && AllStepsAreReachable();
 
-						bool AllStepsButFirstAreIncludedInBoard() => Board.Instance.CurrentBoardState.Contains(Board.BoardMask.BitNumbersToMask(steps) & ~Board.BoardMask.BitNumberToMask(pawn.Position));
+						bool AllStepsAreReachable() => pawn.Movement.ReachableArea.Contains(GetAllTraversedAreaExceptFirst());
+
+						Board.BoardMask GetAllTraversedAreaExceptFirst() => Board.BoardMask.BitNumbersToMask(steps) & ~Board.BoardMask.BitNumberToMask(pawn.Position);
 					}
 				}
 			}

@@ -41,6 +41,8 @@ namespace Game
 		private Tile[] _tiles;
 
 		public BoardMask CurrentBoardState { get; private set; }
+		public BoardMask PawnPositions { get; private set; }
+		public BoardMask TraversableArea => CurrentBoardState & ~PawnPositions;
 		public IEnumerable<Tile> Tiles => _tiles;
 		#endregion
 
@@ -130,17 +132,24 @@ namespace Game
 		#region GAMEPLAY
 		private void OnPlayerJoined(Pawn pawn)
 		{
+			PawnPositions |= BoardMask.BitNumberToMask(pawn.Position);
 			pawn.Movement.OnPawnMoved += OnPlayerMoved;
 			pawn.Hammer.OnTileDestroyed += OnPlayerHammer;
 		}
 
 		private void OnPlayerEliminated(Pawn pawn)
 		{
+			PawnPositions &= ~BoardMask.BitNumberToMask(pawn.Position);
 			pawn.Movement.OnPawnMoved -= OnPlayerMoved;
 			pawn.Hammer.OnTileDestroyed -= OnPlayerHammer;
 		}
 
-		private void OnPlayerMoved(PawnMovement.PawnMovementEvent movementEvent) => RemoveTiles(movementEvent.AllStepsButLast);
+		private void OnPlayerMoved(PawnMovement.PawnMovementEvent movementEvent)
+		{
+			RemoveTiles(movementEvent.AllStepsButLast);
+			PawnPositions &= ~BoardMask.BitNumberToMask(movementEvent.steps.First());
+			PawnPositions |= BoardMask.BitNumberToMask(movementEvent.steps.Last());
+		}
 
 		private void OnPlayerHammer(byte tile) => RemoveTiles(GetSingleTileEnumerable(tile));
 
