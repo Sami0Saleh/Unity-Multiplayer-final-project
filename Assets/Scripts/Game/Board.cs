@@ -128,11 +128,26 @@ namespace Game
 		#endregion
 
 		#region GAMEPLAY
-		private void OnPlayerJoined(Pawn pawn) => pawn.Movement.OnPawnMoved += OnPlayerMoved;
+		private void OnPlayerJoined(Pawn pawn)
+		{
+			pawn.Movement.OnPawnMoved += OnPlayerMoved;
+			pawn.Hammer.OnTileDestroyed += OnPlayerHammer;
+		}
 
-		private void OnPlayerEliminated(Pawn pawn) => pawn.Movement.OnPawnMoved -= OnPlayerMoved;
+		private void OnPlayerEliminated(Pawn pawn)
+		{
+			pawn.Movement.OnPawnMoved -= OnPlayerMoved;
+			pawn.Hammer.OnTileDestroyed -= OnPlayerHammer;
+		}
 
 		private void OnPlayerMoved(PawnMovement.PawnMovementEvent movementEvent) => RemoveTiles(movementEvent.AllStepsButLast);
+
+		private void OnPlayerHammer(byte tile) => RemoveTiles(GetSingleTileEnumerable(tile));
+
+		private IEnumerable<byte> GetSingleTileEnumerable(byte toRemove)
+		{
+			yield return toRemove;
+		}
 
 		private void RemoveTiles(IEnumerable<byte> toRemove)
 		{

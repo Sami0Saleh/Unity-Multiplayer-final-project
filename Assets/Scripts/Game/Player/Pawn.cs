@@ -10,6 +10,7 @@ namespace Game.Player
 		public InputActions InputActions { get; private set; }
 		public Cursor Cursor { get; set; }
 		[field: SerializeField] public PawnMovement Movement { get; private set; }
+		[field: SerializeField] public Hammer Hammer { get; private set; }
 		public byte Position { get; set; }
 		public (byte, byte) PositionIndex
 		{
@@ -21,7 +22,8 @@ namespace Game.Player
 
 		public static event UnityAction<Pawn> PlayerJoined;
 		public static event UnityAction<Pawn> PlayerEliminated;
-		public event UnityAction<Pawn> TurnStart;
+		public event UnityAction<Pawn> MoveTurnStart;
+		public event UnityAction<Pawn> HammerTurnStart;
 		public event UnityAction<Pawn> TurnEnd;
 
 		public Photon.Realtime.Player Owner => photonView.Owner;
@@ -71,8 +73,10 @@ namespace Game.Player
 
 		private void OnTurnChange(TurnIterator.TurnChangeEvent turnChangeEvent)
 		{
-			if (turnChangeEvent.currentPlayer == Owner)
-				TurnStart?.Invoke(this);
+			if (turnChangeEvent.currentPlayer == Owner && turnChangeEvent.action == TurnIterator.TurnChangeEvent.Action.Move)
+				MoveTurnStart?.Invoke(this);
+			else if (turnChangeEvent.currentPlayer == Owner && turnChangeEvent.action == TurnIterator.TurnChangeEvent.Action.Hammer)
+				HammerTurnStart?.Invoke(this);
 			else if (turnChangeEvent.lastPlayer == Owner)
 				TurnEnd?.Invoke(this);
 		}

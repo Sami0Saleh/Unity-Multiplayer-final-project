@@ -31,6 +31,15 @@ namespace Game
 			return reach;
 		}
 
+		/// <param name="bitNumber">Position of the area center.</param>
+		/// <param name="radius">Radius of the area.</param>
+		/// <returns>The area centered in <paramref name="bitNumber"/> with a radius of <paramref name="radius"/>.</returns>
+		public static BoardMask GetArea(byte bitNumber, byte radius)
+		{
+			(var x, var y) = BoardMask.BitNumberToIndex(bitNumber);
+			return GetArea(x, y, radius);
+		}
+
 		/// <param name="centerX">X coordinate of the area center.</param>
 		/// <param name="centerY">Y coordinate of the area center.</param>
 		/// <param name="radius">Radius of the area.</param>

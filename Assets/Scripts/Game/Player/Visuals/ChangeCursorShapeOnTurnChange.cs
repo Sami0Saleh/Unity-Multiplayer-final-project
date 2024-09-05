@@ -24,21 +24,23 @@ namespace Game.Player.Visuals
 		{
 			var pawn = _cursor.OwnerPawn;
 			pawn.TurnEnd += OnTurnEnd;
-			pawn.TurnStart += OnTurnStart;
+			pawn.MoveTurnStart += OnTurnStart;
+			pawn.HammerTurnStart += OnHammerStart;
 		}
 
 		private void OnDisable()
 		{
 			var pawn = _cursor.OwnerPawn;
 			pawn.TurnEnd -= OnTurnEnd;
-			pawn.TurnStart -= OnTurnStart;
+			pawn.MoveTurnStart -= OnTurnStart;
+			pawn.HammerTurnStart -= OnHammerStart;
 		}
 
 		private void OnTurnEnd(Pawn _) => SetCursor(_neutralCursor);
 
 		private void OnTurnStart(Pawn _) => SetCursor(_walkCursor);
 
-		private void OnDestroyStart(Pawn _) => SetCursor(_destroyCursor);
+		private void OnHammerStart(Pawn _) => SetCursor(_destroyCursor);
 
 		private void SetCursor(GameObject renderer)
 		{

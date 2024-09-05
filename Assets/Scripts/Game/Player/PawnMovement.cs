@@ -8,6 +8,9 @@ using ExitGames.Client.Photon;
 
 namespace Game.Player
 {
+	/// <summary>
+	/// Handles <see cref="TurnIterator.TurnChangeEvent.Action.Move"/> events.
+	/// </summary>
 	public class PawnMovement : MonoBehaviourPun
 	{
 		public const int MAX_STEPS = 2;
@@ -26,7 +29,7 @@ namespace Game.Player
 		{
 			if (!turnChangeEvent.Valid)
 				return;
-			if (turnChangeEvent.currentPlayer.IsLocal)
+			if (turnChangeEvent.currentPlayer.IsLocal && turnChangeEvent.action == TurnIterator.TurnChangeEvent.Action.Move)
 				ListenToCursorEvents(_pawn.Cursor);
 			else
 				UnListenToCursorEvents(_pawn.Cursor);
