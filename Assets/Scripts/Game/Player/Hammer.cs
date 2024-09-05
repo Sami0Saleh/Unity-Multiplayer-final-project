@@ -36,7 +36,7 @@ namespace Game.Player
 		[PunRPC]
 		private void HammerTileRPC(byte tile, PhotonMessageInfo info)
 		{
-			if (!AbleToHammer || !CurrentlyActingPlayer() || !TileIsOnBoard() || !WithinRangeOfPawn())
+			if (!AbleToHammer || !CurrentlyActingPlayer() || !TileIsOnBoard() || !WithinRangeOfPawn() || SameTileAsActor())
 				return;
 			AbleToHammer = false;
 			OnHammered?.Invoke(tile);
@@ -46,6 +46,8 @@ namespace Game.Player
 			bool TileIsOnBoard() => Board.Instance.CurrentBoardState.Contains(tile);
 
 			bool WithinRangeOfPawn() => Pathfinding.GetArea(_pawn.Position, MAX_RANGE).Contains(tile);
+
+			bool SameTileAsActor() => _pawn.Position == tile;
 		}
 	}
 }
