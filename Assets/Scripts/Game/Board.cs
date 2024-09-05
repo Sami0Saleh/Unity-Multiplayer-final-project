@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Tile = UnityEngine.GameObject;
 using Game.Player;
+using Unity.Burst;
 
 namespace Game
 {
@@ -134,14 +135,14 @@ namespace Game
 		{
 			PawnPositions |= BoardMask.BitNumberToMask(pawn.Position);
 			pawn.Movement.OnPawnMoved += OnPlayerMoved;
-			pawn.Hammer.OnTileDestroyed += OnPlayerHammer;
+			pawn.Hammer.OnHammered += OnPlayerHammer;
 		}
 
 		private void OnPlayerEliminated(Pawn pawn)
 		{
 			PawnPositions &= ~BoardMask.BitNumberToMask(pawn.Position);
 			pawn.Movement.OnPawnMoved -= OnPlayerMoved;
-			pawn.Hammer.OnTileDestroyed -= OnPlayerHammer;
+			pawn.Hammer.OnHammered -= OnPlayerHammer;
 		}
 
 		private void OnPlayerMoved(PawnMovement.PawnMovementEvent movementEvent)
@@ -236,6 +237,7 @@ namespace Game
 
 			public static byte IndexToBitNumber(byte x, byte y) => (byte)(x + y * WIDTH);
 
+			[BurstCompile]
 			public static BoardMask BitNumbersToMask(IEnumerable<byte> steps)
 			{
 				BoardMask mask = new();

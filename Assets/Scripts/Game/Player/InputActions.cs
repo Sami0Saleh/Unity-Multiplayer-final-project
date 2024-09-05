@@ -47,6 +47,15 @@ namespace Game.Player
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleState"",
+                    ""type"": ""Button"",
+                    ""id"": ""f8f88507-350f-4e74-87cc-9066948ecd65"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -69,6 +78,17 @@ namespace Game.Player
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Select"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fe366049-b6b6-4272-b025-60d89bc1109e"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""ToggleState"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -614,6 +634,7 @@ namespace Game.Player
             m_Cursor = asset.FindActionMap("Cursor", throwIfNotFound: true);
             m_Cursor_Look = m_Cursor.FindAction("Look", throwIfNotFound: true);
             m_Cursor_Select = m_Cursor.FindAction("Select", throwIfNotFound: true);
+            m_Cursor_ToggleState = m_Cursor.FindAction("ToggleState", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -695,12 +716,14 @@ namespace Game.Player
         private List<ICursorActions> m_CursorActionsCallbackInterfaces = new List<ICursorActions>();
         private readonly InputAction m_Cursor_Look;
         private readonly InputAction m_Cursor_Select;
+        private readonly InputAction m_Cursor_ToggleState;
         public struct CursorActions
         {
             private @InputActions m_Wrapper;
             public CursorActions(@InputActions wrapper) { m_Wrapper = wrapper; }
             public InputAction @Look => m_Wrapper.m_Cursor_Look;
             public InputAction @Select => m_Wrapper.m_Cursor_Select;
+            public InputAction @ToggleState => m_Wrapper.m_Cursor_ToggleState;
             public InputActionMap Get() { return m_Wrapper.m_Cursor; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -716,6 +739,9 @@ namespace Game.Player
                 @Select.started += instance.OnSelect;
                 @Select.performed += instance.OnSelect;
                 @Select.canceled += instance.OnSelect;
+                @ToggleState.started += instance.OnToggleState;
+                @ToggleState.performed += instance.OnToggleState;
+                @ToggleState.canceled += instance.OnToggleState;
             }
 
             private void UnregisterCallbacks(ICursorActions instance)
@@ -726,6 +752,9 @@ namespace Game.Player
                 @Select.started -= instance.OnSelect;
                 @Select.performed -= instance.OnSelect;
                 @Select.canceled -= instance.OnSelect;
+                @ToggleState.started -= instance.OnToggleState;
+                @ToggleState.performed -= instance.OnToggleState;
+                @ToggleState.canceled -= instance.OnToggleState;
             }
 
             public void RemoveCallbacks(ICursorActions instance)
@@ -874,6 +903,7 @@ namespace Game.Player
         {
             void OnLook(InputAction.CallbackContext context);
             void OnSelect(InputAction.CallbackContext context);
+            void OnToggleState(InputAction.CallbackContext context);
         }
         public interface IUIActions
         {

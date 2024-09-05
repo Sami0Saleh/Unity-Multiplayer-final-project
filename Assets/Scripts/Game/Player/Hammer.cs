@@ -5,7 +5,7 @@ using Photon.Pun;
 namespace Game.Player
 {
 	/// <summary>
-	/// Handles <see cref="TurnIterator.TurnChangeEvent.Action.Hammer"/> events.
+	/// Handles tile destruction events.
 	/// </summary>
 	public class Hammer : MonoBehaviourPun
 	{
@@ -13,40 +13,33 @@ namespace Game.Player
 
 		[SerializeField] private Pawn _pawn;
 
-		public event UnityAction<byte> OnTileDestroyed;
+		public event UnityAction<byte> OnHammered;
 
-		private void Awake() => enabled = photonView.AmController;
+		public bool AbleToHammer { get; private set; }
 
-		private void OnEnable() => TurnIterator.Instance.OnTurnChange += OnTurnChange;
+		private void Awake() => _pawn.TurnStart += OnStartTurn;
 
-		private void OnDisable() => TurnIterator.Instance.OnTurnChange -= OnTurnChange;
+		private void OnDestroy() => _pawn.TurnStart -= OnStartTurn;
 
-		private void OnTurnChange(TurnIterator.TurnChangeEvent turnChangeEvent)
-		{
-			if (!turnChangeEvent.Valid)
-				return;
-			if (turnChangeEvent.currentPlayer.IsLocal && turnChangeEvent.action == TurnIterator.TurnChangeEvent.Action.Hammer)
-				ListenToCursorEvents(_pawn.Cursor);
-			else
-				UnListenToCursorEvents(_pawn.Cursor);
+		private void OnEnable() => _pawn.Cursor.PositionPicked += OnPositionPicked;
 
-			void ListenToCursorEvents(Cursor cursor) => cursor.PositionPicked += OnPositionPicked;
+		private void OnDisable() => _pawn.Cursor.PositionPicked -= OnPositionPicked;
 
-			void UnListenToCursorEvents(Cursor cursor) => cursor.PositionPicked -= OnPositionPicked;
-		}
+		private void OnStartTurn(Pawn pawn) => AbleToHammer = _pawn.IsOnBoard;
 
 		private void OnPositionPicked(byte position)
 		{
-			const string TILE_HAMMERED = nameof(OnHammerRPC);
+			const string TILE_HAMMERED = nameof(HammerTileRPC);
 			photonView.RPC(TILE_HAMMERED, RpcTarget.All, position);
 		}
 
 		[PunRPC]
-		private void OnHammerRPC(byte tile, PhotonMessageInfo info)
+		private void HammerTileRPC(byte tile, PhotonMessageInfo info)
 		{
-			if (!CurrentlyActingPlayer() || !TileIsOnBoard() || !WithinRangeOfPawn())
+			if (!AbleToHammer || !CurrentlyActingPlayer() || !TileIsOnBoard() || !WithinRangeOfPawn())
 				return;
-			OnTileDestroyed?.Invoke(tile);
+			AbleToHammer = false;
+			OnHammered?.Invoke(tile);
 
 			bool CurrentlyActingPlayer() => TurnIterator.Instance.Current == info.Sender;
 

@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 9013438905312678822}
   - component: {fileID: 4497678083692367122}
   - component: {fileID: 1857945172621769012}
-  - component: {fileID: 7803533810926509056}
   - component: {fileID: 799768566176401108}
+  - component: {fileID: 7803533810926509056}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -81,9 +81,22 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6071354540810833049}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1144b30aacbb92b4cbc31af3373571db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pawn: {fileID: 4497678083692367122}
+--- !u!114 &799768566176401108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6071354540810833049}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c12f2a38d876d349a5e84de815bc599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _pawn: {fileID: 4497678083692367122}
@@ -100,19 +113,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cursorPrefab: {fileID: 2963582785093949732, guid: 093af67fa5a878246b33178d6a90f0e2, type: 3}
---- !u!114 &799768566176401108
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6071354540810833049}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c12f2a38d876d349a5e84de815bc599, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _pawn: {fileID: 4497678083692367122}
 --- !u!1001 &2243864749306681871
 PrefabInstance:
   m_ObjectHideFlags: 0

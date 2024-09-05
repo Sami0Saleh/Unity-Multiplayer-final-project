@@ -37,7 +37,7 @@ namespace Game
 		{
 			BoardMask reach = new();
 			reach[centerX, centerY] = true;
-			while (steps > 0)
+			while (steps > 0 && !reach.Empty())
 			{
 				reach |= reach.Spread() & traversable;
 				steps--;

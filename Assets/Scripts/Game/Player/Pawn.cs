@@ -18,12 +18,12 @@ namespace Game.Player
 			set => Position = Board.BoardMask.IndexToBitNumber(value.Item1, value.Item2);
 		}
 		public bool IsOnBoard => Board.Instance.CurrentBoardState.Contains(Position);
+		public bool CanAct => Movement.AbleToMove || Hammer.AbleToHammer;
 		public static Pawn Mine { get; private set; }
 
 		public static event UnityAction<Pawn> PlayerJoined;
 		public static event UnityAction<Pawn> PlayerEliminated;
-		public event UnityAction<Pawn> MoveTurnStart;
-		public event UnityAction<Pawn> HammerTurnStart;
+		public event UnityAction<Pawn> TurnStart;
 		public event UnityAction<Pawn> TurnEnd;
 
 		public Photon.Realtime.Player Owner => photonView.Owner;
@@ -58,6 +58,7 @@ namespace Game.Player
 			PlayerJoined?.Invoke(this);
 			TurnIterator.Instance.OnTurnChange += OnTurnChange;
 			Movement.OnPawnMoved += OnPawnMoved;
+			Hammer.OnHammered += OnHammered;
 			if (photonView.AmController)
 				InputActions.Cursor.Enable();
 		}
@@ -67,16 +68,15 @@ namespace Game.Player
 			PlayerEliminated?.Invoke(this);
 			TurnIterator.Instance.OnTurnChange -= OnTurnChange;
 			Movement.OnPawnMoved -= OnPawnMoved;
+			Hammer.OnHammered -= OnHammered;
 			if (photonView.AmController)
 				InputActions.Cursor.Disable();
 		}
 
 		private void OnTurnChange(TurnIterator.TurnChangeEvent turnChangeEvent)
 		{
-			if (turnChangeEvent.currentPlayer == Owner && turnChangeEvent.action == TurnIterator.TurnChangeEvent.Action.Move)
-				MoveTurnStart?.Invoke(this);
-			else if (turnChangeEvent.currentPlayer == Owner && turnChangeEvent.action == TurnIterator.TurnChangeEvent.Action.Hammer)
-				HammerTurnStart?.Invoke(this);
+			if (turnChangeEvent.currentPlayer == Owner)
+				TurnStart?.Invoke(this);
 			else if (turnChangeEvent.lastPlayer == Owner)
 				TurnEnd?.Invoke(this);
 		}
@@ -88,6 +88,15 @@ namespace Game.Player
 			Position = movementEvent.steps.Last();
 			var tileTransform = Board.Instance.BitNumberToTile(Position).transform;
 			transform.SetPositionAndRotation(tileTransform.position, tileTransform.rotation);
+			CheckEndTurn();
+		}
+
+		private void OnHammered(byte _) => CheckEndTurn();
+
+		private void CheckEndTurn()
+		{
+			if (!CanAct)
+				TurnEnd?.Invoke(this);
 		}
 	}
 }

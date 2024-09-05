@@ -9,37 +9,29 @@ using ExitGames.Client.Photon;
 namespace Game.Player
 {
 	/// <summary>
-	/// Handles <see cref="TurnIterator.TurnChangeEvent.Action.Move"/> events.
+	/// Handles <see cref="PawnMovementEvent"/>.
 	/// </summary>
 	public class PawnMovement : MonoBehaviourPun
 	{
 		public const int MAX_STEPS = 2;
 
 		[SerializeField] private Pawn _pawn;
+		private byte _stepsLeft;
 
 		public event UnityAction<PawnMovementEvent> OnPawnMoved;
 
-		public Board.BoardMask ReachableArea => Pathfinding.GetTraversableArea(_pawn.Position, MAX_STEPS, Board.Instance.TraversableArea);
+		public bool AbleToMove => !ReachableArea.Empty() && _stepsLeft > 0;
+		public Board.BoardMask ReachableArea => Pathfinding.GetTraversableArea(_pawn.Position, _stepsLeft, Board.Instance.TraversableArea);
 
-		private void Awake() => enabled = photonView.AmController;
+		private void Awake() => _pawn.TurnStart += OnStartTurn;
 
-		private void OnEnable() => TurnIterator.Instance.OnTurnChange += OnTurnChange;
+		private void OnDestroy() => _pawn.TurnStart -= OnStartTurn;
 
-		private void OnDisable() => TurnIterator.Instance.OnTurnChange -= OnTurnChange;
+		private void OnEnable() => _pawn.Cursor.PositionPicked += OnPositionPicked;
 
-		private void OnTurnChange(TurnIterator.TurnChangeEvent turnChangeEvent)
-		{
-			if (!turnChangeEvent.Valid)
-				return;
-			if (turnChangeEvent.currentPlayer.IsLocal && turnChangeEvent.action == TurnIterator.TurnChangeEvent.Action.Move)
-				ListenToCursorEvents(_pawn.Cursor);
-			else
-				UnListenToCursorEvents(_pawn.Cursor);
+		private void OnDisable() => _pawn.Cursor.PositionPicked -= OnPositionPicked;
 
-			void ListenToCursorEvents(Cursor cursor) => cursor.PositionPicked += OnPositionPicked;
-
-			void UnListenToCursorEvents(Cursor cursor) => cursor.PositionPicked -= OnPositionPicked;
-		}
+		private void OnStartTurn(Pawn pawn) => _stepsLeft = MAX_STEPS;
 
 		private void OnPositionPicked(byte position)
 		{
@@ -50,8 +42,9 @@ namespace Game.Player
 		[PunRPC]
 		private void OnPawnMovedRPC(PawnMovementEvent movement, PhotonMessageInfo info)
 		{
-			if (!movement.Valid || (info.Sender != movement.player && info.Sender != PhotonNetwork.MasterClient))
+			if (!AbleToMove || !movement.Valid || (info.Sender != movement.player && info.Sender != PhotonNetwork.MasterClient))
 				return;
+			_stepsLeft -= (byte)(movement.steps.Count() - 1);
 			OnPawnMoved?.Invoke(movement);
 		}
 

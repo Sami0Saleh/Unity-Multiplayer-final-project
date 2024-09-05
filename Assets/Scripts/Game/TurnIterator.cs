@@ -6,7 +6,6 @@ using Photon.Pun;
 using PunPlayer = Photon.Realtime.Player;
 using ExitGames.Client.Photon;
 using Game.Player;
-using static Game.Player.PawnMovement;
 
 namespace Game
 {
@@ -70,11 +69,11 @@ namespace Game
 			else
 			{
 				if (TryGetOutOfBoardPawn(out var pawn)) // Give priority to Pawns out of board
-					InvokeOnTurnChange(new TurnChangeEvent(pawn.Owner, lastPlayer, CurrentTurn, TurnChangeEvent.Action.Move));
+					InvokeOnTurnChange(new TurnChangeEvent(pawn.Owner, lastPlayer, CurrentTurn));
 				else if (CurrentPlayerIsLast()) // Loop back to the first player and advance the turn counter
-					InvokeOnTurnChange(new TurnChangeEvent(activePlayers.First().Key, lastPlayer, CurrentTurn + 1, TurnChangeEvent.Action.Move));
+					InvokeOnTurnChange(new TurnChangeEvent(activePlayers.First().Key, lastPlayer, CurrentTurn + 1));
 				else // Continue to next player normally
-					InvokeOnTurnChange(new TurnChangeEvent(GetNextPlayer(), lastPlayer, CurrentTurn, TurnChangeEvent.Action.Move));
+					InvokeOnTurnChange(new TurnChangeEvent(GetNextPlayer(), lastPlayer, CurrentTurn));
 				return true;
 			}
 
@@ -130,31 +129,11 @@ namespace Game
 			if (PhotonNetwork.IsMasterClient)
 				RegisterAdvanceTurn();
 
-			void RegisterAdvanceTurn()
-			{
-				if (_currentTemp == default && turnChange.action == TurnChangeEvent.Action.Move)
-					currentPawn.Movement.OnPawnMoved += InvokeHammerTurn;
-				else if (_currentTemp == default && turnChange.action == TurnChangeEvent.Action.Hammer)
-					currentPawn.Hammer.OnTileDestroyed += InvokeNextTurn;
-				else
-					currentPawn.Movement.OnPawnMoved += InvokeNextTurnOnMove;
-			}
+			void RegisterAdvanceTurn() => currentPawn.TurnEnd += InvokeNextTurn;
 
-			void InvokeHammerTurn(PawnMovementEvent movement)
+			void InvokeNextTurn(Pawn pawn)
 			{
-				movement.Pawn.Movement.OnPawnMoved -= InvokeHammerTurn;
-				InvokeOnTurnChange(new(_currentStable, _currentStable, CurrentTurn, TurnChangeEvent.Action.Hammer));
-			}
-
-			void InvokeNextTurn(byte _)
-			{
-				currentPawn.Hammer.OnTileDestroyed -= InvokeNextTurn;
-				MoveNext();
-			}
-
-			void InvokeNextTurnOnMove(PawnMovementEvent movement)
-			{
-				currentPawn.Movement.OnPawnMoved -= InvokeNextTurnOnMove;
+				pawn.TurnEnd -= InvokeNextTurn;
 				MoveNext();
 			}
 		}
@@ -167,20 +146,18 @@ namespace Game
 			public PunPlayer currentPlayer;
 			public PunPlayer lastPlayer;
 			public int turn;
-			public Action action;
 
-			public TurnChangeEvent(PunPlayer current, PunPlayer last, int currentTurn, Action action)
+			public TurnChangeEvent(PunPlayer current, PunPlayer last, int currentTurn)
 			{
 				currentPlayer = current;
 				lastPlayer = last;
 				turn = currentTurn;
-				this.action = action;
 			}
 
 			public readonly bool Valid => currentPlayer != null && turn > 0;
 
 			#region SERIALIZATION
-			private const int SIZE = (3 * sizeof(int)) + sizeof(Action);
+			private const int SIZE = 3 * sizeof(int);
 			private static readonly byte[] _bytes = new byte[SIZE];
 
 			public static short Serialize(StreamBuffer outStream, object customobject)
@@ -192,7 +169,6 @@ namespace Game
 					Protocol.Serialize(turnChange.currentPlayer.ActorNumber, _bytes, ref index);
 					Protocol.Serialize(turnChange.lastPlayer.ActorNumber, _bytes, ref index);
 					Protocol.Serialize(turnChange.turn, _bytes, ref index);
-					_bytes[index] = (byte)turnChange.action;
 					outStream.Write(_bytes, 0, SIZE);
 				}
 				return SIZE;
@@ -210,17 +186,10 @@ namespace Game
 					Protocol.Deserialize(out actorNumber, _bytes, ref index);
 					turnChange.lastPlayer = PhotonNetwork.CurrentRoom.GetPlayer(actorNumber);
 					Protocol.Deserialize(out turnChange.turn, _bytes, ref index);
-					turnChange.action = (Action)_bytes[index++];
 				}
 				return turnChange;
 			}
 			#endregion
-
-			public enum Action : byte
-			{
-				Move,
-				Hammer
-			}
 		}
 	}
 }
