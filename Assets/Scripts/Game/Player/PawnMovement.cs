@@ -13,7 +13,8 @@ namespace Game.Player
 	/// </summary>
 	public class PawnMovement : MonoBehaviourPun
 	{
-		public const int MAX_STEPS = 2;
+		public const byte MAX_STEPS = 2;
+		public const byte STEPS_OUT_OF_BOARD = 1;
 
 		[SerializeField] private Pawn _pawn;
 		private byte _stepsLeft;
@@ -31,7 +32,7 @@ namespace Game.Player
 
 		private void OnDisable() => _pawn.Cursor.PositionPicked -= OnPositionPicked;
 
-		private void OnStartTurn(Pawn pawn) => _stepsLeft = MAX_STEPS;
+		private void OnStartTurn(Pawn pawn) => _stepsLeft = _pawn.IsOnBoard ? MAX_STEPS : STEPS_OUT_OF_BOARD;
 
 		private void OnPositionPicked(byte position)
 		{

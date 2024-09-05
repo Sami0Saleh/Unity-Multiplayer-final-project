@@ -32,12 +32,24 @@ namespace Game.Player
 				Destroy(_mousePositionTracker);
 			if (!photonView.AmController)
 				enabled = false;
+			var ownerPawn = OwnerPawn;
+			ownerPawn.TurnStart += OnTurnStart;
+			ownerPawn.TurnEnd += OnTurnEnd;
+			ownerPawn.Movement.OnPawnMoved += OnMoved;
+			ownerPawn.Hammer.OnHammered += OnHammered;
+		}
+
+		private void OnDestroy()
+		{
+			var ownerPawn = OwnerPawn;
+			ownerPawn.TurnStart -= OnTurnStart;
+			ownerPawn.TurnEnd -= OnTurnEnd;
+			ownerPawn.Movement.OnPawnMoved -= OnMoved;
+			ownerPawn.Hammer.OnHammered -= OnHammered;
 		}
 
 		private void OnEnable()
 		{
-			OwnerPawn.TurnStart += OnTurnStart;
-			OwnerPawn.TurnEnd += OnTurnEnd;
 			var input = OwnerPawn.InputActions;
 			if (input == null)
 				return;
@@ -47,8 +59,6 @@ namespace Game.Player
 
 		private void OnDisable()
 		{
-			OwnerPawn.TurnStart -= OnTurnStart;
-			OwnerPawn.TurnEnd -= OnTurnEnd;
 			var input = OwnerPawn.InputActions;
 			if (input == null)
 				return;
@@ -76,16 +86,57 @@ namespace Game.Player
 
 		private void OnToggleState(InputAction.CallbackContext _)
 		{
-			CurrentState = CurrentState == State.Move ? State.Hammer : State.Move;
-			const string TOGGLE_STATE = nameof(ToggleStateRPC);
-			photonView.RPC(TOGGLE_STATE, RpcTarget.All, CurrentState);
+			if (TryToggle(out var newState))
+			{
+				const string TOGGLE_STATE = nameof(ToggleStateRPC);
+				photonView.RPC(TOGGLE_STATE, RpcTarget.All, newState);
+			}
+
+			bool TryToggle(out State newState)
+			{
+				newState = State.Neutral;
+				var ownerPawn = OwnerPawn;
+				if (CanSwitchToHammer())
+					newState = State.Hammer;
+				else if (CanSwitchToMove())
+					newState = State.Move;
+				return newState != State.Neutral;
+
+				bool CanSwitchToHammer() => CurrentState == State.Move && ownerPawn.Hammer.AbleToHammer;
+
+				bool CanSwitchToMove() => CurrentState == State.Hammer && ownerPawn.Movement.AbleToMove;
+			}
 		}
 		#endregion
 
 		#region CURSOR
-		private void OnTurnStart(Pawn pawn) => ChangeStateLocal(pawn.Movement.AbleToMove ? State.Move : State.Hammer, pawn);
+		private void OnTurnStart(Pawn pawn)
+		{
+			enabled = true;
+			ChangeStateLocal(pawn.Movement.AbleToMove ? State.Move : State.Hammer, pawn);
+		}
 
-		private void OnTurnEnd(Pawn pawn) => ChangeStateLocal(State.Neutral, pawn);
+		private void OnTurnEnd(Pawn pawn)
+		{
+			enabled = false;
+			ChangeStateLocal(State.Neutral, pawn);
+		}
+
+		private void OnMoved(PawnMovement.PawnMovementEvent _)
+		{
+			if (OwnerPawn.Movement.AbleToMove)
+				return;
+			else if (OwnerPawn.Hammer.AbleToHammer)
+				ChangeStateLocal(State.Hammer);
+		}
+
+		private void OnHammered(byte _)
+		{
+			if (OwnerPawn.Hammer.AbleToHammer)
+				return;
+			else if (OwnerPawn.Movement.AbleToMove)
+				ChangeStateLocal(State.Move);
+		}
 
 		private void ChangeStateLocal(State newState) => ChangeStateLocal(newState, OwnerPawn);
 

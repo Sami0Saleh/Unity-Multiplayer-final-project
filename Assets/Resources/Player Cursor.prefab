@@ -134,8 +134,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4844836438090211869}
-  - {fileID: 1616615915210482869}
   - {fileID: 29141132210470962}
+  - {fileID: 1616615915210482869}
   m_Father: {fileID: 771532608116789204}
   m_LocalEulerAnglesHint: {x: 0, y: -45, z: 0}
 --- !u!114 &1336632973513520815
@@ -153,7 +153,7 @@ MonoBehaviour:
   _cursor: {fileID: 2963582785093949732}
   _neutralCursor: {fileID: 5221784949720103079}
   _moveCursor: {fileID: 805114194175351432}
-  _hammerCursor: {fileID: 805114194175351432}
+  _hammerCursor: {fileID: 2099960764980624911}
 --- !u!114 &7503899268358023549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -217,7 +217,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: ca790c20141d81549968d4e8b69c3f40, type: 3}
       propertyPath: m_Name
-      value: Boots
+      value: Move
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: ca790c20141d81549968d4e8b69c3f40, type: 3}
       propertyPath: m_IsActive
@@ -329,6 +329,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ade434500e64df4408a510891c936efe, type: 3}
   m_PrefabInstance: {fileID: 1289690724146627422}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2099960764980624911 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ade434500e64df4408a510891c936efe, type: 3}
+  m_PrefabInstance: {fileID: 1289690724146627422}
+  m_PrefabAsset: {fileID: 0}
 --- !u!23 &9124267701227616433 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 8032750206264916975, guid: ade434500e64df4408a510891c936efe, type: 3}
@@ -396,7 +401,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: b9086843cbcac77418e8e27777a8a2e8, type: 3}
       propertyPath: m_Name
-      value: Hand
+      value: Neutral
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

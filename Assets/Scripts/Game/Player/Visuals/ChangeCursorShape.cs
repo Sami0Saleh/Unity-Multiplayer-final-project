@@ -26,6 +26,7 @@ namespace Game.Player.Visuals
 
 		private void OnStateChanged(Cursor.State newState)
 		{
+			Debug.Log("New state:" + newState);
 			var cursor = newState switch
 			{
 				Cursor.State.Move => _moveCursor,
