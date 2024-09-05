@@ -73,9 +73,9 @@ namespace Game.Player
 
 						bool HasEnoughSteps() => steps.Length > 1 && steps.AllUnique();
 
-						bool AllStepsAreValid() => pawn.Position == steps.First() && AllStepsAreIncludedInBoard();
+						bool AllStepsAreValid() => pawn.Position == steps.First() && AllStepsButFirstAreIncludedInBoard();
 
-						bool AllStepsAreIncludedInBoard() => Board.Instance.CurrentBoardState.Contains(Board.BoardMask.BitNumbersToMask(steps));
+						bool AllStepsButFirstAreIncludedInBoard() => Board.Instance.CurrentBoardState.Contains(Board.BoardMask.BitNumbersToMask(steps) & ~Board.BoardMask.BitNumberToMask(pawn.Position));
 					}
 				}
 			}
