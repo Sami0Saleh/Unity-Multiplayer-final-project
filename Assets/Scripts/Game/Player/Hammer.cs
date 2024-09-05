@@ -16,6 +16,7 @@ namespace Game.Player
 		public event UnityAction<byte> OnHammered;
 
 		public bool AbleToHammer { get; private set; }
+		public Board.BoardMask HammerableArea => Board.Instance.CurrentBoardState & Pathfinding.GetArea(_pawn.Position, MAX_RANGE) & ~Board.BoardMask.BitNumberToMask(_pawn.Position);
 
 		private void Awake() => _pawn.TurnStart += OnStartTurn;
 
@@ -36,18 +37,14 @@ namespace Game.Player
 		[PunRPC]
 		private void HammerTileRPC(byte tile, PhotonMessageInfo info)
 		{
-			if (!AbleToHammer || !CurrentlyActingPlayer() || !TileIsOnBoard() || !WithinRangeOfPawn() || SameTileAsActor())
+			if (!AbleToHammer || !CurrentlyActingPlayer() || !WithinHammerableArea())
 				return;
 			AbleToHammer = false;
 			OnHammered?.Invoke(tile);
 
 			bool CurrentlyActingPlayer() => TurnIterator.Instance.Current == info.Sender;
 
-			bool TileIsOnBoard() => Board.Instance.CurrentBoardState.Contains(tile);
-
-			bool WithinRangeOfPawn() => Pathfinding.GetArea(_pawn.Position, MAX_RANGE).Contains(tile);
-
-			bool SameTileAsActor() => _pawn.Position == tile;
+			bool WithinHammerableArea() => HammerableArea.Contains(tile);
 		}
 	}
 }
