@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
@@ -14,19 +15,19 @@ namespace Game.Player
 	/// </summary>
 	public class PawnMovement : MonoBehaviourPun
 	{
-		public const byte MAX_STEPS = 2;
-		public const byte STEPS_OUT_OF_BOARD = 1;
+		public const int MAX_STEPS = 2;
+		public const int STEPS_OUT_OF_BOARD = 1;
 
 		[SerializeField] private Pawn _pawn;
 		private readonly Stack<Position> _path = new(PawnMovementEvent.MAX_ELEMENTS_IN_STEPS);
-		private byte _stepsLeft;
+		private int _stepsLeft;
 
 		public event UnityAction<PawnMovementEvent> OnPawnMoved;
 		public event UnityAction<IEnumerable<Position>> OnPathChanged;
 
 		public bool HasMoved => _stepsLeft < MAX_STEPS;
 		public bool AbleToMove => !ReachableArea.Empty() && _stepsLeft > 0;
-		public Board.BoardMask ReachableArea => Pathfinding.GetTraversableArea(_pawn.Position, _stepsLeft, Board.Instance.TraversableArea);
+		public Board.BoardMask ReachableArea => Pathfinding.GetTraversableArea(_pawn.Position, (byte)Math.Max(_stepsLeft, 0), Board.Instance.TraversableArea);
 
 		private void Awake() => _pawn.TurnStart += OnStartTurn;
 
@@ -58,21 +59,36 @@ namespace Game.Player
 
 		private void OnPositionChanged(Position position)
 		{
+			bool canBranch;
 			if (_path.Peek() != position && _path.Contains(position))
-				ReturnTo();
-			else if (!ReachableArea.Contains(position) || !ExtendsHead() || _path.Count >= PawnMovementEvent.MAX_ELEMENTS_IN_STEPS)
+				ReturnTo(position);
+			else if (!ReachableArea.Contains(position) || !(canBranch = CanBranch(position, out var branchPosition)) || _path.Count >= _stepsLeft+1)
 				return;
+			else if (canBranch)
+				BranchFrom(branchPosition, position);
 			else
 				_path.Push(position);
 			OnPathChanged?.Invoke(_path.Reverse());
 
-			void ReturnTo()
+			void ReturnTo(Position position)
 			{
 				while (_path.Peek() != position && _path.Count > 1)
 					_path.Pop();
 			}
 
-			bool ExtendsHead() => Pathfinding.GetNeighbors(_path.Peek()).Contains(position);
+			bool CanBranch(Position to, out Position branchPosition)
+			{
+				branchPosition = _path.FirstOrDefault(p => CanBranchSingle(p, to));
+				return branchPosition != default;
+			}
+
+			bool CanBranchSingle(Position from, Position to) => Pathfinding.GetNeighbors(from).Contains(to);
+
+			void BranchFrom(Position branchPosition, Position to)
+			{
+				ReturnTo(branchPosition);
+				_path.Push(to);
+			}
 		}
 
 		[PunRPC]
