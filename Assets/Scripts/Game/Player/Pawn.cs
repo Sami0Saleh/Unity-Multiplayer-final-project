@@ -77,10 +77,10 @@ namespace Game.Player
 		private void OnTurnChange(TurnIterator.TurnChangeEvent turnChangeEvent)
 		{
 			CheckForPawnElimination(turnChangeEvent);
+			if (turnChangeEvent.lastPlayer == Owner)
+				TurnEnd?.Invoke(this);
 			if (turnChangeEvent.currentPlayer == Owner)
 				TurnStart?.Invoke(this);
-			else if (turnChangeEvent.lastPlayer == Owner)
-				TurnEnd?.Invoke(this);
 		}
 
 		private void OnPawnMoved(PawnMovement.PawnMovementEvent movementEvent)
