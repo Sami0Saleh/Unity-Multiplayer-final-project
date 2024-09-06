@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Unity.Burst;
+using UnityEngine;
 using static Game.Board;
 using static Game.Board.BoardMask;
 
@@ -19,25 +20,20 @@ namespace Game
 		/// <param name="traversable">Mask detailing where the entity can reach.</param>
 		/// <returns>Where the entity can reach.</returns>
 		[BurstCompile]
-		public static BoardMask GetTraversableArea(Position position, byte steps, BoardMask traversable)
-		{
-			(var x, var y) = position.ToIndex();
-			return GetTraversableArea(x, y, steps, traversable);
-		}
+		public static BoardMask GetTraversableArea(Position position, byte steps, BoardMask traversable) => GetTraversableArea(position.ToIndex(), steps, traversable);
 
 		/// <summary>
 		/// Shows where an entity starting in (<paramref name="centerX"/>, <paramref name="centerY"/>) can reach in <paramref name="steps"/> steps given the <paramref name="traversable"/> area.
 		/// </summary>
-		/// <param name="centerX">Starting X coordinate of the entity.</param>
-		/// <param name="centerY">Starting Y coordinate of the entity.</param>
+		/// <param name="index">Position of the entity.</param>
 		/// <param name="steps">How many steps the entity can take.</param>
 		/// <param name="traversable">Mask detailing where the entity can reach.</param>
 		/// <returns>Where the entity can reach.</returns>
 		[BurstCompile]
-		public static BoardMask GetTraversableArea(byte centerX, byte centerY, byte steps, BoardMask traversable)
+		public static BoardMask GetTraversableArea(Vector2Int index, byte steps, BoardMask traversable)
 		{
 			BoardMask reach = new();
-			reach[centerX, centerY] = true;
+			reach[index] = true;
 			while (steps > 0 && !reach.Empty())
 			{
 				reach = reach.Spread() & traversable;
@@ -49,39 +45,34 @@ namespace Game
 		/// <param name="position">Position of the area center.</param>
 		/// <param name="radius">Radius of the area.</param>
 		/// <returns>The area centered in <paramref name="position"/> with a radius of <paramref name="radius"/>.</returns>
-		public static BoardMask GetArea(Position position, byte radius)
-		{
-			(var x, var y) = position.ToIndex();
-			return GetArea(x, y, radius);
-		}
+		public static BoardMask GetArea(Position position, byte radius) => GetArea(position.ToIndex(), radius);
 
-		/// <param name="centerX">X coordinate of the area center.</param>
-		/// <param name="centerY">Y coordinate of the area center.</param>
+		/// <param name="index">Position of the area center.</param>
 		/// <param name="radius">Radius of the area.</param>
-		/// <returns>The area centered in (<paramref name="centerX"/>, <paramref name="centerY"/>) with a radius of <paramref name="radius"/>.</returns>
+		/// <returns>The area centered in <paramref name="index"/> with a radius of <paramref name="radius"/>.</returns>
 		[BurstCompile]
-		public static BoardMask GetArea(byte centerX, byte centerY, byte radius)
+		public static BoardMask GetArea(Vector2Int index, byte radius)
 		{
 			BoardMask mask = new();
 			int diameter = 1 + (radius << 1);
-			int startX = centerX - radius;
+			int startX = index.x - radius;
 			int endX = startX + diameter;
 			startX = Math.Max(startX, 0);
 			endX = Math.Min(endX, WIDTH);
-			for (byte x = (byte)startX; x < endX; x++)
+			for (int x = startX; x < endX; x++)
 				Column(x);
 			return mask;
 
 			[BurstCompile]
-			void Column(byte x)
+			void Column(int x)
 			{
-				int height = diameter - Math.Abs(centerX - x);
-				int startY = centerY - (height >> 1) - ((centerX % 2) * (x % 2)) + (centerX % 2);
+				int height = diameter - Math.Abs(index.x - x);
+				int startY = index.y - (height >> 1) - ((index.x % 2) * (x % 2)) + (index.x % 2);
 				int endY = startY + height;
 				startY = Math.Max(startY, 0);
 				endY = Math.Min(endY, HEIGHT);
-				for (byte y = (byte)startY; y < endY; y++)
-					mask[x, y] = true;
+				for (int y = startY; y < endY; y++)
+					mask[new(x, y)] = true;
 			}
 		}
 
@@ -104,23 +95,21 @@ namespace Game
 		/// <returns>The immediate neighbors of tile at <paramref name="position"/>.</returns>
 		public static BoardMask GetNeighbors(Position position) => GetArea(position, 1);
 
-		/// <param name="centerX">X coordinate of the tile.</param>
-		/// <param name="centerY">Y coordinate of the tile.</param>
-		/// <returns>The immediate neighbors of tile at (<paramref name="centerX"/>, <paramref name="centerY"/>).</returns>
-		public static BoardMask GetNeighbors(byte centerX, byte centerY) => GetArea(centerX, centerY, 1);
+		/// <param name="index">Position of the tile.</param>
+		/// <returns>The immediate neighbors of tile at <paramref name="index"/>.</returns>
+		public static BoardMask GetNeighbors(Vector2Int index) => GetArea(index, 1);
 
-		/// <param name="centerX">X coordinate of the rings center.</param>
-		/// <param name="centerY">Y coordinate of the rings center.</param>
-		/// <returns>A series of rings centered in (<paramref name="centerX"/>, <paramref name="centerY"/>).</returns>
-		public static IEnumerable<BoardMask> GetRings(byte centerX, byte centerY)
+		/// <param name="index">Position of the tile.</param>
+		/// <returns>A series of rings centered in <paramref name="index"/>.</returns>
+		public static IEnumerable<BoardMask> GetRings(Vector2Int index)
 		{
 			BoardMask mask = new();
 			byte radius = 1;
-			mask[centerX, centerY] = true;
+			mask[index] = true;
 			while (!mask.Empty())
 			{
 				yield return mask;
-				mask = GetArea(centerX, centerY, radius) & ~mask;
+				mask = GetArea(index, radius) & ~mask;
 			}
 		}
 	}

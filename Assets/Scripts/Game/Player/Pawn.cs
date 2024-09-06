@@ -13,10 +13,10 @@ namespace Game.Player
 		[field: SerializeField] public PawnMovement Movement { get; private set; }
 		[field: SerializeField] public Hammer Hammer { get; private set; }
 		public Position Position { get; set; }
-		public (byte, byte) PositionIndex
+		public Vector2Int PositionIndex
 		{
 			get => Position.ToIndex();
-			set => Position = new Position(value.Item1, value.Item2);
+			set => Position = new Position(value);
 		}
 		public bool IsOnBoard => Board.Instance.CurrentBoardState.Contains(Position);
 		public bool CanAct => Movement.AbleToMove || Hammer.AbleToHammer;

@@ -13,7 +13,7 @@ namespace Test
 		[ContextMenu("Select")]
 		private void Select()
 		{
-			foreach (var tile in Board.Instance.MaskToTiles(Pathfinding.GetArea(_x, _y, _radius)))
+			foreach (var tile in Board.Instance.MaskToTiles(Pathfinding.GetArea(new Vector2Int(_x, _y), _radius)))
 				tile.transform.DOShakeScale(1f);
 		}
 	}

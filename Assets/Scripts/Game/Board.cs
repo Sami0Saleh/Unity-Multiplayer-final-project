@@ -19,11 +19,12 @@ namespace Game
 		public const byte MAX_NUMBER_OF_TILES = HEIGHT * WIDTH;
 		private const int X_OFFSET = -WIDTH / 2;
 		private const int Y_OFFSET = -HEIGHT / 2;
+		
 		public static BoardMask STARTING_POSITIONS =
-								IndexToMask(0, 1) |
-								IndexToMask(WIDTH - 1, 1) |
-								IndexToMask(0, HEIGHT-2) |
-								IndexToMask(WIDTH - 1, HEIGHT -2);
+								BoardMask.IndexToMask(new(0, 1)) |
+								BoardMask.IndexToMask(new(WIDTH - 1, 1)) |
+								BoardMask.IndexToMask(new(0, HEIGHT-2)) |
+								BoardMask.IndexToMask(new(WIDTH - 1, HEIGHT -2));
 		#region CELL_BOUNDS
 		private const int X_MIN = Y_OFFSET;
 		private const int X_MAX = -Y_OFFSET;
@@ -60,7 +61,7 @@ namespace Game
 
 			static BoardMask GetInitialBoardMaskForTileCreation()
 			{
-				BoardMask mask = BoardMask.FULL;
+				BoardMask mask = FULL;
 				RemoveCorners();
 				RemoveOddsFromLastRow();
 				return mask;
@@ -75,8 +76,8 @@ namespace Game
 
 				void RemoveOddsFromLastRow()
 				{
-					BoardMask.Position y = HEIGHT - 1;
-					for (BoardMask.Position x = 1; x < WIDTH; x += 2)
+					Position y = HEIGHT - 1;
+					for (Position x = 1; x < WIDTH; x += 2)
 						mask[x, y] = false;
 				}
 			}
@@ -106,10 +107,10 @@ namespace Game
 
 			Tile CreateTile(Position position)
 			{
-				(var x, var y) = position.ToIndex();
-				var cell = IndexToCell(x, y);
+				var index = position.ToIndex();
+				var cell = IndexToCell(index);
 				var tile = Instantiate(_tilePrefab, Grid.CellToWorld(cell), Quaternion.identity, TilesParent);
-				tile.name = $"Tile @ {x}, {y}";
+				tile.name = $"Tile @ {index.x}, {index.y}";
 				_tiles[position] = tile;
 				CurrentBoardState |= position.ToMask();
 				return tile;
@@ -182,21 +183,13 @@ namespace Game
 		
 		public Position WorldPositionToBitNumber(Vector3 worldPosition) => CellToPosition(Grid.WorldToCell(worldPosition));
 
-		public static Vector3Int PositionToCell(Position position)
-		{
-			(byte x, byte y) = position.ToIndex();
-			return IndexToCell(x, y);
-		}
+		public static Vector3Int PositionToCell(Position position) => IndexToCell(position.ToIndex());
 
-		public static Vector3Int IndexToCell(byte x, byte y) => new(y + Y_OFFSET, x + X_OFFSET);
+		public static Vector3Int IndexToCell(Vector2Int index) => new(index.y + Y_OFFSET, index.x + X_OFFSET);
 
-		public static (byte, byte) CellToIndex(Vector3Int cell) => ((byte)(cell.y - X_OFFSET), (byte)(cell.x - Y_OFFSET));
+		public static Vector2Int CellToIndex(Vector3Int cell) => new(cell.y - X_OFFSET, cell.x - Y_OFFSET);
 
-		public static Position CellToPosition(Vector3Int cell)
-		{
-			(byte x, byte y) = CellToIndex(cell);
-			return new Position(x, y);
-		}
+		public static Position CellToPosition(Vector3Int cell) => new Position(CellToIndex(cell));
 
 		public Tile PositionToTile(Position position) => _tiles[position];
 
@@ -219,13 +212,25 @@ namespace Game
 			#region OPERATORS
 			public bool this[byte x, byte y]
 			{
-				readonly get => (_mask & IndexToMask(x, y)) != 0;
+				readonly get => this[new(x, y)];
+				set
+				{
+					Vector2Int index = new(x, y);
+					if (value)
+						_mask |= IndexToMask(index);
+					else
+						_mask &= ~IndexToMask(index);
+				}
+			}
+			public bool this[Vector2Int index]
+			{
+				readonly get => (_mask & IndexToMask(index)) != 0;
 				set
 				{
 					if (value)
-						_mask |= IndexToMask(x, y);
+						_mask |= IndexToMask(index);
 					else
-						_mask &= ~IndexToMask(x, y);
+						_mask &= ~IndexToMask(index);
 				}
 			}
 
@@ -235,7 +240,7 @@ namespace Game
 			#endregion
 
 			#region CONVERSIONS
-			public static ulong IndexToMask(byte x, byte y) => new Position(x, y).ToMask();
+			public static ulong IndexToMask(Vector2Int index) => new Position(index).ToMask();
 
 			[BurstCompile]
 			public static BoardMask FromPositions(IEnumerable<Position> positions)
@@ -270,7 +275,7 @@ namespace Game
 
 			readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-			public readonly IEnumerable<(byte, byte)> Indices => this.Select(p => p.ToIndex());
+			public readonly IEnumerable<Vector2Int> Indices => this.Select(p => p.ToIndex());
 			#endregion
 			#endregion
 
@@ -287,13 +292,13 @@ namespace Game
 				public static implicit operator Position(byte position) => new() { _position = position };
 
 				#region CONVERSIONS
-				public Position(byte x, byte y) => _position = FromIndex(x, y);
+				public Position(Vector2Int index) => _position = FromIndex(index);
 
 				public readonly ulong ToMask() => (ulong)1 << _position;
 
-				public readonly (byte, byte) ToIndex() => ((byte)(_position % WIDTH), (byte)(_position / WIDTH));
+				public readonly Vector2Int ToIndex() => new(_position % WIDTH, _position / WIDTH);
 
-				public static Position FromIndex(byte x, byte y) => (byte)(x + y * WIDTH);
+				public static Position FromIndex(Vector2Int index) => (Position)(index.x + index.y * WIDTH);
 				#endregion
 
 				public readonly bool Equals(Position other) => _position == other._position;
