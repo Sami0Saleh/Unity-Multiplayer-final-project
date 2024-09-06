@@ -56,8 +56,8 @@ namespace UI
 		private void SetColorText(string color)
 		{
 			_colorTextbox.text = color;
-			if (_colorConfig.TryGetValue(color, out var mat))
-				_colorTextbox.color = mat.color;
+			if (_colorConfig.TryGetValue(color, out var profile))
+				_colorTextbox.color = profile.Color;
 		}
 
 		private void CycleColorRightButton() => CycleColor(1);

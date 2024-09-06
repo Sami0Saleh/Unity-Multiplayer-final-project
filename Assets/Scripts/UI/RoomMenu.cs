@@ -80,8 +80,8 @@ namespace UI
 		{
 			var msg = Instantiate(_chatMessagePrefab, _chat);
 			msg.Text = $"{info.Sender.NickName}: {message}";
-			if (_colorConfig.TryGetMaterial(info.Sender, out var mat))
-				msg.Color = mat.color;
+			if (_colorConfig.TryGetMaterial(info.Sender, out var profile))
+				msg.Color = profile.Color;
 		}
 
 		private bool AllUniqueAndValidColors()

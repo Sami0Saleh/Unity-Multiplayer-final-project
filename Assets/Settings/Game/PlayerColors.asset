@@ -12,9 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f9e9dd4e7655e44e8244d53046a866f, type: 3}
   m_Name: PlayerColors
   m_EditorClassIdentifier: 
-  _defaultColor: {fileID: 2100000, guid: aca645d1b5fe7f34f949b1d8176ff164, type: 2}
-  _materials:
-  - {fileID: 2100000, guid: 4a70e84a75880f64c9350c0ba8e7a11b, type: 2}
-  - {fileID: 2100000, guid: 38d1b05e188d5d74ca900b6ff7e0f731, type: 2}
-  - {fileID: 2100000, guid: 929e1004ce0043c4bb4f68edee8a289d, type: 2}
-  - {fileID: 2100000, guid: 8402b8b69b156454bb5c1c22f6b41bfd, type: 2}
+  _defaultProfile:
+    outlineMaterial: {fileID: 2100000, guid: aca645d1b5fe7f34f949b1d8176ff164, type: 2}
+    lineMaterial: {fileID: 2100000, guid: 2c97703a374a24f4ba97c37868a6d7fb, type: 2}
+  _profiles:
+  - outlineMaterial: {fileID: 2100000, guid: 4a70e84a75880f64c9350c0ba8e7a11b, type: 2}
+    lineMaterial: {fileID: 2100000, guid: 971475cb22f5fda408b0a208b5f7b3e7, type: 2}
+  - outlineMaterial: {fileID: 2100000, guid: 38d1b05e188d5d74ca900b6ff7e0f731, type: 2}
+    lineMaterial: {fileID: 2100000, guid: c2c3089e93701134194745a0ec18f61e, type: 2}
+  - outlineMaterial: {fileID: 2100000, guid: 929e1004ce0043c4bb4f68edee8a289d, type: 2}
+    lineMaterial: {fileID: 2100000, guid: a935208920ca04047bf06012a68b8ae3, type: 2}
+  - outlineMaterial: {fileID: 2100000, guid: 8402b8b69b156454bb5c1c22f6b41bfd, type: 2}
+    lineMaterial: {fileID: 2100000, guid: d66e60e7b24977442bbae12a944f55a9, type: 2}

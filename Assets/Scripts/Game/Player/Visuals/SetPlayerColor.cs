@@ -19,8 +19,8 @@ namespace Game.Player.Visuals
 
 			void SetMaterial()
 			{
-				if (_colorConfig.TryGetMaterial(ThisPlayer, out var mat))
-					SetOutline(mat);
+				if (_colorConfig.TryGetMaterial(ThisPlayer, out var profile))
+					SetOutline(profile.outlineMaterial);
 			}
 			Destroy(this);
 		}

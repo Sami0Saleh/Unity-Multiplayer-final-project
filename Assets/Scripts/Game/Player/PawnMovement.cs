@@ -51,14 +51,15 @@ namespace Game.Player
 		private void OnPositionPicked(Position position)
 		{
 			const string PAWN_MOVED = nameof(OnPawnMovedRPC);
-			photonView.RPC(PAWN_MOVED, RpcTarget.All, new PawnMovementEvent(photonView.Owner, _path));
+			if (_path.Peek() == position)
+				photonView.RPC(PAWN_MOVED, RpcTarget.All, new PawnMovementEvent(photonView.Owner, _path));
 		}
 
 		private void OnPositionChanged(Position position)
 		{
 			if (_path.Contains(position))
 				ReturnTo();
-			else if (_path.Count >= PawnMovementEvent.MAX_ELEMENTS_IN_STEPS)
+			else if (!ReachableArea.Contains(position) || _path.Count >= PawnMovementEvent.MAX_ELEMENTS_IN_STEPS)
 				return;
 			else if (ExtendsHead())
 				_path.Push(position);
@@ -66,7 +67,7 @@ namespace Game.Player
 
 			void ReturnTo()
 			{
-				while (_path.Peek() != position)
+				while (_path.Peek() != position && _path.Count > 1)
 					_path.Pop();
 			}
 
