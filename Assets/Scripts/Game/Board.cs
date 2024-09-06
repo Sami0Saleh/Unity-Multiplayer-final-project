@@ -19,12 +19,22 @@ namespace Game
 		public const byte MAX_NUMBER_OF_TILES = HEIGHT * WIDTH;
 		private const int X_OFFSET = -WIDTH / 2;
 		private const int Y_OFFSET = -HEIGHT / 2;
-		
-		public static BoardMask STARTING_POSITIONS =
-								BoardMask.IndexToMask(new(0, 1)) |
-								BoardMask.IndexToMask(new(WIDTH - 1, 1)) |
-								BoardMask.IndexToMask(new(0, HEIGHT-2)) |
-								BoardMask.IndexToMask(new(WIDTH - 1, HEIGHT -2));
+
+		public static IEnumerable<Position> StartingPositions
+		{
+			get
+			{
+				yield return BottomLeft();
+				yield return TopRight();
+				yield return TopLeft();
+				yield return BottomRight();
+
+				static Position BottomLeft() => new(new(0, 1));
+				static Position TopRight() => new(new(WIDTH - 1, HEIGHT - 2));
+				static Position TopLeft() => new(new(0, HEIGHT - 2));
+				static Position BottomRight() => new(new(WIDTH - 1, 1));
+			}
+		}
 		#region CELL_BOUNDS
 		private const int X_MIN = Y_OFFSET;
 		private const int X_MAX = -Y_OFFSET;
