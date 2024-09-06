@@ -131,5 +131,7 @@ namespace Game.Player
 				PhotonNetwork.Destroy(gameObject);
 			}
 		}
+
+		public override string ToString() => gameObject.name;
 	}
 }

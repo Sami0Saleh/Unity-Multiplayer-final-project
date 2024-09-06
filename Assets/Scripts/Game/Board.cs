@@ -260,6 +260,8 @@ namespace Game
 					mask |= position.ToMask();
 				return mask;
 			}
+
+			public override readonly string ToString() => string.Format("0x{0:X}", _mask);
 			#endregion
 
 			#region CHECKS
