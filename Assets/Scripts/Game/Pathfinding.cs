@@ -93,11 +93,11 @@ namespace Game
 
 		/// <param name="position">Position of the tile.</param>
 		/// <returns>The immediate neighbors of tile at <paramref name="position"/>.</returns>
-		public static BoardMask GetNeighbors(Position position) => GetArea(position, 1);
+		public static BoardMask GetNeighbors(Position position) => GetArea(position, 1) & ~position.ToMask();
 
 		/// <param name="index">Position of the tile.</param>
 		/// <returns>The immediate neighbors of tile at <paramref name="index"/>.</returns>
-		public static BoardMask GetNeighbors(Vector2Int index) => GetArea(index, 1);
+		public static BoardMask GetNeighbors(Vector2Int index) => GetNeighbors(new Position(index));
 
 		/// <param name="index">Position of the tile.</param>
 		/// <returns>A series of rings centered in <paramref name="index"/>.</returns>

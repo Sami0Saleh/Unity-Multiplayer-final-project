@@ -312,6 +312,8 @@ namespace Game
 				#endregion
 
 				public readonly bool Equals(Position other) => _position == other._position;
+
+				public override readonly string ToString() => ToIndex().ToString();
 			}
 		}
 	}

@@ -30,16 +30,23 @@ namespace Game.Player.Visuals
 
 		private void OnDisable()
 		{
+			ResetLineRenderer();
 			_lineRenderer.enabled = false;
 			_pawn.Movement.OnPathChanged -= OnPathChanged;
+
+			void ResetLineRenderer()
+			{
+				_lineRenderer.positionCount = 0;
+				_lineRenderer.SetPositions(Array.Empty<Vector3>());
+			}
 		}
 
 		private void OnStateChanged(Cursor.State state) => enabled = state == Cursor.State.Move;
 
 		private void OnPathChanged(IEnumerable<Position> path)
 		{
-			_lineRenderer.SetPositions(UpdatePath());
 			_lineRenderer.positionCount = path.Count();
+			_lineRenderer.SetPositions(UpdatePath());
 
 			Vector3[] UpdatePath()
 			{

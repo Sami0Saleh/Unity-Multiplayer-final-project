@@ -52,18 +52,18 @@ namespace Game.Player
 		{
 			const string PAWN_MOVED = nameof(OnPawnMovedRPC);
 			if (_path.Peek() == position)
-				photonView.RPC(PAWN_MOVED, RpcTarget.All, new PawnMovementEvent(photonView.Owner, _path));
+				photonView.RPC(PAWN_MOVED, RpcTarget.All, new PawnMovementEvent(photonView.Owner, _path.Reverse()));
 		}
 
 		private void OnPositionChanged(Position position)
 		{
-			if (_path.Contains(position))
+			if (_path.Peek() != position && _path.Contains(position))
 				ReturnTo();
-			else if (!ReachableArea.Contains(position) || _path.Count >= PawnMovementEvent.MAX_ELEMENTS_IN_STEPS)
+			else if (!ReachableArea.Contains(position) || !ExtendsHead() || _path.Count >= PawnMovementEvent.MAX_ELEMENTS_IN_STEPS)
 				return;
-			else if (ExtendsHead())
+			else
 				_path.Push(position);
-			OnPathChanged?.Invoke(_path);
+			OnPathChanged?.Invoke(_path.Reverse());
 
 			void ReturnTo()
 			{
@@ -107,7 +107,7 @@ namespace Game.Player
 
 						bool AllStepsAreReachable() => pawn.Movement.ReachableArea.Contains(GetAllTraversedAreaExceptFirst());
 
-						Board.BoardMask GetAllTraversedAreaExceptFirst() => Board.BoardMask.FromPositions(steps) & ~pawn.Position.ToMask();
+						Board.BoardMask GetAllTraversedAreaExceptFirst() => FromPositions(steps) & ~pawn.Position.ToMask();
 					}
 				}
 			}
