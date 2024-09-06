@@ -1,4 +1,10 @@
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
+using System;
+using static Game.Player.Pawn;
+using static Game.Pathfinding;
+using UnityEditor;
 
 namespace Game.Player.Visuals
 {
@@ -6,6 +12,7 @@ namespace Game.Player.Visuals
     {
         // get pawn from cursor
         [SerializeField] private Cursor _cursor;
+        [SerializeField] private Material _tileMaterial;
         private Board _board;
         private void Start() => _board = Board.Instance;
         private void OnEnable()
@@ -22,10 +29,11 @@ namespace Game.Player.Visuals
         {
             if (state == Cursor.State.Move)
             {
-                foreach(var tile in _board.Tiles) 
+
+                foreach (var tile in Pathfinding.GetTraversableArea(Pawn.Mine.Position, PawnMovement.MAX_STEPS, _board.TraversableArea))
                 {
-                    if (/*tiles are in range of the player*/ true)
-                    tile.SetActive(false);
+                    Debug.Log("Change color");
+                    _tileMaterial.color = Color.black;
                 }
             }
         }

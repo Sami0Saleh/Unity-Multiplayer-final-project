@@ -116,6 +116,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cursor: {fileID: 2963582785093949732}
+  _tileMaterial: {fileID: 2100000, guid: c7c5c9c2ed7583441aed7a0f2895f00c, type: 2}
 --- !u!1 &9006694680252720099
 GameObject:
   m_ObjectHideFlags: 0
