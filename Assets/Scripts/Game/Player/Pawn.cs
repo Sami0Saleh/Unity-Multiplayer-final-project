@@ -62,7 +62,6 @@ namespace Game.Player
 			Hammer.OnHammered += OnHammered;
 			if (photonView.AmController)
 				InputActions.Cursor.Enable();
-			TurnIterator.Instance.OnTurnChange += CheckForPawnElimination;
 		}
 
 		private void OnDisable()
@@ -73,11 +72,11 @@ namespace Game.Player
 			Hammer.OnHammered -= OnHammered;
 			if (photonView.AmController)
 				InputActions.Cursor.Disable();
-			TurnIterator.Instance.OnTurnChange -= CheckForPawnElimination;
 		}
 
 		private void OnTurnChange(TurnIterator.TurnChangeEvent turnChangeEvent)
 		{
+			CheckForPawnElimination(turnChangeEvent);
 			if (turnChangeEvent.currentPlayer == Owner)
 				TurnStart?.Invoke(this);
 			else if (turnChangeEvent.lastPlayer == Owner)
@@ -126,7 +125,11 @@ namespace Game.Player
 			if (info.Sender != PhotonNetwork.MasterClient)
 				return;
 			PlayerEliminated?.Invoke(this);
-			Destroy(gameObject);
+			if (photonView.IsMine)
+			{
+				PhotonNetwork.Destroy(Cursor.gameObject);
+				PhotonNetwork.Destroy(gameObject);
+			}
 		}
 	}
 }

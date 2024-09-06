@@ -44,6 +44,7 @@ namespace Game.Player
 		{
 			_pawn.Cursor.PositionPicked -= OnPositionPicked;
 			_pawn.Cursor.PositionChanged -= OnPositionChanged;
+			_path.Clear();
 		}
 
 		private void OnStartTurn(Pawn pawn) => _stepsLeft = _pawn.IsOnBoard ? MAX_STEPS : STEPS_OUT_OF_BOARD;
@@ -81,6 +82,11 @@ namespace Game.Player
 				return;
 			_stepsLeft -= (byte)(movement.steps.Count() - 1);
 			OnPawnMoved?.Invoke(movement);
+			if (_stepsLeft > 0)
+			{
+				_path.Clear();
+				_path.Push(_pawn.Position);
+			}
 		}
 
 		public struct PawnMovementEvent : IValidateable
