@@ -10,7 +10,7 @@ using static Game.Board.BoardMask;
 namespace Game.Player
 {
 	/// <summary>
-	/// Handles <see cref="PawnMovementEvent"/>.
+	/// Handles sending and receiving <see cref="PawnMovementEvent"/>.
 	/// </summary>
 	public class PawnMovement : MonoBehaviourPun
 	{
@@ -18,9 +18,11 @@ namespace Game.Player
 		public const byte STEPS_OUT_OF_BOARD = 1;
 
 		[SerializeField] private Pawn _pawn;
+		private readonly Stack<Position> _path = new(PawnMovementEvent.MAX_ELEMENTS_IN_STEPS);
 		private byte _stepsLeft;
 
 		public event UnityAction<PawnMovementEvent> OnPawnMoved;
+		public event UnityAction<IEnumerable<Position>> OnPathChanged;
 
 		public bool HasMoved => _stepsLeft < MAX_STEPS;
 		public bool AbleToMove => !ReachableArea.Empty() && _stepsLeft > 0;
@@ -30,16 +32,45 @@ namespace Game.Player
 
 		private void OnDestroy() => _pawn.TurnStart -= OnStartTurn;
 
-		private void OnEnable() => _pawn.Cursor.PositionPicked += OnPositionPicked;
+		private void OnEnable()
+		{
+			_path.Clear();
+			_path.Push(_pawn.Position);
+			_pawn.Cursor.PositionPicked += OnPositionPicked;
+			_pawn.Cursor.PositionChanged += OnPositionChanged;
+		}
 
-		private void OnDisable() => _pawn.Cursor.PositionPicked -= OnPositionPicked;
+		private void OnDisable()
+		{
+			_pawn.Cursor.PositionPicked -= OnPositionPicked;
+			_pawn.Cursor.PositionChanged -= OnPositionChanged;
+		}
 
 		private void OnStartTurn(Pawn pawn) => _stepsLeft = _pawn.IsOnBoard ? MAX_STEPS : STEPS_OUT_OF_BOARD;
 
 		private void OnPositionPicked(Position position)
 		{
 			const string PAWN_MOVED = nameof(OnPawnMovedRPC);
-			photonView.RPC(PAWN_MOVED, RpcTarget.All, new PawnMovementEvent(photonView.Owner, new Position[] { _pawn.Position, position })); // TODO Pass movement path
+			photonView.RPC(PAWN_MOVED, RpcTarget.All, new PawnMovementEvent(photonView.Owner, _path));
+		}
+
+		private void OnPositionChanged(Position position)
+		{
+			if (_path.Contains(position))
+				ReturnTo();
+			else if (_path.Count >= PawnMovementEvent.MAX_ELEMENTS_IN_STEPS)
+				return;
+			else if (ExtendsHead())
+				_path.Push(position);
+			OnPathChanged?.Invoke(_path);
+
+			void ReturnTo()
+			{
+				while (_path.Peek() != position)
+					_path.Pop();
+			}
+
+			bool ExtendsHead() => Pathfinding.GetNeighbors(_path.Peek()).Contains(position);
 		}
 
 		[PunRPC]
@@ -95,7 +126,7 @@ namespace Game.Player
 			}
 
 			#region SERIALIZATION
-			private const int MAX_ELEMENTS_IN_STEPS = MAX_STEPS + 1;
+			public const int MAX_ELEMENTS_IN_STEPS = MAX_STEPS + 1;
 			private const int MAX_SIZE = sizeof(int) + (sizeof(byte) * MAX_ELEMENTS_IN_STEPS);
 			private readonly short Size => (short)(sizeof(int) + steps.Length * sizeof(byte));
 			private static readonly byte[] _bytes = new byte[MAX_SIZE];
