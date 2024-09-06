@@ -21,6 +21,7 @@ namespace Game.Player
 
 		public event UnityAction<PawnMovementEvent> OnPawnMoved;
 
+		public bool HasMoved => _stepsLeft < MAX_STEPS;
 		public bool AbleToMove => !ReachableArea.Empty() && _stepsLeft > 0;
 		public Board.BoardMask ReachableArea => Pathfinding.GetTraversableArea(_pawn.Position, _stepsLeft, Board.Instance.TraversableArea);
 

@@ -61,6 +61,7 @@ namespace Game.Player
 			Hammer.OnHammered += OnHammered;
 			if (photonView.AmController)
 				InputActions.Cursor.Enable();
+			TurnIterator.Instance.OnTurnChange += CheckForPawnElimination;
 		}
 
 		private void OnDisable()
@@ -71,6 +72,7 @@ namespace Game.Player
 			Hammer.OnHammered -= OnHammered;
 			if (photonView.AmController)
 				InputActions.Cursor.Disable();
+			TurnIterator.Instance.OnTurnChange -= CheckForPawnElimination;
 		}
 
 		private void OnTurnChange(TurnIterator.TurnChangeEvent turnChangeEvent)
@@ -97,6 +99,33 @@ namespace Game.Player
 		{
 			if (!CanAct)
 				TurnEnd?.Invoke(this);
+		}
+
+		private void CheckForPawnElimination(TurnIterator.TurnChangeEvent turnChangeEvent)
+		{
+			const string ELIMINATE_PAWN = nameof(EliminatePawnRPC);
+
+			if (PhotonNetwork.IsMasterClient && EliminatePawnCondition())
+				EliminatePawn();
+
+			bool EliminatePawnCondition() => InstantPawnEliminationCondition() || EndOfTurnPawnEliminationCondition();
+
+			bool InstantPawnEliminationCondition() => Pathfinding.GetArea(Position, 1).Empty();
+
+			bool EndOfTurnPawnEliminationCondition() => LastPawnIsMe() && !Movement.HasMoved && Movement.ReachableArea.Empty();
+
+			bool LastPawnIsMe() => turnChangeEvent.lastPlayer != null && GameManager.Instance.ActivePlayers.TryGetValue(turnChangeEvent.lastPlayer, out var lastPawn) && lastPawn == this;
+
+			void EliminatePawn() => photonView.RPC(ELIMINATE_PAWN, RpcTarget.All);
+		}
+
+		[PunRPC]
+		private void EliminatePawnRPC(PhotonMessageInfo info)
+		{
+			if (info.Sender != PhotonNetwork.MasterClient)
+				return;
+			PlayerEliminated?.Invoke(this);
+			Destroy(gameObject);
 		}
 	}
 }

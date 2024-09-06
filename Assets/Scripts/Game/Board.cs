@@ -135,14 +135,16 @@ namespace Game
 		{
 			PawnPositions |= BoardMask.BitNumberToMask(pawn.Position);
 			pawn.Movement.OnPawnMoved += OnPlayerMoved;
-			pawn.Hammer.OnHammered += OnPlayerHammer;
+			pawn.Hammer.OnHammered += RemoveTile;
 		}
 
 		private void OnPlayerEliminated(Pawn pawn)
 		{
 			PawnPositions &= ~BoardMask.BitNumberToMask(pawn.Position);
 			pawn.Movement.OnPawnMoved -= OnPlayerMoved;
-			pawn.Hammer.OnHammered -= OnPlayerHammer;
+			pawn.Hammer.OnHammered -= RemoveTile;
+			if (CurrentBoardState.Contains(pawn.Position))
+				RemoveTile(pawn.Position);
 		}
 
 		private void OnPlayerMoved(PawnMovement.PawnMovementEvent movementEvent)
@@ -152,11 +154,14 @@ namespace Game
 			PawnPositions |= BoardMask.BitNumberToMask(movementEvent.steps.Last());
 		}
 
-		private void OnPlayerHammer(byte tile) => RemoveTiles(GetSingleTileEnumerable(tile));
-
-		private IEnumerable<byte> GetSingleTileEnumerable(byte toRemove)
+		private void RemoveTile(byte tile)
 		{
-			yield return toRemove;
+			RemoveTiles(GetSingleTileEnumerable(tile));
+
+			static IEnumerable<byte> GetSingleTileEnumerable(byte toRemove)
+			{
+				yield return toRemove;
+			}
 		}
 
 		private void RemoveTiles(IEnumerable<byte> toRemove)
