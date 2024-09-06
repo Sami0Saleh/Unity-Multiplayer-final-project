@@ -54,7 +54,7 @@ namespace Game.Player.Visuals
 				int index = 0;
 				Array.Clear(_path, index, _path.Length);
 				foreach (var position in path)
-					_path[index++] = board.PositionToTile(position).transform.position;
+					_path[index++] = board.Grid.CellToWorld(Board.PositionToCell(position));
 				return _path;
 			}
 		}

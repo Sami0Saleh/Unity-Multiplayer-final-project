@@ -20,33 +20,32 @@ namespace Game.Player
 
 		public State CurrentState { get; private set; } = State.Move;
 		public PunPlayer Owner => photonView.Owner;
-		public Pawn OwnerPawn => GameManager.Instance.ActivePlayers[Owner];
+		public Pawn OwnerPawn { get; private set; }
 		#endregion
 
 		#region FUNCTIONS
 		#region UNITY
 		private void Awake()
 		{
+			OwnerPawn = GameManager.Instance.ActivePlayers[Owner];
 			OwnerPawn.Cursor = this;
 			gameObject.name = $"{Owner.NickName}'s Cursor";
 			if (!photonView.AmOwner)
 				Destroy(_mousePositionTracker);
 			if (!photonView.AmController)
 				enabled = false;
-			var ownerPawn = OwnerPawn;
-			ownerPawn.TurnStart += OnTurnStart;
-			ownerPawn.TurnEnd += OnTurnEnd;
-			ownerPawn.Movement.OnPawnMoved += OnMoved;
-			ownerPawn.Hammer.OnHammered += OnHammered;
+			OwnerPawn.TurnStart += OnTurnStart;
+			OwnerPawn.TurnEnd += OnTurnEnd;
+			OwnerPawn.Movement.OnPawnMoved += OnMoved;
+			OwnerPawn.Hammer.OnHammered += OnHammered;
 		}
 
 		private void OnDestroy()
 		{
-			var ownerPawn = OwnerPawn;
-			ownerPawn.TurnStart -= OnTurnStart;
-			ownerPawn.TurnEnd -= OnTurnEnd;
-			ownerPawn.Movement.OnPawnMoved -= OnMoved;
-			ownerPawn.Hammer.OnHammered -= OnHammered;
+			OwnerPawn.TurnStart -= OnTurnStart;
+			OwnerPawn.TurnEnd -= OnTurnEnd;
+			OwnerPawn.Movement.OnPawnMoved -= OnMoved;
+			OwnerPawn.Hammer.OnHammered -= OnHammered;
 		}
 
 		private void OnEnable()

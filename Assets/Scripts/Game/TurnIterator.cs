@@ -190,6 +190,8 @@ namespace Game
 				return turnChange;
 			}
 			#endregion
+
+			public override readonly string ToString() => $"{currentPlayer} <= {lastPlayer} @ turn {turn}";
 		}
 	}
 }
