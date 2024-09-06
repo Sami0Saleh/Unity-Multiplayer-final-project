@@ -5,8 +5,9 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Tile = UnityEngine.GameObject;
-using Game.Player;
 using Unity.Burst;
+using Game.Player;
+using static Game.Board.BoardMask;
 
 namespace Game
 {
@@ -19,10 +20,10 @@ namespace Game
 		private const int X_OFFSET = -WIDTH / 2;
 		private const int Y_OFFSET = -HEIGHT / 2;
 		public static BoardMask STARTING_POSITIONS =
-			BoardMask.IndexToMask(0, 1) |
-			BoardMask.IndexToMask(WIDTH - 1, 1) |
-			BoardMask.IndexToMask(0, HEIGHT-2) |
-			BoardMask.IndexToMask(WIDTH - 1, HEIGHT -2);
+								IndexToMask(0, 1) |
+								IndexToMask(WIDTH - 1, 1) |
+								IndexToMask(0, HEIGHT-2) |
+								IndexToMask(WIDTH - 1, HEIGHT -2);
 		#region CELL_BOUNDS
 		private const int X_MIN = Y_OFFSET;
 		private const int X_MAX = -Y_OFFSET;
@@ -48,7 +49,7 @@ namespace Game
 		#endregion
 
 		#region EVENTS
-		public event UnityAction<IEnumerable<byte>> OnTilesRemoved;
+		public event UnityAction<IEnumerable<BoardMask.Position>> OnTilesRemoved;
 		#endregion
 
 		#region METHODS
@@ -74,8 +75,8 @@ namespace Game
 
 				void RemoveOddsFromLastRow()
 				{
-					byte y = HEIGHT - 1;
-					for (byte x = 1; x < WIDTH; x += 2)
+					BoardMask.Position y = HEIGHT - 1;
+					for (BoardMask.Position x = 1; x < WIDTH; x += 2)
 						mask[x, y] = false;
 				}
 			}
@@ -103,14 +104,14 @@ namespace Game
 				CheckForValidInit(_initialBoardState);
 			}
 
-			Tile CreateTile(byte bitNumber)
+			Tile CreateTile(Position position)
 			{
-				(var x, var y) = BoardMask.BitNumberToIndex(bitNumber);
+				(var x, var y) = position.ToIndex();
 				var cell = IndexToCell(x, y);
 				var tile = Instantiate(_tilePrefab, Grid.CellToWorld(cell), Quaternion.identity, TilesParent);
 				tile.name = $"Tile @ {x}, {y}";
-				_tiles[bitNumber] = tile;
-				CurrentBoardState |= BoardMask.BitNumberToMask(bitNumber);
+				_tiles[position] = tile;
+				CurrentBoardState |= position.ToMask();
 				return tile;
 			}
 
@@ -133,14 +134,14 @@ namespace Game
 		#region GAMEPLAY
 		private void OnPlayerJoined(Pawn pawn)
 		{
-			PawnPositions |= BoardMask.BitNumberToMask(pawn.Position);
+			PawnPositions |= pawn.Position.ToMask();
 			pawn.Movement.OnPawnMoved += OnPlayerMoved;
 			pawn.Hammer.OnHammered += RemoveTile;
 		}
 
 		private void OnPlayerEliminated(Pawn pawn)
 		{
-			PawnPositions &= ~BoardMask.BitNumberToMask(pawn.Position);
+			PawnPositions &= ~pawn.Position.ToMask();
 			pawn.Movement.OnPawnMoved -= OnPlayerMoved;
 			pawn.Hammer.OnHammered -= RemoveTile;
 			if (CurrentBoardState.Contains(pawn.Position))
@@ -150,23 +151,23 @@ namespace Game
 		private void OnPlayerMoved(PawnMovement.PawnMovementEvent movementEvent)
 		{
 			RemoveTiles(movementEvent.AllStepsButLast);
-			PawnPositions &= ~BoardMask.BitNumberToMask(movementEvent.steps.First());
-			PawnPositions |= BoardMask.BitNumberToMask(movementEvent.steps.Last());
+			PawnPositions &= ~movementEvent.steps.First().ToMask();
+			PawnPositions |= movementEvent.steps.Last().ToMask();
 		}
 
-		private void RemoveTile(byte tile)
+		private void RemoveTile(Position position)
 		{
-			RemoveTiles(GetSingleTileEnumerable(tile));
+			RemoveTiles(GetSingleTileEnumerable(position));
 
-			static IEnumerable<byte> GetSingleTileEnumerable(byte toRemove)
+			static IEnumerable<Position> GetSingleTileEnumerable(byte toRemove)
 			{
 				yield return toRemove;
 			}
 		}
 
-		private void RemoveTiles(IEnumerable<byte> toRemove)
+		private void RemoveTiles(IEnumerable<Position> toRemove)
 		{
-			var removedTilesMask = BoardMask.BitNumbersToMask(toRemove);
+			var removedTilesMask = FromPositions(toRemove);
 			OnTilesRemoved?.Invoke(toRemove);
 			foreach (var tile in MaskToTiles(removedTilesMask))
 				Destroy(tile);
@@ -175,15 +176,15 @@ namespace Game
 		#endregion
 
 		#region INDEXING_AND_ENUMERATION
-		public bool IsCellOnBoard(Vector3Int cell) => WithinBounds(cell) && CurrentBoardState.Contains(CellToBitNumber(cell));
+		public bool IsCellOnBoard(Vector3Int cell) => WithinBounds(cell) && CurrentBoardState.Contains(CellToPosition(cell));
 
 		public bool WithinBounds(Vector3Int cell) => cell.x >= X_MIN && cell.x <= X_MAX && cell.y >= Y_MIN && cell.y <= Y_MAX;
 		
-		public byte WorldPositionToBitNumber(Vector3 worldPosition) => CellToBitNumber(Grid.WorldToCell(worldPosition));
+		public Position WorldPositionToBitNumber(Vector3 worldPosition) => CellToPosition(Grid.WorldToCell(worldPosition));
 
-		public static Vector3Int BitNumberToCell(byte bitNumber)
+		public static Vector3Int PositionToCell(Position position)
 		{
-			(byte x, byte y) = BoardMask.BitNumberToIndex(bitNumber);
+			(byte x, byte y) = position.ToIndex();
 			return IndexToCell(x, y);
 		}
 
@@ -191,24 +192,24 @@ namespace Game
 
 		public static (byte, byte) CellToIndex(Vector3Int cell) => ((byte)(cell.y - X_OFFSET), (byte)(cell.x - Y_OFFSET));
 
-		public static byte CellToBitNumber(Vector3Int cell)
+		public static Position CellToPosition(Vector3Int cell)
 		{
 			(byte x, byte y) = CellToIndex(cell);
-			return BoardMask.IndexToBitNumber(x, y);
+			return new Position(x, y);
 		}
 
-		public Tile BitNumberToTile(byte bit) => _tiles[bit];
+		public Tile PositionToTile(Position position) => _tiles[position];
 
 		public IEnumerable<Tile> MaskToTiles(BoardMask mask)
 		{
 			mask &= CurrentBoardState;
-			foreach (var bit in mask)
-				yield return BitNumberToTile(bit);
+			foreach (var position in mask)
+				yield return PositionToTile(position);
 		}
 		#endregion
 		#endregion
 
-		public struct BoardMask : IEquatable<BoardMask>, IEnumerable<byte>
+		public struct BoardMask : IEquatable<BoardMask>, IEnumerable<Position>
 		{
 			public const ulong FULL = ulong.MaxValue >> 1;
 
@@ -234,20 +235,14 @@ namespace Game
 			#endregion
 
 			#region CONVERSIONS
-			public static ulong IndexToMask(byte x, byte y) => BitNumberToMask(IndexToBitNumber(x, y));
-
-			public static ulong BitNumberToMask(byte bitNumber) => (ulong)1 << bitNumber;
-
-			public static (byte, byte) BitNumberToIndex(byte bitNumber) => ((byte)(bitNumber % WIDTH), (byte)(bitNumber / WIDTH));
-
-			public static byte IndexToBitNumber(byte x, byte y) => (byte)(x + y * WIDTH);
+			public static ulong IndexToMask(byte x, byte y) => new Position(x, y).ToMask();
 
 			[BurstCompile]
-			public static BoardMask BitNumbersToMask(IEnumerable<byte> steps)
+			public static BoardMask FromPositions(IEnumerable<Position> positions)
 			{
 				BoardMask mask = new();
-				foreach (var step in steps)
-					mask |= BitNumberToMask(step);
+				foreach (Position position in positions)
+					mask |= position.ToMask();
 				return mask;
 			}
 			#endregion
@@ -255,7 +250,7 @@ namespace Game
 			#region CHECKS
 			public readonly bool Empty() => _mask == 0;
 
-			public readonly bool Contains(byte bitNumber) => (BitNumberToMask(bitNumber) & _mask) != 0;
+			public readonly bool Contains(Position position) => (position.ToMask() & _mask) != 0;
 
 			/// <returns>Whether <paramref name="other"/> is entirely contained within <see langword="this"/>.</returns>
 			public readonly bool Contains(BoardMask other) => other.Equals(other & this);
@@ -264,20 +259,45 @@ namespace Game
 			#endregion
 
 			#region ENUMERATION
-			public readonly IEnumerator<byte> GetEnumerator()
+			public readonly IEnumerator<Position> GetEnumerator()
 			{
-				for (byte b = 0; b <= MAX_NUMBER_OF_TILES; b++)
+				for (Position p = 0; p <= MAX_NUMBER_OF_TILES; p++)
 				{
-					if (Contains(b))
-						yield return b;
+					if (Contains(p))
+						yield return p;
 				}
 			}
 
 			readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-			public readonly IEnumerable<(byte, byte)> Indices => this.Select(BitNumberToIndex);
+			public readonly IEnumerable<(byte, byte)> Indices => this.Select(p => p.ToIndex());
 			#endregion
 			#endregion
+
+			/// <summary>
+			/// Represents a single position on a <see cref="BoardMask"/>.
+			/// </summary>
+			[BurstCompile]
+			public struct Position : IEquatable<Position>
+			{
+				private byte _position;
+
+				public static implicit operator byte(Position position) => position._position;
+
+				public static implicit operator Position(byte position) => new() { _position = position };
+
+				#region CONVERSIONS
+				public Position(byte x, byte y) => _position = FromIndex(x, y);
+
+				public readonly ulong ToMask() => (ulong)1 << _position;
+
+				public readonly (byte, byte) ToIndex() => ((byte)(_position % WIDTH), (byte)(_position / WIDTH));
+
+				public static Position FromIndex(byte x, byte y) => (byte)(x + y * WIDTH);
+				#endregion
+
+				public readonly bool Equals(Position other) => _position == other._position;
+			}
 		}
 	}
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Photon.Pun;
+using PunPlayer = Photon.Realtime.Player;
 using Game.Player;
 
 namespace Game
@@ -14,9 +15,9 @@ namespace Game
 		public static GameManager Instance;
 
 		public event UnityAction GameStart;
-		public event UnityAction<Photon.Realtime.Player> GameOver;
+		public event UnityAction<PunPlayer> GameOver;
 
-		public Dictionary<Photon.Realtime.Player, Pawn> ActivePlayers { get; private set; }
+		public Dictionary<PunPlayer, Pawn> ActivePlayers { get; private set; }
 
 		private void Awake()
 		{
@@ -57,7 +58,7 @@ namespace Game
 		}
 
 		[PunRPC]
-		private void GameOverRPC(Photon.Realtime.Player winningPlayer, PhotonMessageInfo info)
+		private void GameOverRPC(PunPlayer winningPlayer, PhotonMessageInfo info)
 		{
 			Debug.Assert(info.Sender.IsMasterClient, "Game Over can only be sent by master client");
 			GameOver?.Invoke(winningPlayer);
@@ -66,7 +67,7 @@ namespace Game
 				StartCoroutine(LeaveMatch());
 		}
 
-		public void TriggerGameOver(Photon.Realtime.Player winningPlayer)
+		public void TriggerGameOver(PunPlayer winningPlayer)
 		{
 			const string GAME_OVER = nameof(GameOverRPC);
 			photonView.RPC(GAME_OVER, RpcTarget.AllViaServer, winningPlayer);

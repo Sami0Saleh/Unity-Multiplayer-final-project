@@ -3,8 +3,9 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Photon.Pun;
-using PunPlayer = Photon.Realtime.Player;
 using ExitGames.Client.Photon;
+using PunPlayer = Photon.Realtime.Player;
+using static Game.Board.BoardMask;
 
 namespace Game.Player
 {
@@ -35,10 +36,10 @@ namespace Game.Player
 
 		private void OnStartTurn(Pawn pawn) => _stepsLeft = _pawn.IsOnBoard ? MAX_STEPS : STEPS_OUT_OF_BOARD;
 
-		private void OnPositionPicked(byte position)
+		private void OnPositionPicked(Position position)
 		{
 			const string PAWN_MOVED = nameof(OnPawnMovedRPC);
-			photonView.RPC(PAWN_MOVED, RpcTarget.All, new PawnMovementEvent(photonView.Owner, new byte[] { _pawn.Position, position })); // TODO Pass movement path
+			photonView.RPC(PAWN_MOVED, RpcTarget.All, new PawnMovementEvent(photonView.Owner, new Position[] { _pawn.Position, position })); // TODO Pass movement path
 		}
 
 		[PunRPC]
@@ -53,7 +54,7 @@ namespace Game.Player
 		public struct PawnMovementEvent : IValidateable
 		{
 			[Tooltip("The player whose Pawn has moved.")] public PunPlayer player;
-			[Tooltip("Contains the tiles on which this player's Pawn has stepped (Inclusive of both start and end tiles.)")] public byte[] steps;
+			[Tooltip("Contains the tiles on which this player's Pawn has stepped (Inclusive of both start and end tiles.)")] public Position[] steps;
 			
 			public readonly Pawn Pawn => GameManager.Instance.ActivePlayers[player];
 			public readonly bool Valid
@@ -64,7 +65,7 @@ namespace Game.Player
 
 					static bool PlayerValid(PunPlayer player) => player != null && GameManager.Instance.ActivePlayers.ContainsKey(player) && TurnIterator.Instance.Current == player;
 
-					static bool StepsValid(byte[] steps, Pawn pawn)
+					static bool StepsValid(Position[] steps, Pawn pawn)
 					{
 						return HasEnoughSteps() && AllStepsAreValid();
 
@@ -74,20 +75,20 @@ namespace Game.Player
 
 						bool AllStepsAreReachable() => pawn.Movement.ReachableArea.Contains(GetAllTraversedAreaExceptFirst());
 
-						Board.BoardMask GetAllTraversedAreaExceptFirst() => Board.BoardMask.BitNumbersToMask(steps) & ~Board.BoardMask.BitNumberToMask(pawn.Position);
+						Board.BoardMask GetAllTraversedAreaExceptFirst() => Board.BoardMask.FromPositions(steps) & ~pawn.Position.ToMask();
 					}
 				}
 			}
 
-			public readonly IEnumerable<byte> AllStepsButLast => steps.Take(steps.Length-1);
+			public readonly IEnumerable<Position> AllStepsButLast => steps.Take(steps.Length-1);
 
-			public PawnMovementEvent(PunPlayer player, IEnumerable<byte> steps)
+			public PawnMovementEvent(PunPlayer player, IEnumerable<Position> steps)
 			{
 				this.player = player;
 				this.steps = steps.ToArray();
 			}
 
-			public PawnMovementEvent(PunPlayer player, byte[] steps)
+			public PawnMovementEvent(PunPlayer player, Position[] steps)
 			{
 				this.player = player;
 				this.steps = steps;
@@ -134,7 +135,7 @@ namespace Game.Player
 				void DeserializeSteps(ref int index)
 				{
 					int stepsCount = GetStepsCount();
-					movement.steps = new byte[stepsCount];
+					movement.steps = new Position[stepsCount];
 					for (int step = 0; step < stepsCount; step++)
 						movement.steps[step] = _bytes[index++];
 				}

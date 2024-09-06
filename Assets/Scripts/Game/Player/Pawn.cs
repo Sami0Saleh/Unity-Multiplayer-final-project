@@ -2,6 +2,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Photon.Pun;
+using static Game.Board.BoardMask;
 
 namespace Game.Player
 {
@@ -11,11 +12,11 @@ namespace Game.Player
 		public Cursor Cursor { get; set; }
 		[field: SerializeField] public PawnMovement Movement { get; private set; }
 		[field: SerializeField] public Hammer Hammer { get; private set; }
-		public byte Position { get; set; }
+		public Position Position { get; set; }
 		public (byte, byte) PositionIndex
 		{
-			get => Board.BoardMask.BitNumberToIndex(Position);
-			set => Position = Board.BoardMask.IndexToBitNumber(value.Item1, value.Item2);
+			get => Position.ToIndex();
+			set => Position = new Position(value.Item1, value.Item2);
 		}
 		public bool IsOnBoard => Board.Instance.CurrentBoardState.Contains(Position);
 		public bool CanAct => Movement.AbleToMove || Hammer.AbleToHammer;
@@ -88,12 +89,12 @@ namespace Game.Player
 			if (movementEvent.player != Owner)
 				return;
 			Position = movementEvent.steps.Last();
-			var tileTransform = Board.Instance.BitNumberToTile(Position).transform;
+			var tileTransform = Board.Instance.PositionToTile(Position).transform;
 			transform.SetPositionAndRotation(tileTransform.position, tileTransform.rotation);
 			CheckEndTurn();
 		}
 
-		private void OnHammered(byte _) => CheckEndTurn();
+		private void OnHammered(Position _) => CheckEndTurn();
 
 		private void CheckEndTurn()
 		{

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using Photon.Pun;
+using static Game.Board.BoardMask;
 
 namespace Game.Player
 {
@@ -13,7 +14,7 @@ namespace Game.Player
 
 		[SerializeField] private Pawn _pawn;
 
-		public event UnityAction<byte> OnHammered;
+		public event UnityAction<Position> OnHammered;
 
 		public bool AbleToHammer { get; private set; }
 		public Board.BoardMask HammerableArea => Board.Instance.CurrentBoardState & Pathfinding.GetArea(_pawn.Position, MAX_RANGE);
@@ -28,23 +29,23 @@ namespace Game.Player
 
 		private void OnStartTurn(Pawn pawn) => AbleToHammer = _pawn.IsOnBoard;
 
-		private void OnPositionPicked(byte position)
+		private void OnPositionPicked(Position position)
 		{
 			const string TILE_HAMMERED = nameof(HammerTileRPC);
-			photonView.RPC(TILE_HAMMERED, RpcTarget.All, position);
+			photonView.RPC(TILE_HAMMERED, RpcTarget.All, (byte)position);
 		}
 
 		[PunRPC]
-		private void HammerTileRPC(byte tile, PhotonMessageInfo info)
+		private void HammerTileRPC(byte position, PhotonMessageInfo info)
 		{
 			if (!AbleToHammer || !CurrentlyActingPlayer() || !WithinHammerableArea())
 				return;
 			AbleToHammer = false;
-			OnHammered?.Invoke(tile);
+			OnHammered?.Invoke(position);
 
 			bool CurrentlyActingPlayer() => TurnIterator.Instance.Current == info.Sender;
 
-			bool WithinHammerableArea() => HammerableArea.Contains(tile);
+			bool WithinHammerableArea() => HammerableArea.Contains((Position)position);
 		}
 	}
 }

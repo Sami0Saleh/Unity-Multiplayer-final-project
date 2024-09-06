@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Unity.Burst;
 using static Game.Board;
+using static Game.Board.BoardMask;
 
 namespace Game
 {
@@ -11,16 +12,16 @@ namespace Game
 	public static class Pathfinding
 	{
 		/// <summary>
-		/// Shows where an entity starting in <paramref name="bitNumber"/> can reach in <paramref name="steps"/> steps given the <paramref name="traversable"/> area.
+		/// Shows where an entity starting in <paramref name="position"/> can reach in <paramref name="steps"/> steps given the <paramref name="traversable"/> area.
 		/// </summary>
-		/// <param name="bitNumber">Position of the entity.</param>
+		/// <param name="position">Position of the entity.</param>
 		/// <param name="steps">How many steps the entity can take.</param>
 		/// <param name="traversable">Mask detailing where the entity can reach.</param>
 		/// <returns>Where the entity can reach.</returns>
 		[BurstCompile]
-		public static BoardMask GetTraversableArea(byte bitNumber, byte steps, BoardMask traversable)
+		public static BoardMask GetTraversableArea(Position position, byte steps, BoardMask traversable)
 		{
-			(var x, var y) = BoardMask.BitNumberToIndex(bitNumber);
+			(var x, var y) = position.ToIndex();
 			return GetTraversableArea(x, y, steps, traversable);
 		}
 
@@ -45,12 +46,12 @@ namespace Game
 			return reach;
 		}
 
-		/// <param name="bitNumber">Position of the area center.</param>
+		/// <param name="position">Position of the area center.</param>
 		/// <param name="radius">Radius of the area.</param>
-		/// <returns>The area centered in <paramref name="bitNumber"/> with a radius of <paramref name="radius"/>.</returns>
-		public static BoardMask GetArea(byte bitNumber, byte radius)
+		/// <returns>The area centered in <paramref name="position"/> with a radius of <paramref name="radius"/>.</returns>
+		public static BoardMask GetArea(Position position, byte radius)
 		{
-			(var x, var y) = BoardMask.BitNumberToIndex(bitNumber);
+			(var x, var y) = position.ToIndex();
 			return GetArea(x, y, radius);
 		}
 
@@ -92,16 +93,16 @@ namespace Game
 		[BurstCompile]
 		public static BoardMask Spread(this BoardMask mask)
 		{
-			if (mask.Empty() || mask == BoardMask.FULL)
+			if (mask.Empty() || mask == FULL)
 				return mask;
 			foreach (var bitPosition in mask)
 				mask |= GetNeighbors(bitPosition);
 			return mask;
 		}
 
-		/// <param name="bitNumber">Position of the tile.</param>
-		/// <returns>The immediate neighbors of tile at <paramref name="bitNumber"/>.</returns>
-		public static BoardMask GetNeighbors(byte bitNumber) => GetArea(bitNumber, 1);
+		/// <param name="position">Position of the tile.</param>
+		/// <returns>The immediate neighbors of tile at <paramref name="position"/>.</returns>
+		public static BoardMask GetNeighbors(Position position) => GetArea(position, 1);
 
 		/// <param name="centerX">X coordinate of the tile.</param>
 		/// <param name="centerY">Y coordinate of the tile.</param>

@@ -3,6 +3,7 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using Photon.Pun;
 using PunPlayer = Photon.Realtime.Player;
+using static Game.Board.BoardMask;
 
 namespace Game.Player
 {
@@ -13,8 +14,8 @@ namespace Game.Player
 		private Board _board;
 		private Vector3Int _currentCell;
 
-		[Tooltip("Called whenever the cursor changes the tile on which it points.")] public event UnityAction<byte> PositionChanged;
-		[Tooltip("Called once the player picks a tile and clicks it.")] public event UnityAction<byte> PositionPicked;
+		[Tooltip("Called whenever the cursor changes the tile on which it points.")] public event UnityAction<Position> PositionChanged;
+		[Tooltip("Called once the player picks a tile and clicks it.")] public event UnityAction<Position> PositionPicked;
 		[Tooltip("Called once the player changes the state of the cursor.")] public event UnityAction<State> StateChanged;
 
 		public State CurrentState { get; private set; } = State.Move;
@@ -72,7 +73,7 @@ namespace Game.Player
 		{
 			var currentCell = GetCurrentCell();
 			if (_currentCell != currentCell && _board.IsCellOnBoard(currentCell))
-				PositionChanged?.Invoke(Board.CellToBitNumber(_currentCell = currentCell));
+				PositionChanged?.Invoke(Board.CellToPosition(_currentCell = currentCell));
 		}
 		#endregion
 
@@ -81,7 +82,7 @@ namespace Game.Player
 		{
 			var currentCell = GetCurrentCell();
 			if (_board.IsCellOnBoard(currentCell))
-				PositionPicked?.Invoke(Board.CellToBitNumber(_currentCell = currentCell));
+				PositionPicked?.Invoke(Board.CellToPosition(_currentCell = currentCell));
 		}
 
 		private void OnToggleState(InputAction.CallbackContext _)
@@ -130,7 +131,7 @@ namespace Game.Player
 				ChangeStateLocal(State.Hammer);
 		}
 
-		private void OnHammered(byte _)
+		private void OnHammered(Position _)
 		{
 			if (OwnerPawn.Hammer.AbleToHammer)
 				return;
