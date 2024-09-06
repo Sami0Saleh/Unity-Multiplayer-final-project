@@ -59,15 +59,18 @@ namespace Game.Player
 
 		private void OnPositionChanged(Position position)
 		{
-			bool canBranch;
 			if (_path.Peek() != position && _path.Contains(position))
 				ReturnTo(position);
-			else if (!ReachableArea.Contains(position) || !(canBranch = CanBranch(position, out var branchPosition)) || _path.Count >= _stepsLeft+1)
+			else if (!ReachableArea.Contains(position))
 				return;
-			else if (canBranch)
+			else if (CanBranch(position, out var branchPosition))
 				BranchFrom(branchPosition, position);
+			else if (_path.Count >= _stepsLeft + 1)
+				return;
+			else if (CanBranchSingle(_path.Peek(), position))
+				BranchFromHead(position);
 			else
-				_path.Push(position);
+				return;
 			OnPathChanged?.Invoke(_path.Reverse());
 
 			void ReturnTo(Position position)
@@ -78,7 +81,7 @@ namespace Game.Player
 
 			bool CanBranch(Position to, out Position branchPosition)
 			{
-				branchPosition = _path.FirstOrDefault(p => CanBranchSingle(p, to));
+				branchPosition = _path.Skip(1).FirstOrDefault(p => CanBranchSingle(p, to));
 				return branchPosition != default;
 			}
 
@@ -87,8 +90,10 @@ namespace Game.Player
 			void BranchFrom(Position branchPosition, Position to)
 			{
 				ReturnTo(branchPosition);
-				_path.Push(to);
+				BranchFromHead(to);
 			}
+
+			void BranchFromHead(Position to) => _path.Push(to);
 		}
 
 		[PunRPC]
