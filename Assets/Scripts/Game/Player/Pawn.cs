@@ -66,7 +66,6 @@ namespace Game.Player
 
 		private void OnDisable()
 		{
-			PlayerEliminated?.Invoke(this);
 			TurnIterator.Instance.OnTurnChange -= OnTurnChange;
 			Movement.OnPawnMoved -= OnPawnMoved;
 			Hammer.OnHammered -= OnHammered;
