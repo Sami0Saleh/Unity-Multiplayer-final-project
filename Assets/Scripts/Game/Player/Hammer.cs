@@ -16,7 +16,7 @@ namespace Game.Player
 		public event UnityAction<byte> OnHammered;
 
 		public bool AbleToHammer { get; private set; }
-		public Board.BoardMask HammerableArea => Board.Instance.CurrentBoardState & Pathfinding.GetArea(_pawn.Position, MAX_RANGE) & ~Board.BoardMask.BitNumberToMask(_pawn.Position);
+		public Board.BoardMask HammerableArea => Board.Instance.CurrentBoardState & Pathfinding.GetArea(_pawn.Position, MAX_RANGE);
 
 		private void Awake() => _pawn.TurnStart += OnStartTurn;
 
