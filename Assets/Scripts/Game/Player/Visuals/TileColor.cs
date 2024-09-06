@@ -6,6 +6,8 @@ namespace Game.Player.Visuals
     {
         // get pawn from cursor
         [SerializeField] private Cursor _cursor;
+        private Board _board;
+        private void Start() => _board = Board.Instance;
         private void OnEnable()
         {
             _cursor.StateChanged += OnChangeState;
@@ -18,7 +20,14 @@ namespace Game.Player.Visuals
 
         private void OnChangeState(Cursor.State state)
         {
-            Debug.Log("Did I Work");
+            if (state == Cursor.State.Move)
+            {
+                foreach(var tile in _board.Tiles) 
+                {
+                    if (/*tiles are in range of the player*/ true)
+                    tile.SetActive(false);
+                }
+            }
         }
     }
 }
