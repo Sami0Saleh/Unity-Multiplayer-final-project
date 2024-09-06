@@ -39,7 +39,7 @@ namespace Game
 			reach[centerX, centerY] = true;
 			while (steps > 0 && !reach.Empty())
 			{
-				reach |= reach.Spread() & traversable;
+				reach = reach.Spread() & traversable;
 				steps--;
 			}
 			return reach;
@@ -63,7 +63,7 @@ namespace Game
 		{
 			BoardMask mask = new();
 			int diameter = 1 + (radius << 1);
-			int startX = centerX - (diameter >> 1);
+			int startX = centerX - radius;
 			int endX = startX + diameter;
 			startX = Math.Max(startX, 0);
 			endX = Math.Min(endX, WIDTH);
@@ -75,7 +75,7 @@ namespace Game
 			void Column(byte x)
 			{
 				int height = diameter - Math.Abs(centerX - x);
-				int startY = centerY - (height >> 1) - ((centerX % 2) * (x % 2));
+				int startY = centerY - (height >> 1) - ((centerX % 2) * (x % 2)) + (centerX % 2);
 				int endY = startY + height;
 				startY = Math.Max(startY, 0);
 				endY = Math.Min(endY, HEIGHT);
@@ -94,11 +94,14 @@ namespace Game
 		{
 			if (mask.Empty() || mask == BoardMask.FULL)
 				return mask;
-			BoardMask newMask = new();
-			foreach ((byte x, byte y) in mask.Indices)
-				newMask |= GetNeighbors(x, y);
-			return newMask;
+			foreach (var bitPosition in mask)
+				mask |= GetNeighbors(bitPosition);
+			return mask;
 		}
+
+		/// <param name="bitNumber">Position of the tile.</param>
+		/// <returns>The immediate neighbors of tile at <paramref name="bitNumber"/>.</returns>
+		public static BoardMask GetNeighbors(byte bitNumber) => GetArea(bitNumber, 1);
 
 		/// <param name="centerX">X coordinate of the tile.</param>
 		/// <param name="centerY">Y coordinate of the tile.</param>
