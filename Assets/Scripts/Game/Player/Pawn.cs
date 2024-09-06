@@ -79,7 +79,10 @@ namespace Game.Player
 			if (turnChangeEvent.lastPlayer == Owner)
 				TurnEnd?.Invoke(this);
 			if (turnChangeEvent.currentPlayer == Owner)
+			{
 				TurnStart?.Invoke(this);
+				CheckForStartOfTurnPawnElimination();
+			}
 		}
 
 		private void OnPawnMoved(PawnMovement.PawnMovementEvent movementEvent)
@@ -102,8 +105,6 @@ namespace Game.Player
 
 		private void CheckForPawnElimination(TurnIterator.TurnChangeEvent turnChangeEvent)
 		{
-			const string ELIMINATE_PAWN = nameof(EliminatePawnRPC);
-
 			if (PhotonNetwork.IsMasterClient && EliminatePawnCondition())
 				EliminatePawn();
 
@@ -114,8 +115,22 @@ namespace Game.Player
 			bool EndOfTurnPawnEliminationCondition() => LastPawnIsMe() && !Movement.HasMoved && Movement.ReachableArea.Empty();
 
 			bool LastPawnIsMe() => turnChangeEvent.lastPlayer != null && GameManager.Instance.ActivePlayers.TryGetValue(turnChangeEvent.lastPlayer, out var lastPawn) && lastPawn == this;
+		}
 
-			void EliminatePawn() => photonView.RPC(ELIMINATE_PAWN, RpcTarget.All);
+		public void CheckForStartOfTurnPawnElimination()
+		{
+			if (!CanAct)
+			{
+				Debug.Log("Start of turn elimination on " + this); // TODO Delete
+				EliminatePawn();
+			}
+		}
+
+		void EliminatePawn()
+		{
+			const string ELIMINATE_PAWN = nameof(EliminatePawnRPC);
+
+			photonView.RPC(ELIMINATE_PAWN, RpcTarget.All);
 		}
 
 		[PunRPC]
