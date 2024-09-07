@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
-using Tile = UnityEngine.GameObject;
 using Unity.Burst;
 using Game.Player;
 using static Game.Board.BoardMask;
@@ -184,7 +183,7 @@ namespace Game
 			var removedTilesMask = FromPositions(toRemove);
 			OnTilesRemoved?.Invoke(toRemove);
 			foreach (var tile in MaskToTiles(removedTilesMask))
-				Destroy(tile);
+				Destroy(tile.gameObject);
 			CurrentBoardState &= ~removedTilesMask;
 		}
 		#endregion

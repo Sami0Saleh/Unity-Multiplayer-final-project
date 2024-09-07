@@ -1,53 +1,56 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using static Game.Player.Pawn;
-using static Game.Pathfinding;
-using UnityEditor;
+using static Game.Player.Cursor;
 
 namespace Game.Player.Visuals
 {
     public class TileColor : MonoBehaviour
     {
-        // get pawn from cursor
         [SerializeField] private Cursor _cursor;
-        [SerializeField] private MeshRenderer _tileRenderer;
-        [SerializeField] private Material _oldMaterial;
-        [SerializeField] private Material _newMaterial;
+        [SerializeField] private List<Material> _neutralMaterials;
+		[SerializeField] private List<Material> _moveMaterials;
+		[SerializeField] private List<Material> _hammerMaterials;
 
-        private Board _board;
+		private Board _board;
         private void Start() => _board = Board.Instance;
-        private void OnEnable()
+		private void OnEnable() => _cursor.StateChanged += OnChangeState;
+
+		private void OnDisable() => _cursor.StateChanged -= OnChangeState;
+
+		private void OnChangeState(State state)
         {
-            _cursor.StateChanged += OnChangeState;
+			ColorsTiles(State.Neutral);
+			if (state != State.Neutral)
+				ColorsTiles(state);
         }
 
-        private void OnDisable()
-        {
-            _cursor.StateChanged -= OnChangeState;
-        }
+		private void ColorsTiles(State state)
+		{
+			var tiles = GetTilesForState(state);
+			var materials = GetMaterialsForState(state);
+			foreach (var tile in tiles.Where(t => t != null))
+				tile.Renderer.SetMaterials(materials);
 
-        private void OnChangeState(Cursor.State state)
-        {
-            if (state == Cursor.State.Neutral)
-            {
+			List<Material> GetMaterialsForState(State state)
+			{
+				return state switch
+				{
+					State.Move => _moveMaterials,
+					State.Hammer => _hammerMaterials,
+					_ => _neutralMaterials,
+				};
+			}
 
-                foreach (var tile in Pathfinding.GetTraversableArea(Pawn.Mine.Position, PawnMovement.MAX_STEPS, _board.TraversableArea))
-                {
-                    _tileRenderer = _board.Tiles1[tile].GetComponentInChildren<MeshRenderer>(true);
-                    _tileRenderer.materials[1] = _newMaterial;
-                }
-            }
-            else
-            {
-                foreach (var tile in _board.TraversableArea)
-                {
-                    _tileRenderer = _board.Tiles1[tile].GetComponentInChildren<MeshRenderer>(true);
-                    _tileRenderer.materials[1] = _oldMaterial;
-                }
-
-            }
-        }
+			IEnumerable<Tile> GetTilesForState(State state)
+			{
+				return state switch
+				{
+					State.Move => _board.MaskToTiles(_cursor.OwnerPawn.Movement.ReachableArea),
+					State.Hammer => _board.MaskToTiles(_cursor.OwnerPawn.Hammer.HammerableArea),
+					_ => _board.Tiles,
+				};
+			}
+		}
     }
 }
