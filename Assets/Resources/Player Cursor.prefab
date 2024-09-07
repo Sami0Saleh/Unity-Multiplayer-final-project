@@ -116,7 +116,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cursor: {fileID: 2963582785093949732}
-  _tileMaterial: {fileID: 2100000, guid: c7c5c9c2ed7583441aed7a0f2895f00c, type: 2}
+  _tileRenderer: {fileID: 554844729628254781, guid: 789c649d653169a4a82bbba8f38f2be8, type: 3}
+  _oldMaterial: {fileID: 2100000, guid: c7c5c9c2ed7583441aed7a0f2895f00c, type: 2}
+  _newMaterial: {fileID: 2100000, guid: ca3b2f64eb3b3aa43af14f78ed9d5d87, type: 2}
 --- !u!1 &9006694680252720099
 GameObject:
   m_ObjectHideFlags: 0

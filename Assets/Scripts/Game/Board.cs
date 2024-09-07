@@ -53,14 +53,17 @@ namespace Game
 		[SerializeField, HideInInspector] private BoardMask _initialBoardState;
 		private Tile[] _tiles;
 
+		
+
 		public BoardMask CurrentBoardState { get; private set; }
 		public BoardMask PawnPositions { get; private set; }
 		public BoardMask TraversableArea => CurrentBoardState & ~PawnPositions;
 		public IEnumerable<Tile> Tiles => _tiles;
-		#endregion
+        public Tile[] Tiles1 { get { return _tiles; } }
+        #endregion
 
-		#region EVENTS
-		public event UnityAction<IEnumerable<BoardMask.Position>> OnTilesRemoved;
+        #region EVENTS
+        public event UnityAction<IEnumerable<BoardMask.Position>> OnTilesRemoved;
 		#endregion
 
 		#region METHODS

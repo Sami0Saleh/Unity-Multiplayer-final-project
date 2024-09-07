@@ -12,7 +12,10 @@ namespace Game.Player.Visuals
     {
         // get pawn from cursor
         [SerializeField] private Cursor _cursor;
-        [SerializeField] private Material _tileMaterial;
+        [SerializeField] private MeshRenderer _tileRenderer;
+        [SerializeField] private Material _oldMaterial;
+        [SerializeField] private Material _newMaterial;
+
         private Board _board;
         private void Start() => _board = Board.Instance;
         private void OnEnable()
@@ -27,14 +30,25 @@ namespace Game.Player.Visuals
 
         private void OnChangeState(Cursor.State state)
         {
-            if (state == Cursor.State.Move)
+            if (state == Cursor.State.Neutral)
             {
 
                 foreach (var tile in Pathfinding.GetTraversableArea(Pawn.Mine.Position, PawnMovement.MAX_STEPS, _board.TraversableArea))
                 {
                     Debug.Log("Change color");
-                    _tileMaterial.color = Color.black;
+                    _tileRenderer = _board.Tiles1[tile].GetComponentInChildren<MeshRenderer>(true);
+                    _tileRenderer.material = _newMaterial;
                 }
+            }
+            else
+            {
+                foreach (var tile in Pathfinding.GetTraversableArea(Pawn.Mine.Position, PawnMovement.MAX_STEPS, _board.TraversableArea))
+                {
+                    Debug.Log("Change color");
+                    _tileRenderer = _board.Tiles1[tile].GetComponentInChildren<MeshRenderer>(true);
+                    _tileRenderer.material = _oldMaterial;
+                }
+
             }
         }
     }
