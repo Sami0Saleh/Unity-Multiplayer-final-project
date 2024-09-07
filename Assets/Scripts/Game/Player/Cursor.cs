@@ -29,9 +29,8 @@ namespace Game.Player
 		private void Awake()
 		{
 			OwnerPawn = GameManager.Instance.ActivePlayers[Owner];
-			
 			OwnerPawn.Cursor = this;
-			gameObject.name = $"{Owner.NickName}'s _cursor";
+			gameObject.name = $"{Owner.NickName}'s Cursor";
 			if (!photonView.AmOwner)
 				Destroy(_mousePositionTracker);
 			if (!photonView.AmController)
@@ -68,9 +67,13 @@ namespace Game.Player
 			input.Cursor.ToggleState.started -= OnToggleState;
 		}
 
-		private void Start() => _board = Board.Instance;
+		private void Start()
+		{
+			_board = Board.Instance;
+			UIManager.Instance.Cursor = this;
+		}
 
-		private void Update()
+        private void Update()
 		{
 			var currentCell = GetCurrentCell();
 			if (_currentCell != currentCell && _board.IsCellOnBoard(currentCell))

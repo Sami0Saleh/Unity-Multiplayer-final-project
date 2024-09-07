@@ -7,30 +7,44 @@ namespace Game.Player.Visuals
 {
     public class UIManager : MonoBehaviour
     {
-        public static UIManager instance;
+        public static UIManager Instance;
 
-        [SerializeField] private Cursor _cursor;
+        public Cursor Cursor;
         [SerializeField] private TMP_Text _turnText;
         [SerializeField] private TMP_Text _actionText;
         
         [SerializeField] private GameObject _ranks;
         [SerializeField] private TMP_Text _ranksText;
 
+        private void Awake()
+        {
+            if (!TryRegisterSingleton())
+                return;
 
+            bool TryRegisterSingleton()
+            {
+                bool created = Instance == null;
+                if (created)
+                    Instance = this;
+                else
+                    Destroy(gameObject);
+                return created;
+            }
+        }
         private void Start()
         {
             _ranksText.text = "Ranks:\n";
         }
         private void OnEnable()
         {
-            _cursor.StateChanged += OnStateChange;
+            Cursor.StateChanged += OnStateChange;
             TurnIterator.Instance.OnTurnChange += ChangeTurn;
             GameManager.Instance.GameOver += OnGameOver;
         }
 
         private void OnDisable()
         {
-            _cursor.StateChanged -= OnStateChange;
+            Cursor.StateChanged -= OnStateChange;
             TurnIterator.Instance.OnTurnChange -= ChangeTurn;
             GameManager.Instance.GameOver -= OnGameOver;
         }
@@ -41,7 +55,6 @@ namespace Game.Player.Visuals
 
         private void OnStateChange(Cursor.State state)
         {
-            Debug.Log("Meeeeee");
             if (state == Cursor.State.Neutral)
             {
                 Debug.Log("Move");

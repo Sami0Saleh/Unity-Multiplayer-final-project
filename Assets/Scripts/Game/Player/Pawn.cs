@@ -127,7 +127,7 @@ namespace Game.Player
 			if (!CanAct)
 			{
                 EliminatedPlayers.Add(Owner, this);
-                UIManager.instance.UpdateRanks($"{photonView.Owner.NickName}\n");
+                UIManager.Instance.UpdateRanks($"{EliminatedPlayers}\n");
                 EliminatePawn();
 			}
 		}
