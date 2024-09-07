@@ -62,7 +62,7 @@ MonoBehaviour:
   <Grid>k__BackingField: {fileID: 2516987731138674965}
   <TilesParent>k__BackingField: {fileID: 2634415392458589694}
   <PawnsParent>k__BackingField: {fileID: 4901772542142643931}
-  _tilePrefab: {fileID: 771511384513196556, guid: 789c649d653169a4a82bbba8f38f2be8, type: 3}
+  _tilePrefab: {fileID: 3672554952381479021, guid: 789c649d653169a4a82bbba8f38f2be8, type: 3}
 --- !u!1 &3780283015680733202
 GameObject:
   m_ObjectHideFlags: 0
