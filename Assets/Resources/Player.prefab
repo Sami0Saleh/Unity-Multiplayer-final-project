@@ -56,7 +56,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 128400502825744065}
+  - {fileID: 0}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -370,22 +370,12 @@ PrefabInstance:
       propertyPath: m_SynchronizeParameters.Array.data[3].Type
       value: 9
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2228125723860331726, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}
---- !u!114 &128400502825744065 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2228125723860331726, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}
-  m_PrefabInstance: {fileID: 2243864749306681871}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &904430438953788445 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1418319048224423442, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}

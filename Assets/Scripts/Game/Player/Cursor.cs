@@ -4,7 +4,6 @@ using UnityEngine.InputSystem;
 using Photon.Pun;
 using PunPlayer = Photon.Realtime.Player;
 using static Game.Board.BoardMask;
-using Game.Player.Visuals;
 
 namespace Game.Player
 {
@@ -38,7 +37,6 @@ namespace Game.Player
 		private void Start()
 		{
 			_board = Board.Instance;
-			UIManager.Instance.Cursor = this;
 			OwnerPawn.TurnStart += OnTurnStart;
 			OwnerPawn.TurnEnd += OnTurnEnd;
 			OwnerPawn.Movement.OnPawnMoved += OnMoved;
