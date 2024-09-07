@@ -145,7 +145,6 @@ namespace Game.Player
 
 		private void ChangeStateLocal(State newState, Pawn pawn)
 		{
-			Debug.Log("New state: " + newState);
 			CurrentState = newState;
 			StateChanged?.Invoke(CurrentState);
 			if (!photonView.AmController)

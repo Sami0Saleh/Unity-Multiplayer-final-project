@@ -310,6 +310,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6876047691521267597}
     m_Modifications:
+    - target: {fileID: 866583763489472931, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}
+      propertyPath: _pawn
+      value: 
+      objectReference: {fileID: 4497678083692367122}
     - target: {fileID: 1418319048224423442, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}
       propertyPath: m_LocalRotation.x
       value: -0
@@ -340,7 +344,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2228125723860331726, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}
       propertyPath: m_SynchronizeParameters.Array.size
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2228125723860331726, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}
       propertyPath: m_SynchronizeParameters.Array.data[1].Name
@@ -356,6 +360,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2228125723860331726, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}
       propertyPath: m_SynchronizeParameters.Array.data[2].Type
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 2228125723860331726, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}
+      propertyPath: m_SynchronizeParameters.Array.data[3].Name
+      value: TrFall
+      objectReference: {fileID: 0}
+    - target: {fileID: 2228125723860331726, guid: 3ac0862b97aa4f04797b40dcb1993c40, type: 3}
+      propertyPath: m_SynchronizeParameters.Array.data[3].Type
       value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
