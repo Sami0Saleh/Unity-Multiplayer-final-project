@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace Game.Player.Visuals
 		const string FALL_TRIGGER = "TrFall";
 
 		const float TIME_TO_DESTROY = 3f;
+		const float DISTANCE_TO_FALL = -10f;
 
 		[SerializeField] private Animator _animator;
 		[SerializeField] private Pawn _pawn;
@@ -65,16 +67,9 @@ namespace Game.Player.Visuals
             if (_animator != null && pawn == _pawn)
 			{
                 _animator.SetTrigger(FALL_TRIGGER);
-                StartCoroutine(DelayDestroy(TIME_TO_DESTROY));
+                transform.SetParent(null);
+                transform.DOMoveY(DISTANCE_TO_FALL, TIME_TO_DESTROY).SetEase(Ease.InExpo).OnComplete(() => Destroy(gameObject));
             }
-                
         }
-
-		public IEnumerator DelayDestroy(float time)
-		{
-			transform.SetParent(null);
-			yield return new WaitForSeconds(time);
-			Destroy(gameObject);
-		}
 	}
 }
