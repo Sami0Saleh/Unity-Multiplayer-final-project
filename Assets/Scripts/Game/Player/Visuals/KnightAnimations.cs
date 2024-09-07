@@ -11,8 +11,7 @@ namespace Game.Player.Visuals
 	public class KnightAnimations : MonoBehaviour
 	{
 		const string POINT_TRIGGER = "TrPoint";
-		const string WALK_TRIGGER = "TrWalk";
-		const string STOP_WALK_TRIGGER = "TrStopWalk";
+		const string WALK_BOOL = "isWalking";
 		const string FALL_TRIGGER = "TrFall";
 
 		const float TIME_TO_MOVE = 0.5f;
@@ -57,12 +56,12 @@ namespace Game.Player.Visuals
 		{
 			if (_animator != null)
 			{
-                _animator.SetTrigger(WALK_TRIGGER);
+                _animator.SetBool(WALK_BOOL, true);
 				transform.position = Board.Instance.Grid.CellToWorld(Board.PositionToCell(movement.steps[0]));
 				Vector3[] path = new Vector3[movement.steps.Length];
 				for (int i = 0; i < movement.steps.Length; i++)
 					path[i] = Board.Instance.Grid.CellToWorld(Board.PositionToCell(movement.steps[i]));
-				transform.DOPath(path, TIME_TO_MOVE * movement.steps.Length, PathType.Linear).OnComplete(() => StopWalk(movement.Pawn));
+				transform.DOPath(path, TIME_TO_MOVE * movement.steps.Length, PathType.Linear).SetLookAt(0.1f).SetEase(Ease.Linear).OnComplete(() => StopWalk(movement.Pawn));
             }
 		}
 
@@ -70,7 +69,7 @@ namespace Game.Player.Visuals
 		public void StopWalk(Pawn pawn)
 		{
 			if (_animator != null && pawn == _pawn)
-				_animator.SetTrigger(STOP_WALK_TRIGGER);
+                _animator.SetBool(WALK_BOOL, false);
 		}
 
 		[ContextMenu("Fall")]
