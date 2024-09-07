@@ -7,6 +7,7 @@ using TMPro;
 using Photon.Realtime;
 using Photon.Pun;
 using Game.Player.Visuals;
+using ExitGames.Client.Photon;
 
 namespace UI
 {
@@ -24,6 +25,7 @@ namespace UI
 		[SerializeField] private TextMeshProUGUI _playerCountText;
 		[SerializeField] private Transform _chat;
 		[SerializeField] private TMP_InputField _chatBoxInput;
+		[SerializeField] private TextMeshProUGUI _roomName;
 
 		private bool StartCondition => PhotonNetwork.CurrentRoom.PlayerCount > 1 && AllUniqueAndValidColors();
 
@@ -39,6 +41,7 @@ namespace UI
 		public override void OnEnable()
 		{
 			base.OnEnable();
+			UpdateRoomName();
 			CreateElement();
 			UpdatePlayerCount();
 			if (PhotonNetwork.IsMasterClient)
@@ -115,6 +118,8 @@ namespace UI
 			_playerCountText.text = $"{room.PlayerCount}/{room.MaxPlayers}";
 		}
 
+		private void UpdateRoomName() => _roomName.text = PhotonNetwork.CurrentRoom.Name;
+
 		public override void OnPlayerEnteredRoom(Player newPlayer) => UpdatePlayerCount();
 
 		public override void OnPlayerLeftRoom(Player otherPlayer) => UpdatePlayerCount();
@@ -134,6 +139,8 @@ namespace UI
 			for (int i = _chat.childCount - 1; i >= 0; i--)
 				Destroy(_chat.GetChild(i).gameObject);
 		}
+
+		public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged) => UpdateRoomName();
 
 		private PlayerElement CreateElement() => PhotonNetwork.Instantiate(PLAYER_ELEMENT_PREFAB, PlayerList.position, PlayerList.rotation).GetComponent<PlayerElement>();
 	}

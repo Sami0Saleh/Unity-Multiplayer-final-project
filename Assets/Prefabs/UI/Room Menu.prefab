@@ -1252,12 +1252,12 @@ MonoBehaviour:
   _colorConfig: {fileID: 11400000, guid: 59f0b44d65fa7b440b6af1910403bdcb, type: 2}
   _playerElementPrefab: {fileID: 1494016892256083145, guid: 0adb4442f94f881418cc2679716c0dfb, type: 3}
   _chatMessagePrefab: {fileID: 61683092014611079, guid: 00aaee99e6c47124ca2faa804f8658ad, type: 3}
-  _photonView: {fileID: 8759038978770551462}
   _leaveRoomButton: {fileID: 3717414418509321082}
   _startButton: {fileID: 4473848282868723326}
   _playerCountText: {fileID: 6323592381559395205}
   _chat: {fileID: 8363113576536091939}
   _chatBoxInput: {fileID: 3627528656961837828}
+  _roomName: {fileID: 6733986039433904899}
   <PlayerList>k__BackingField: {fileID: 8363875147720184407}
 --- !u!114 &8759038978770551462
 MonoBehaviour:
