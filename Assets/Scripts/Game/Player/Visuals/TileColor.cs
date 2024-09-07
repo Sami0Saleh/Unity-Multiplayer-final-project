@@ -36,7 +36,7 @@ namespace Game.Player.Visuals
                 foreach (var tile in Pathfinding.GetTraversableArea(Pawn.Mine.Position, PawnMovement.MAX_STEPS, _board.TraversableArea))
                 {
                     _tileRenderer = _board.Tiles1[tile].GetComponentInChildren<MeshRenderer>(true);
-                    _tileRenderer.material = _newMaterial;
+                    _tileRenderer.materials[1] = _newMaterial;
                 }
             }
             else
@@ -44,7 +44,7 @@ namespace Game.Player.Visuals
                 foreach (var tile in _board.TraversableArea)
                 {
                     _tileRenderer = _board.Tiles1[tile].GetComponentInChildren<MeshRenderer>(true);
-                    _tileRenderer.material = _oldMaterial;
+                    _tileRenderer.materials[1] = _oldMaterial;
                 }
 
             }
