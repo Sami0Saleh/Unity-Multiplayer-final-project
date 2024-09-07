@@ -51,15 +51,13 @@ namespace UI
 			ClearChat();
 		}
 
-		public void LeaveRoomButton()
-		{
-			PhotonNetwork.LeaveRoom();
-		}
+		public void LeaveRoomButton() => PhotonNetwork.LeaveRoom();
 
 		public void StartButton()
 		{
 			if (!StartCondition)
 				return;
+			PhotonNetwork.RemoveBufferedRPCs();
 			PhotonNetwork.DestroyAll();
 			PhotonNetwork.CurrentRoom.IsOpen = false;
 			PhotonNetwork.LoadLevel(GAME_SCENE_INDEX);
@@ -71,8 +69,6 @@ namespace UI
 				return;
 			photonView.RPC(DISPALY_CHAT, RpcTarget.AllViaServer, msg);
 			_chatBoxInput.text = string.Empty;
-			if (PhotonNetwork.IsMasterClient)
-				PhotonNetwork.RemoveRPCs(photonView);
 		}
 
 		[PunRPC]
@@ -108,8 +104,8 @@ namespace UI
 		{
 			foreach (var player in PhotonNetwork.PlayerList)
 			{
-				if (player.CustomProperties.TryGetValue("PlayerColor", out var color))
-					yield return color.ToString();
+				if (player.TryGetColorProperty(out var color))
+					yield return color;
 			}
 		}
 
@@ -123,10 +119,7 @@ namespace UI
 
 		public override void OnPlayerLeftRoom(Player otherPlayer) => UpdatePlayerCount();
 
-		public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
-		{
-			UpdateStartButton();
-		}
+		public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps) => UpdateStartButton();
 
 		public override void OnMasterClientSwitched(Player newMasterClient)
 		{
