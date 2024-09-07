@@ -19,7 +19,6 @@ namespace UI
 		[SerializeField] private PlayerColors _colorConfig;
 		[SerializeField] private PlayerElement _playerElementPrefab;
 		[SerializeField] private ChatMessage _chatMessagePrefab;
-		[SerializeField] private PhotonView _photonView;
 		[SerializeField] private Button _leaveRoomButton;
 		[SerializeField] private Button _startButton;
 		[SerializeField] private TextMeshProUGUI _playerCountText;
@@ -59,20 +58,21 @@ namespace UI
 
 		public void StartButton()
 		{
-			if (StartCondition)
-			{
-				PhotonNetwork.DestroyAll();
-				PhotonNetwork.CurrentRoom.IsOpen = false;
-				PhotonNetwork.LoadLevel(GAME_SCENE_INDEX);
-			}
+			if (!StartCondition)
+				return;
+			PhotonNetwork.DestroyAll();
+			PhotonNetwork.CurrentRoom.IsOpen = false;
+			PhotonNetwork.LoadLevel(GAME_SCENE_INDEX);
 		}
 
 		public void SendChatButton(string msg)
 		{
 			if (msg.IsNullOrEmpty())
 				return;
-			_photonView.RPC(DISPALY_CHAT, RpcTarget.All, msg);
+			photonView.RPC(DISPALY_CHAT, RpcTarget.AllViaServer, msg);
 			_chatBoxInput.text = string.Empty;
+			if (PhotonNetwork.IsMasterClient)
+				PhotonNetwork.RemoveRPCs(photonView);
 		}
 
 		[PunRPC]
