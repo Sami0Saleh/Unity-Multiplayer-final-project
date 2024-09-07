@@ -19,7 +19,7 @@ namespace Game.Player
 		[Tooltip("Called once the player picks a tile and clicks it.")] public event UnityAction<Position> PositionPicked;
 		[Tooltip("Called once the player changes the state of the cursor.")] public event UnityAction<State> StateChanged;
 
-		public State CurrentState { get; private set; } = State.Move;
+		public State CurrentState { get; private set; }
 		public PunPlayer Owner => photonView.Owner;
 		public Pawn OwnerPawn { get; private set; }
 		#endregion
@@ -33,8 +33,12 @@ namespace Game.Player
 			gameObject.name = $"{Owner.NickName}'s Cursor";
 			if (!photonView.AmOwner)
 				Destroy(_mousePositionTracker);
-			if (!photonView.AmController)
-				enabled = false;
+		}
+
+		private void Start()
+		{
+			_board = Board.Instance;
+			UIManager.Instance.Cursor = this;
 			OwnerPawn.TurnStart += OnTurnStart;
 			OwnerPawn.TurnEnd += OnTurnEnd;
 			OwnerPawn.Movement.OnPawnMoved += OnMoved;
@@ -65,12 +69,6 @@ namespace Game.Player
 				return;
 			input.Cursor.Select.started -= OnPick;
 			input.Cursor.ToggleState.started -= OnToggleState;
-		}
-
-		private void Start()
-		{
-			_board = Board.Instance;
-			UIManager.Instance.Cursor = this;
 		}
 
         private void Update()
@@ -123,8 +121,8 @@ namespace Game.Player
 
 		private void OnTurnEnd(Pawn pawn)
 		{
-			enabled = false;
 			ChangeStateLocal(State.Neutral, pawn);
+			enabled = false;
 		}
 
 		private void OnMoved(PawnMovement.PawnMovementEvent _)
@@ -147,6 +145,7 @@ namespace Game.Player
 
 		private void ChangeStateLocal(State newState, Pawn pawn)
 		{
+			Debug.Log("New state: " + newState);
 			CurrentState = newState;
 			StateChanged?.Invoke(CurrentState);
 			if (!photonView.AmController)
