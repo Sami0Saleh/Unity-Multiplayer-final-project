@@ -9,18 +9,18 @@ namespace Game.Player
 	public class SpawnMyPawn : MonoBehaviour
 	{
 		[SerializeField] private Pawn _pawnPrefab;
-		private IEnumerable<Tile> StartPositions => Board.StartingPositions.Select(p => Board.Instance.PositionToTile(p));
+		private IEnumerable<Vector3> StartPositions => Board.StartingPositions.Select(p => Board.Instance.Grid.CellToWorld(Board.PositionToCell(p)));
 
         private void Start()
 		{
 			var start = GetStartPosition();
-            PhotonNetwork.Instantiate(_pawnPrefab.name, start.position, start.rotation);
+            PhotonNetwork.Instantiate(_pawnPrefab.name, start, Quaternion.identity);
 			Destroy(this);
         }
 
-		private Transform GetStartPosition()
+		private Vector3 GetStartPosition()
 		{
-			return StartPositions.ElementAt(GetPlayerNumber(PhotonNetwork.LocalPlayer)).transform;
+			return StartPositions.ElementAt(GetPlayerNumber(PhotonNetwork.LocalPlayer));
 		}
 	}
 }

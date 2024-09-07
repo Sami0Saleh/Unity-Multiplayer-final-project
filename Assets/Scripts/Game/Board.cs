@@ -52,8 +52,6 @@ namespace Game
 		[SerializeField, HideInInspector] private BoardMask _initialBoardState;
 		private Tile[] _tiles;
 
-		
-
 		public BoardMask CurrentBoardState { get; private set; }
 		public BoardMask PawnPositions { get; private set; }
 		public BoardMask TraversableArea => CurrentBoardState & ~PawnPositions;
@@ -67,6 +65,7 @@ namespace Game
 
 		#region METHODS
 		#region UNITY
+#if UNITY_EDITOR
 		private void OnValidate()
 		{
 			_initialBoardState = GetInitialBoardMaskForTileCreation();
@@ -94,6 +93,7 @@ namespace Game
 				}
 			}
 		}
+#endif
 
 		private void Awake()
 		{
@@ -214,11 +214,12 @@ namespace Game
 		#endregion
 		#endregion
 
+		[Serializable]
 		public struct BoardMask : IEquatable<BoardMask>, IEnumerable<Position>
 		{
 			public const ulong FULL = ulong.MaxValue >> 1;
 
-			private ulong _mask;
+			[SerializeField] private ulong _mask;
 
 			#region FUNCTIONS
 			#region OPERATORS

@@ -19,7 +19,6 @@ namespace UI
 		[SerializeField] private PlayerColors _colorConfig;
 		[SerializeField] private PlayerElement _playerElementPrefab;
 		[SerializeField] private ChatMessage _chatMessagePrefab;
-		[SerializeField] private PhotonView _photonView;
 		[SerializeField] private Button _leaveRoomButton;
 		[SerializeField] private Button _startButton;
 		[SerializeField] private TextMeshProUGUI _playerCountText;
@@ -52,26 +51,23 @@ namespace UI
 			ClearChat();
 		}
 
-		public void LeaveRoomButton()
-		{
-			PhotonNetwork.LeaveRoom();
-		}
+		public void LeaveRoomButton() => PhotonNetwork.LeaveRoom();
 
 		public void StartButton()
 		{
-			if (StartCondition)
-			{
-				PhotonNetwork.DestroyAll();
-				PhotonNetwork.CurrentRoom.IsOpen = false;
-				PhotonNetwork.LoadLevel(GAME_SCENE_INDEX);
-			}
+			if (!StartCondition)
+				return;
+			PhotonNetwork.RemoveBufferedRPCs();
+			PhotonNetwork.DestroyAll();
+			PhotonNetwork.CurrentRoom.IsOpen = false;
+			PhotonNetwork.LoadLevel(GAME_SCENE_INDEX);
 		}
 
 		public void SendChatButton(string msg)
 		{
 			if (msg.IsNullOrEmpty())
 				return;
-			_photonView.RPC(DISPALY_CHAT, RpcTarget.All, msg);
+			photonView.RPC(DISPALY_CHAT, RpcTarget.AllViaServer, msg);
 			_chatBoxInput.text = string.Empty;
 		}
 
@@ -108,8 +104,8 @@ namespace UI
 		{
 			foreach (var player in PhotonNetwork.PlayerList)
 			{
-				if (player.CustomProperties.TryGetValue("PlayerColor", out var color))
-					yield return color.ToString();
+				if (player.TryGetColorProperty(out var color))
+					yield return color;
 			}
 		}
 
@@ -123,10 +119,7 @@ namespace UI
 
 		public override void OnPlayerLeftRoom(Player otherPlayer) => UpdatePlayerCount();
 
-		public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
-		{
-			UpdateStartButton();
-		}
+		public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps) => UpdateStartButton();
 
 		public override void OnMasterClientSwitched(Player newMasterClient)
 		{
