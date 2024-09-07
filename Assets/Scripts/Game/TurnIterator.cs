@@ -127,10 +127,7 @@ namespace Game
 				_currentTemp = currentPlayer;
 			CurrentTurn = turnChange.turn;
 			OnTurnChange?.Invoke(turnChange);
-			if (PhotonNetwork.IsMasterClient)
-				RegisterAdvanceTurn();
-
-			void RegisterAdvanceTurn() => currentPawn.TurnEnd += InvokeNextTurn;
+			currentPawn.TurnEnd += InvokeNextTurn;
 
 			void InvokeNextTurn(Pawn pawn)
 			{
