@@ -1,10 +1,6 @@
-using DG.Tweening;
-using System.Collections;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
+using DG.Tweening;
 using static Game.Board.BoardMask;
-using static UnityEditor.PlayerSettings;
 
 namespace Game.Player.Visuals
 {
