@@ -6,6 +6,7 @@ using Photon.Pun;
 using PunPlayer = Photon.Realtime.Player;
 using ExitGames.Client.Photon;
 using Game.Player;
+using Game.Player.Visuals;
 
 namespace Game
 {
