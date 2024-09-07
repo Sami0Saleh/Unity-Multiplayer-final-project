@@ -67,11 +67,7 @@ namespace Game.Player
 			input.Cursor.ToggleState.started -= OnToggleState;
 		}
 
-		private void Start()
-		{
-			_board = Board.Instance;
-			UIManager.Instance.Cursor = this;
-		}
+		private void Start() =>	_board = Board.Instance;
 
         private void Update()
 		{

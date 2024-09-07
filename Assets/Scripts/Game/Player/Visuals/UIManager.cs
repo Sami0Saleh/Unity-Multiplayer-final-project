@@ -9,9 +9,7 @@ namespace Game.Player.Visuals
     {
         public static UIManager Instance;
 
-        public Cursor Cursor;
         [SerializeField] private TMP_Text _turnText;
-        [SerializeField] private TMP_Text _actionText;
         
         [SerializeField] private GameObject _ranks;
         [SerializeField] private TMP_Text _ranksText;
@@ -37,14 +35,12 @@ namespace Game.Player.Visuals
         }
         private void OnEnable()
         {
-            Cursor.StateChanged += OnStateChange;
             TurnIterator.Instance.OnTurnChange += ChangeTurn;
             GameManager.Instance.GameOver += OnGameOver;
         }
 
         private void OnDisable()
         {
-            Cursor.StateChanged -= OnStateChange;
             TurnIterator.Instance.OnTurnChange -= ChangeTurn;
             GameManager.Instance.GameOver -= OnGameOver;
         }
@@ -53,23 +49,6 @@ namespace Game.Player.Visuals
             _turnText.text = $"{turn.currentPlayer.NickName}'s turn";
         }
 
-        private void OnStateChange(Cursor.State state)
-        {
-            if (state == Cursor.State.Neutral)
-            {
-                Debug.Log("Move");
-                _actionText.text = "Move your pawn.";
-            }
-
-            else if (state == Cursor.State.Hammer)
-            {
-                Debug.Log("Hammer");
-
-                _actionText.text = "Choose a tile to destroy.";
-            }
-            
-        }
-        
         private void OnGameOver(PunPlayer player)
         {
             _ranks.SetActive(true);
