@@ -2,7 +2,10 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Photon.Pun;
+using PunPlayer = Photon.Realtime.Player;
 using static Game.Board.BoardMask;
+using Game.Player.Visuals;
+using System.Collections.Generic;
 
 namespace Game.Player
 {
@@ -27,7 +30,9 @@ namespace Game.Player
 		public event UnityAction<Pawn> TurnStart;
 		public event UnityAction<Pawn> TurnEnd;
 
-		public Photon.Realtime.Player Owner => photonView.Owner;
+        public Dictionary<PunPlayer, Pawn> EliminatedPlayers { get; private set; }
+
+        public Photon.Realtime.Player Owner => photonView.Owner;
 
 		private void Awake()
 		{
@@ -121,16 +126,17 @@ namespace Game.Player
 		{
 			if (!CanAct)
 			{
-				Debug.Log("Start of turn elimination on " + this); // TODO Delete
-				EliminatePawn();
+                EliminatedPlayers.Add(Owner, this);
+                UIManager.instance.UpdateRanks($"{photonView.Owner.NickName}\n");
+                EliminatePawn();
 			}
 		}
 
 		void EliminatePawn()
 		{
 			const string ELIMINATE_PAWN = nameof(EliminatePawnRPC);
-
-			photonView.RPC(ELIMINATE_PAWN, RpcTarget.All);
+            
+            photonView.RPC(ELIMINATE_PAWN, RpcTarget.All);
 		}
 
 		[PunRPC]

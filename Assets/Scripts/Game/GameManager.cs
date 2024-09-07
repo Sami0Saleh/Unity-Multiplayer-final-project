@@ -6,6 +6,7 @@ using UnityEngine.Events;
 using Photon.Pun;
 using PunPlayer = Photon.Realtime.Player;
 using Game.Player;
+using Game.Player.Visuals;
 
 namespace Game
 {
@@ -90,7 +91,7 @@ namespace Game
 
 		IEnumerator LeaveMatch()
 		{
-			yield return new WaitForSeconds(2f); // TODO Test without this delay
+            yield return new WaitForSeconds(2f); // TODO Test without this delay
 			PhotonNetwork.DestroyAll();
 			PhotonNetwork.LoadLevel(MENU_SCENE_INDEX);
 		}

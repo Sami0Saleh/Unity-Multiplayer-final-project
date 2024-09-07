@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 using Photon.Pun;
 using PunPlayer = Photon.Realtime.Player;
 using static Game.Board.BoardMask;
+using Game.Player.Visuals;
 
 namespace Game.Player
 {
@@ -28,8 +29,9 @@ namespace Game.Player
 		private void Awake()
 		{
 			OwnerPawn = GameManager.Instance.ActivePlayers[Owner];
+			
 			OwnerPawn.Cursor = this;
-			gameObject.name = $"{Owner.NickName}'s Cursor";
+			gameObject.name = $"{Owner.NickName}'s _cursor";
 			if (!photonView.AmOwner)
 				Destroy(_mousePositionTracker);
 			if (!photonView.AmController)

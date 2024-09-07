@@ -35,16 +35,14 @@ namespace Game.Player.Visuals
 
                 foreach (var tile in Pathfinding.GetTraversableArea(Pawn.Mine.Position, PawnMovement.MAX_STEPS, _board.TraversableArea))
                 {
-                    Debug.Log("Change color");
                     _tileRenderer = _board.Tiles1[tile].GetComponentInChildren<MeshRenderer>(true);
                     _tileRenderer.material = _newMaterial;
                 }
             }
             else
             {
-                foreach (var tile in Pathfinding.GetTraversableArea(Pawn.Mine.Position, PawnMovement.MAX_STEPS, _board.TraversableArea))
+                foreach (var tile in _board.TraversableArea)
                 {
-                    Debug.Log("Change color");
                     _tileRenderer = _board.Tiles1[tile].GetComponentInChildren<MeshRenderer>(true);
                     _tileRenderer.material = _oldMaterial;
                 }

@@ -27,7 +27,7 @@ namespace Game.Player
     ""name"": ""InputActions"",
     ""maps"": [
         {
-            ""name"": ""Cursor"",
+            ""name"": ""_cursor"",
             ""id"": ""df70fa95-8a34-4494-b137-73ab6b9c7d37"",
             ""actions"": [
                 {
@@ -630,8 +630,8 @@ namespace Game.Player
         }
     ]
 }");
-            // Cursor
-            m_Cursor = asset.FindActionMap("Cursor", throwIfNotFound: true);
+            // _cursor
+            m_Cursor = asset.FindActionMap("_cursor", throwIfNotFound: true);
             m_Cursor_Look = m_Cursor.FindAction("Look", throwIfNotFound: true);
             m_Cursor_Select = m_Cursor.FindAction("Select", throwIfNotFound: true);
             m_Cursor_ToggleState = m_Cursor.FindAction("ToggleState", throwIfNotFound: true);
@@ -651,7 +651,7 @@ namespace Game.Player
 
         ~@InputActions()
         {
-            Debug.Assert(!m_Cursor.enabled, "This will cause a leak and performance issues, InputActions.Cursor.Disable() has not been called.");
+            Debug.Assert(!m_Cursor.enabled, "This will cause a leak and performance issues, InputActions._cursor.Disable() has not been called.");
             Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, InputActions.UI.Disable() has not been called.");
         }
 
@@ -711,7 +711,7 @@ namespace Game.Player
             return asset.FindBinding(bindingMask, out action);
         }
 
-        // Cursor
+        // _cursor
         private readonly InputActionMap m_Cursor;
         private List<ICursorActions> m_CursorActionsCallbackInterfaces = new List<ICursorActions>();
         private readonly InputAction m_Cursor_Look;
