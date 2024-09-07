@@ -70,13 +70,15 @@ namespace Game
 
 		public void TriggerGameOver(PunPlayer winningPlayer)
 		{
-			const string GAME_OVER = nameof(GameOverRPC);
+            UIManager.Instance.UpdateRanks($"{winningPlayer.NickName} - Winner\n");
+            const string GAME_OVER = nameof(GameOverRPC);
 			photonView.RPC(GAME_OVER, RpcTarget.AllViaServer, winningPlayer);
 		}
 
 		private void OnPlayerEliminated(Pawn pawn)
 		{
-			ActivePlayers.Remove(pawn.Owner);
+            UIManager.Instance.UpdateRanks($"{pawn.Owner.NickName} - Eliminated\n");
+            ActivePlayers.Remove(pawn.Owner);
 			if (PhotonNetwork.IsMasterClient && ActivePlayers.Count <= 1)
 				TriggerGameOver(ActivePlayers.Single().Key);
 		}
@@ -91,7 +93,7 @@ namespace Game
 
 		IEnumerator LeaveMatch()
 		{
-            yield return new WaitForSeconds(2f); // TODO Test without this delay
+            yield return new WaitForSeconds(5f); // TODO Test without this delay
 			PhotonNetwork.DestroyAll();
 			PhotonNetwork.LoadLevel(MENU_SCENE_INDEX);
 		}

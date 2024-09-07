@@ -2,7 +2,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Photon.Pun;
-using PunPlayer = Photon.Realtime.Player;
 using static Game.Board.BoardMask;
 using Game.Player.Visuals;
 using System.Collections.Generic;
@@ -29,8 +28,6 @@ namespace Game.Player
 		public static event UnityAction<Pawn> PlayerEliminated;
 		public event UnityAction<Pawn> TurnStart;
 		public event UnityAction<Pawn> TurnEnd;
-
-        public Dictionary<PunPlayer, Pawn> EliminatedPlayers { get; private set; }
 
         public Photon.Realtime.Player Owner => photonView.Owner;
 
@@ -126,8 +123,6 @@ namespace Game.Player
 		{
 			if (!CanAct)
 			{
-                EliminatedPlayers.Add(Owner, this);
-                UIManager.Instance.UpdateRanks($"{EliminatedPlayers}\n");
                 EliminatePawn();
 			}
 		}
