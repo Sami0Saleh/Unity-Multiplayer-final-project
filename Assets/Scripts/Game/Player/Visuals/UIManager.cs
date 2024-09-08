@@ -2,6 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using PunPlayer = Photon.Realtime.Player;
+using static Game.Board.BoardMask;
 
 
 namespace Game.Player.Visuals
@@ -39,14 +40,19 @@ namespace Game.Player.Visuals
         {
             TurnIterator.Instance.OnTurnChange += ChangeTurn;
             GameManager.Instance.GameOver += OnGameOver;
+            Pawn.PlayerEliminated += PlayerEliminatedTextUpdate;
+            GameManager.Instance.GameOver += OnGameOverTextUpdate;
         }
 
         private void OnDisable()
         {
             TurnIterator.Instance.OnTurnChange -= ChangeTurn;
             GameManager.Instance.GameOver -= OnGameOver;
+            Pawn.PlayerEliminated -= PlayerEliminatedTextUpdate;
+            GameManager.Instance.GameOver -= OnGameOverTextUpdate;
+
         }
-        public void ChangeTurn(TurnIterator.TurnChangeEvent turn)
+        private void ChangeTurn(TurnIterator.TurnChangeEvent turn)
         {
             _turnText.text = $"{turn.currentPlayer.NickName}'s turn";
         }
@@ -55,9 +61,13 @@ namespace Game.Player.Visuals
         {
             _ranks.SetActive(true);
         }
-        public void UpdateRanks(string text)
+        private void PlayerEliminatedTextUpdate(Pawn pawn)
         {
-            _ranksText.text += text;
+            _ranksText.text += $"{pawn.Owner.NickName} - Eliminated\n";
+        }
+        private void OnGameOverTextUpdate(PunPlayer player)
+        {
+            _ranksText.text += $"{player.NickName} - Winner\n";
         }
     }
 }

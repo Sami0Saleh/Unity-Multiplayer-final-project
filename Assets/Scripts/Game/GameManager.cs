@@ -71,14 +71,12 @@ namespace Game
 
 		public void TriggerGameOver(PunPlayer winningPlayer)
 		{
-            UIManager.Instance.UpdateRanks($"{winningPlayer.NickName} - Winner\n");
             const string GAME_OVER = nameof(GameOverRPC);
 			photonView.RPC(GAME_OVER, RpcTarget.AllViaServer, winningPlayer);
 		}
 
 		private void OnPlayerEliminated(Pawn pawn)
 		{
-            UIManager.Instance.UpdateRanks($"{pawn.Owner.NickName} - Eliminated\n");
             ActivePlayers.Remove(pawn.Owner);
 			if (PhotonNetwork.IsMasterClient && ActivePlayers.Count <= 1)
 				TriggerGameOver(ActivePlayers.Single().Key);
