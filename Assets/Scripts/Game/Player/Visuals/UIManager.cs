@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using PunPlayer = Photon.Realtime.Player;
@@ -9,8 +10,9 @@ namespace Game.Player.Visuals
     {
         public static UIManager Instance;
 
+        private const string GAME_OVER_TEXT = "Game Over\n";
+
         [SerializeField] private TMP_Text _turnText;
-        
         [SerializeField] private GameObject _ranks;
         [SerializeField] private TMP_Text _ranksText;
 
@@ -31,7 +33,7 @@ namespace Game.Player.Visuals
         }
         private void Start()
         {
-            _ranksText.text = "Ranks:\n";
+            _ranksText.text = GAME_OVER_TEXT;
         }
         private void OnEnable()
         {

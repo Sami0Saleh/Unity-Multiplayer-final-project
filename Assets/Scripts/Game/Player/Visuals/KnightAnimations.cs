@@ -6,13 +6,13 @@ namespace Game.Player.Visuals
 {
 	public class KnightAnimations : MonoBehaviour
 	{
-		const string POINT_TRIGGER = "TrPoint";
-		const string WALK_BOOL = "isWalking";
-		const string FALL_TRIGGER = "TrFall";
+		private const string POINT_TRIGGER = "TrPoint";
+        private const string WALK_BOOL = "isWalking";
+        private const string FALL_TRIGGER = "TrFall";
 
-		const float TIME_TO_MOVE = 0.5f;
-		const float TIME_TO_DESTROY = 3f;
-		const float DISTANCE_TO_FALL = -10f;
+        private const float TIME_TO_MOVE = 0.5f;
+		private const float TIME_TO_DESTROY = 3f;
+        private const float DISTANCE_TO_FALL = -10f;
 
 		[SerializeField] private Animator _animator;
 		[SerializeField] private Pawn _pawn;

@@ -13,7 +13,8 @@ namespace Game
 	public class GameManager : MonoBehaviourPunCallbacks
 	{
 		private const int MENU_SCENE_INDEX = 0;
-		public static GameManager Instance;
+        private const float TIME_TO_LEAVE_GAME = 5f;
+        public static GameManager Instance;
 
 		public event UnityAction GameStart;
 		public event UnityAction<PunPlayer> GameOver;
@@ -65,7 +66,7 @@ namespace Game
 			GameOver?.Invoke(winningPlayer);
 
 			if (PhotonNetwork.IsMasterClient)
-				StartCoroutine(LeaveMatch());
+				StartCoroutine(LeaveMatch(TIME_TO_LEAVE_GAME));
 		}
 
 		public void TriggerGameOver(PunPlayer winningPlayer)
@@ -91,9 +92,9 @@ namespace Game
 				photonView.RPC(GAME_START, RpcTarget.AllViaServer);
 		}
 
-		IEnumerator LeaveMatch()
+		IEnumerator LeaveMatch(float time)
 		{
-            yield return new WaitForSeconds(5f); // TODO Test without this delay
+            yield return new WaitForSeconds(time); // TODO Test without this delay
 			PhotonNetwork.DestroyAll();
 			PhotonNetwork.LoadLevel(MENU_SCENE_INDEX);
 		}
