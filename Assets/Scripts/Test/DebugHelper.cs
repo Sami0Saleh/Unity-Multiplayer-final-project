@@ -38,7 +38,7 @@ namespace Test
                 reconnectManager.SetIntentionalDisconnect(PhotonNetwork.CurrentRoom.Name);
             }
 
-            PhotonNetwork.LeaveRoom(true);
+            PhotonNetwork.LeaveRoom();
 
             _rejoinButton.SetActive(true);
         }

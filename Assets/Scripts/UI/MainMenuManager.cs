@@ -10,6 +10,7 @@ namespace UI
 	public class MainMenuManager : MonoBehaviourPunCallbacks
 	{
 		public const int MAX_PLAYERS_PER_ROOM = 4;
+		public static string LastRoomName { get; private set; }
 
 		[SerializeField] private ErrorPopup _errorPopup;
 
@@ -114,6 +115,7 @@ namespace UI
 
 		public override void OnJoinedRoom()
 		{
+			LastRoomName = PhotonNetwork.CurrentRoom.Name;
 			SetActiveMenu(RoomMenu);
 		}
 

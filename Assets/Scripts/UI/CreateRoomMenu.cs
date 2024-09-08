@@ -8,6 +8,8 @@ namespace UI
 {
 	public class CreateRoomMenu : MonoBehaviour
 	{
+		public const int PLAYER_TTL = 60_000;
+
 		[SerializeField] private TMP_InputField _roomName;
 		[SerializeField] private Slider _maxPlayerCount;
 		[SerializeField] private TextMeshProUGUI _maxPlayerText;
@@ -35,7 +37,7 @@ namespace UI
 		{
 			if (RoomName.IsNullOrEmpty())
 				return;
-			PhotonNetwork.CreateRoom(RoomName, new() { MaxPlayers = MaxPlayerCount });
+			PhotonNetwork.CreateRoom(RoomName, new() { MaxPlayers = MaxPlayerCount, PlayerTtl = PLAYER_TTL, CleanupCacheOnLeave = false });
 
 			ToggleButtonsState(false);
 		}

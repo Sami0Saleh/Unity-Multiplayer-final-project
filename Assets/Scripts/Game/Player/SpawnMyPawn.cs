@@ -13,8 +13,8 @@ namespace Game.Player
 
         private void Start()
 		{
-			var start = GetStartPosition();
-            PhotonNetwork.Instantiate(_pawnPrefab.name, start, Quaternion.identity);
+			if (!PhotonNetwork.LocalPlayer.HasRejoined)
+				PhotonNetwork.Instantiate(_pawnPrefab.name, GetStartPosition(), Quaternion.identity);
 			Destroy(this);
         }
 

@@ -6,7 +6,6 @@ using UnityEngine.Events;
 using Photon.Pun;
 using PunPlayer = Photon.Realtime.Player;
 using Game.Player;
-using Game.Player.Visuals;
 
 namespace Game
 {
@@ -42,14 +41,14 @@ namespace Game
 		{
 			base.OnEnable();
 			Pawn.PlayerEliminated += OnPlayerEliminated;
-			Pawn.PlayerJoined += OnPlayerJoined;
+			Pawn.PlayerJoined += OnPawnCreated;
 		}
 
 		public override void OnDisable()
 		{
 			base.OnDisable();
 			Pawn.PlayerEliminated -= OnPlayerEliminated;
-			Pawn.PlayerJoined -= OnPlayerJoined;
+			Pawn.PlayerJoined -= OnPawnCreated;
 		}
 
 		[PunRPC]
@@ -82,11 +81,10 @@ namespace Game
 				TriggerGameOver(ActivePlayers.Single().Key);
 		}
 
-		private void OnPlayerJoined(Pawn pawn)
+		private void OnPawnCreated(Pawn pawn)
 		{
 			const string GAME_START = nameof(GameStartRPC);
-			ActivePlayers.Add(pawn.Owner, pawn);
-			if (PhotonNetwork.IsMasterClient && ActivePlayers.Count == PhotonNetwork.CurrentRoom.PlayerCount)
+			if (ActivePlayers.TryAdd(pawn.Owner, pawn) && PhotonNetwork.IsMasterClient && ActivePlayers.Count == PhotonNetwork.CurrentRoom.PlayerCount)
 				photonView.RPC(GAME_START, RpcTarget.AllViaServer);
 		}
 
@@ -94,6 +92,17 @@ namespace Game
 		{
             yield return new WaitForSeconds(time); // TODO Test without this delay
 			PhotonNetwork.DestroyAll();
+			PhotonNetwork.LoadLevel(MENU_SCENE_INDEX);
+		}
+
+		public override void OnPlayerEnteredRoom(PunPlayer newPlayer)
+		{
+			if (!newPlayer.HasRejoined)
+				return;
+		}
+
+		public override void OnLeftRoom()
+		{
 			PhotonNetwork.LoadLevel(MENU_SCENE_INDEX);
 		}
 	}
